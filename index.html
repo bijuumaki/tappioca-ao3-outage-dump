@@ -107,47 +107,15 @@
 
     <section class="view view-list" id="view-list" hidden>
       <h1 class="list-heading" tabindex="-1">Tappioca’s fanfiction stories</h1>
-      <div class="fic-list" id="fic-list">
-        <!-- Cards below hold placeholder text: titles and values in (parentheses) and the lorem ipsum summary.
-             To add a real fic, copy a card and replace the text after each label, keeping the data-field attributes.
-             Placeholders are ignored by search and sorted last; real values are used automatically. -->
-        <article class="fic-card">
-          <h2 class="fic-title">(fic #1 title)</h2>
-          <div class="fic-rule" aria-hidden="true"></div>
-          <div class="fic-meta">
-            <p data-field="fandom">FANDOM: (media title)</p>
-            <p data-field="rating">RATING: (rating)</p>
-            <p data-field="words">WORD COUNT: (numerical value)</p>
-            <p data-field="relationships">RELATIONSHIPS:</p>
-            <p class="summary-label">SUMMARY:</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In mollis rutrum rhoncus. Suspendisse potenti. Mauris congue odio ipsum, at sodales risus efficitur nec. In hac habitasse platea dictumst. Integer consectetur dolor nulla, nec facilisis lectus vestibulum sed. Cras porttitor ut eros et gravida. Duis quis interdum ipsum. Nullam cursus, lacus sed cursus laoreet, elit quam tristique lorem, nec scelerisque justo lacus sed mi. Curabitur quis fermentum urna, quis rhoncus dolor. Cras convallis orci ac nulla</p>
-          </div>
-        </article>
-        <article class="fic-card">
-          <h2 class="fic-title">(fic #2 title)</h2>
-          <div class="fic-rule" aria-hidden="true"></div>
-          <div class="fic-meta">
-            <p data-field="fandom">FANDOM: (media title)</p>
-            <p data-field="rating">RATING: (rating)</p>
-            <p data-field="words">WORD COUNT: (numerical value)</p>
-            <p data-field="relationships">RELATIONSHIPS:</p>
-            <p class="summary-label">SUMMARY:</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In mollis rutrum rhoncus. Suspendisse potenti. Mauris congue odio ipsum, at sodales risus efficitur nec. In hac habitasse platea dictumst. Integer consectetur dolor nulla, nec facilisis lectus vestibulum sed. Cras porttitor ut eros et gravida. Duis quis interdum ipsum. Nullam cursus, lacus sed cursus laoreet, elit quam tristique lorem, nec scelerisque justo lacus sed mi. Curabitur quis fermentum urna, quis rhoncus dolor. Cras convallis orci ac nulla</p>
-          </div>
-        </article>
-        <article class="fic-card">
-          <h2 class="fic-title">(fic #3 title)</h2>
-          <div class="fic-rule" aria-hidden="true"></div>
-          <div class="fic-meta">
-            <p data-field="fandom">FANDOM: (media title)</p>
-            <p data-field="rating">RATING: (rating)</p>
-            <p data-field="words">WORD COUNT: (numerical value)</p>
-            <p data-field="relationships">RELATIONSHIPS:</p>
-            <p class="summary-label">SUMMARY:</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In mollis rutrum rhoncus. Suspendisse potenti. Mauris congue odio ipsum, at sodales risus efficitur nec. In hac habitasse platea dictumst. Integer consectetur dolor nulla, nec facilisis lectus vestibulum sed. Cras porttitor ut eros et gravida. Duis quis interdum ipsum. Nullam cursus, lacus sed cursus laoreet, elit quam tristique lorem, nec scelerisque justo lacus sed mi. Curabitur quis fermentum urna, quis rhoncus dolor. Cras convallis orci ac nulla</p>
-          </div>
-        </article>
+      <!-- The cards are built by app.js from the library (the Google Apps Script web app). Nothing to edit here to add a fic:
+           put the file in the Drive folder. Details left out of a fic show as placeholders; see "Placeholder convention" in CLAUDE.md. -->
+      <p class="fic-note" id="list-loading" role="status">Loading the library…</p>
+      <div class="fic-note" id="list-error" role="alert" hidden>
+        <p id="list-error-text"></p>
+        <button class="link-btn" id="list-retry" type="button">Try again</button>
       </div>
+      <p class="fic-note" id="list-empty" hidden>No fics here yet. Check back soon!</p>
+      <div class="fic-list" id="fic-list" hidden></div>
       <p class="fic-empty" id="fic-empty" hidden>No fics match that search. <button class="link-btn" id="clear-search" type="button">Clear search</button></p>
       <p class="sr-only" id="list-status" role="status" aria-live="polite"></p>
     </section>

@@ -83,7 +83,7 @@ img { max-width: 100%; }
   :root[data-font="imfell"] { --font-display: var(--stack-imfell); --font-body: var(--stack-imfell); }
   :root[data-font="cormorant"] { --font-display: var(--stack-cormorant); --font-body: var(--stack-cormorant); }
   /* The default display font is a small-caps face; in the sans serif choices every letter of that text, capitals included, is set in small caps */
-  :root:is([data-font="lucida"], [data-font="cantarell"], [data-font="tahoma"]) :is(.links-card, .label, .guest-box, .howdy, .list-heading, .fic-title, .fic-empty, .list-tools) {
+  :root:is([data-font="lucida"], [data-font="cantarell"], [data-font="tahoma"]) :is(.links-card, .label, .guest-box, .howdy, .list-heading, .fic-title, .fic-empty, .fic-note, .list-tools) {
     font-variant-caps: all-small-caps;
   }
   /* Menu open: the page behind does not scroll */
@@ -405,6 +405,16 @@ img { max-width: 100%; }
     font-family: var(--font-display);
     font-size: calc(19 * var(--u));
   }
+  /* Loading, error and "no fics yet" notes in the list */
+  .fic-note {
+    max-width: 755px;
+    margin: 0 0 17px;
+    font-family: var(--font-display);
+    font-size: calc(19 * var(--u));
+    line-height: 1.5;
+  }
+  .fic-note p { margin: 0 0 6px; }
+  .fic-note .link-btn { margin-left: 0; min-height: 44px; }
   .link-btn {
     margin: 0 0 0 0.5ch;
     padding: 0;

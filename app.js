@@ -3,6 +3,12 @@
     if (!root.getAttribute("lang")) root.setAttribute("lang", "en");
     var baseTitle = document.title;
 
+    /* The library: a Google Apps Script web app that reads the Drive folder (apps-script/Code.gs).
+       Not a secret; it only serves that one folder. Plain GET requests, so the browser needs no preflight. */
+    var LIBRARY_URL = "https://script.google.com/macros/s/AKfycbzp6QNwpXQCtwJrba7PSS3qWA-Y6fljaQ9pckKFvWm8NrFuiokibS6kg8RhUlD7KuECfg/exec";
+    var REQUEST_TIMEOUT = 30000; /* the first request after a quiet spell can take a while to wake the script */
+    var LIBRARY_CACHE_KEY = "fic-site-library";
+
     var headerEl = document.querySelector(".site-header");
     var headerInner = document.querySelector(".site-header-inner");
     var siteTitle = document.querySelector(".site-title");
@@ -14,6 +20,10 @@
     var viewHome = document.getElementById("view-home");
     var viewList = document.getElementById("view-list");
     var ficList = document.getElementById("fic-list");
+    var listLoading = document.getElementById("list-loading");
+    var listError = document.getElementById("list-error");
+    var listErrorText = document.getElementById("list-error-text");
+    var listEmpty = document.getElementById("list-empty");
     var themeBtn = document.getElementById("theme-toggle");
     var fontSel = document.getElementById("font-select");
     var aaBtn = document.getElementById("aa-toggle");
@@ -144,7 +154,7 @@
         if (!layer.hidden) setDrawer(false, false);
       }
       if (medium.matches) {
-        if (listToolsEl.parentNode !== viewList) viewList.insertBefore(listToolsEl, ficList);
+        if (listToolsEl.parentNode !== viewList) viewList.insertBefore(listToolsEl, listLoading);
       } else if (listToolsEl.parentNode !== pageEl) {
         pageEl.appendChild(listToolsEl);
       }
@@ -178,6 +188,7 @@
       viewSoon.hidden = !showSoon;
       if (showSoon) soonHeading.textContent = soonRoutes[name] + ": coming soon";
       listToolsEl.hidden = !showList;
+      if (showList) loadLibrary(false);
       document.title = showList ? "Tappioca’s fanfiction stories" : (showSoon ? soonRoutes[name] + " (coming soon)" : baseTitle);
       var current = showList || showSoon ? name : (name === "" || name === "home" ? "home" : "");
       navLinks.forEach(function (a) {
@@ -191,13 +202,134 @@
       e.preventDefault();
       activeView().querySelector("h1").focus();
     });
-    route(false);
 
-    /* Fic list: live search and sorting, with results announced */
+    /* Fic list: built from the library, with live search and sorting, results announced */
     var ficEmpty = document.getElementById("fic-empty");
     var statusEl = document.getElementById("list-status");
     var searchInput = document.getElementById("fic-search");
     var sortButtons = Array.prototype.slice.call(document.querySelectorAll(".sort-btn"));
+    var currentSort = "";
+
+    /* Talking to the library. Every request is a plain GET without custom headers, so there is no CORS preflight. */
+    function friendlyError(err) {
+      if (err && err.name === "AbortError") return "The library took too long to answer. Please try again in a moment.";
+      if (err && err.name === "SyntaxError") return "The library sent back something unexpected. Please try again in a moment.";
+      if (err && err.fromLibrary) {
+        if (err.message === "Not found.") return "That fic could not be found.";
+        return "The library had a problem: " + err.message;
+      }
+      if (err && err.fromHttp) return "The library answered with an error (" + err.message + "). Please try again in a moment.";
+      return "Couldn’t reach the library. Check your connection and try again.";
+    }
+    function libraryGet(params) {
+      var query = Object.keys(params || {}).map(function (k) {
+        return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]);
+      }).join("&");
+      var ctl = window.AbortController ? new AbortController() : null;
+      var timer = setTimeout(function () { if (ctl) ctl.abort(); }, REQUEST_TIMEOUT);
+      return fetch(LIBRARY_URL + (query ? "?" + query : ""), ctl ? { signal: ctl.signal } : {})
+        .then(function (res) {
+          if (!res.ok) { var e = new Error(String(res.status)); e.fromHttp = true; throw e; }
+          return res.json();
+        })
+        .then(function (data) {
+          if (data && data.error) { var e = new Error(String(data.error)); e.fromLibrary = true; throw e; }
+          return data;
+        })
+        .then(function (data) { clearTimeout(timer); return data; },
+              function (err) { clearTimeout(timer); throw new Error(friendlyError(err)); });
+    }
+
+    /* Saved in this browser only: the last library list, so the list shows at once and then refreshes */
+    function readSaved(key) {
+      try { var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+    }
+    function writeSaved(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+    }
+
+    /* Placeholders for details a file does not give. Same look as the original design cards:
+       a value in (parentheses) or the lorem ipsum filler is a placeholder (see isPlaceholder). */
+    var PLACEHOLDER = {
+      title: "(fic title)",
+      fandom: "(media title)",
+      rating: "(rating)",
+      words: "(numerical value)",
+      relationships: "(pairing)",
+      summary: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In mollis rutrum rhoncus. Suspendisse potenti. Mauris congue odio ipsum, at sodales risus efficitur nec. In hac habitasse platea dictumst. Integer consectetur dolor nulla, nec facilisis lectus vestibulum sed. Cras porttitor ut eros et gravida. Duis quis interdum ipsum. Nullam cursus, lacus sed cursus laoreet, elit quam tristique lorem, nec scelerisque justo lacus sed mi. Curabitur quis fermentum urna, quis rhoncus dolor. Cras convallis orci ac nulla"
+    };
+    function make(tag, className, text) {
+      var node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text != null) node.textContent = text;
+      return node;
+    }
+    function detail(field, label, value, placeholder) {
+      var p = make("p", null, label + ": " + (value || placeholder));
+      p.setAttribute("data-field", field);
+      return p;
+    }
+    /* Built with textContent only, never innerHTML: the text comes from files in Drive */
+    function buildCard(fic, index) {
+      var card = make("article", "fic-card");
+      card.setAttribute("data-fic-id", fic.id);
+      card.setAttribute("data-order", String(index));
+      card.setAttribute("data-tags", (fic.tags || []).join(" "));
+      card.appendChild(make("h2", "fic-title", fic.title || PLACEHOLDER.title));
+      var rule = make("div", "fic-rule");
+      rule.setAttribute("aria-hidden", "true");
+      card.appendChild(rule);
+      var meta = make("div", "fic-meta");
+      var words = typeof fic.words === "number" && fic.words > 0 ? fic.words.toLocaleString("en-US") : "";
+      meta.appendChild(detail("fandom", "FANDOM", fic.fandom, PLACEHOLDER.fandom));
+      meta.appendChild(detail("rating", "RATING", fic.rating, PLACEHOLDER.rating));
+      meta.appendChild(detail("words", "WORD COUNT", words, PLACEHOLDER.words));
+      meta.appendChild(detail("relationships", "RELATIONSHIPS", fic.relationships, PLACEHOLDER.relationships));
+      meta.appendChild(make("p", "summary-label", "SUMMARY:"));
+      var summary = make("p", null, fic.summary || PLACEHOLDER.summary);
+      summary.setAttribute("data-field", "summary");
+      meta.appendChild(summary);
+      card.appendChild(meta);
+      return card;
+    }
+
+    var libraryLoadedAt = 0;
+    var libraryBusy = false;
+    function showListState(state, message) {
+      listLoading.hidden = state !== "loading";
+      listError.hidden = state !== "error";
+      listEmpty.hidden = state !== "empty";
+      ficList.hidden = state !== "list";
+      if (state === "error") listErrorText.textContent = message;
+      ficList.setAttribute("aria-busy", String(state === "loading"));
+    }
+    function renderLibrary(data) {
+      var fics = (data && data.fics) || [];
+      while (ficList.firstChild) ficList.removeChild(ficList.firstChild);
+      fics.forEach(function (fic, i) { ficList.appendChild(buildCard(fic, i)); });
+      showListState(fics.length ? "list" : "empty");
+      if (currentSort) sortCards(currentSort);
+      filterCards();
+    }
+    function loadLibrary(force) {
+      if (libraryBusy) return;
+      if (!force && libraryLoadedAt && Date.now() - libraryLoadedAt < 60000) return; /* no need to ask again within a minute */
+      var saved = readSaved(LIBRARY_CACHE_KEY);
+      var haveSaved = !!(saved && saved.data && saved.data.fics);
+      if (haveSaved) renderLibrary(saved.data); else showListState("loading");
+      libraryBusy = true;
+      libraryGet({}).then(function (data) {
+        libraryBusy = false;
+        libraryLoadedAt = Date.now();
+        writeSaved(LIBRARY_CACHE_KEY, { savedAt: Date.now(), data: data });
+        renderLibrary(data);
+      }, function (err) {
+        libraryBusy = false;
+        if (haveSaved) { statusEl.textContent = "Couldn’t refresh the library, showing the last saved list."; return; }
+        showListState("error", err.message);
+      });
+    }
+    document.getElementById("list-retry").addEventListener("click", function () { loadLibrary(true); });
 
     function fieldValue(card, name) {
       var el = card.querySelector('[data-field="' + name + '"]');
@@ -218,8 +350,8 @@
       var title = card.querySelector(".fic-title");
       if (title) parts.push(title.textContent);
       ["fandom", "rating", "words", "relationships"].forEach(function (f) { parts.push(fieldValue(card, f)); });
-      var summary = card.querySelector(".fic-meta p:not([data-field]):not(.summary-label)");
-      if (summary) parts.push(summary.textContent);
+      parts.push(fieldValue(card, "summary"));
+      parts.push(card.getAttribute("data-tags") || "");
       return parts.filter(function (p) { return !isPlaceholder(p); }).join(" ").toLowerCase();
     }
     function sortCards(mode) {
@@ -249,6 +381,7 @@
       btn.addEventListener("click", function () {
         sortButtons.forEach(function (b) { b.setAttribute("aria-pressed", String(b === btn)); });
         var mode = btn.getAttribute("data-sort");
+        currentSort = mode;
         sortCards(mode);
         var label = btn.textContent.toLowerCase();
         statusEl.textContent = "Sorted by " + (mode.indexOf("words") === 0 ? "word count, " : "") + label;
@@ -263,8 +396,8 @@
         card.hidden = !match;
         if (match) shown += 1;
       });
-      ficEmpty.hidden = shown > 0;
-      statusEl.textContent = shown === 0 ? "No fics match that search." : shown + " of " + cards.length + " fics shown";
+      ficEmpty.hidden = shown > 0 || cards.length === 0;
+      if (cards.length) statusEl.textContent = shown === 0 ? "No fics match that search." : shown + " of " + cards.length + " fics shown";
     }
     searchInput.addEventListener("input", filterCards);
     document.getElementById("search-form").addEventListener("submit", function (e) {
@@ -278,4 +411,5 @@
     });
 
     syncTheme();
+    route(false);
   })();
