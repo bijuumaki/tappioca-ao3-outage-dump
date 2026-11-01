@@ -162,7 +162,7 @@ function fillInfo_(files, cache) {
 
   // An epub is opened once (when new or changed) to learn its chapters; the answer is remembered like the rest.
   files.filter(function (f) { return f.format === 'epub'; }).forEach(function (f) {
-    var key = 'e2:' + f.id + ':' + f.updated.getTime();
+    var key = 'e3:' + f.id + ':' + f.updated.getTime();
     var raw = cache.get(key);
     if (raw) { f.info = JSON.parse(raw); return; }
     f.info = epubInfo_(f.file);
@@ -382,16 +382,33 @@ function epubStructure_(read) {
   if (title) meta.title = title;
   if (summary) meta.summary = summary;
 
+  // An Archive of Our Own download carries the work's rating on its Preface page.
+  var preface = chapters.filter(function (c) { return isArchivePreface_(c); })[0];
+  var rating = preface ? archiveField_(preface.md, 'Rating') : '';
+  if (rating) meta.rating = rating;
+
   // The pages an Archive of Our Own download wraps around a story are not chapters.
   var story = chapters.filter(function (c) { return !isArchiveWrapper_(c, title); });
   return { meta: meta, chapters: story.length ? story : chapters };
+}
+
+function isArchivePreface_(chapter) {
+  return chapter.words < 600 && /Posted originally on the \[?Archive of Our Own/i.test(chapter.md);
+}
+
+// Reads one labelled value from the Preface ("Rating:" on one line, its value on the next).
+// Links keep only their text, and several values stay as a comma-separated list.
+function archiveField_(md, label) {
+  var m = md.match(new RegExp('(?:^|\\n\\n)' + label + ':\\n\\n([^\\n]+)'));
+  if (!m) return '';
+  return m[1].replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/\\(.)/g, '$1').replace(/\s+/g, ' ').trim();
 }
 
 // The "Preface" info page, the title page and the "Afterword" that an Archive of Our Own epub adds around the story.
 // They are recognized by what they say (and are short), so a real chapter is never mistaken for one.
 function isArchiveWrapper_(chapter, bookTitle) {
   if (chapter.words >= 600) return false;
-  if (/Posted originally on the \[?Archive of Our Own/i.test(chapter.md)) return true;
+  if (isArchivePreface_(chapter)) return true;
   if (/drop by the Archive and comment/i.test(chapter.md)) return true;
   return chapter.words < 150 && !!bookTitle && chapter.title.toLowerCase() === bookTitle.toLowerCase() && /^by\s/m.test(chapter.md);
 }
