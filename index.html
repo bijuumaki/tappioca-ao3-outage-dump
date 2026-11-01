@@ -128,10 +128,10 @@
     <section class="view view-read" id="view-read" hidden>
       <p class="reader-back"><a href="#list">← Back to the list</a></p>
       <h1 class="list-heading reader-title" id="reader-title" tabindex="-1">Loading…</h1>
-      <p class="reader-chapter" id="reader-chapter" hidden></p>
       <div class="reader-bar" id="reader-bar" hidden>
-        <label for="chapter-select">Chapter</label>
+        <label class="sr-only" for="chapter-select">Chapter</label>
         <select id="chapter-select"></select>
+        <span class="reader-count" id="reader-count"></span>
       </div>
       <p class="fic-note" id="reader-loading" role="status">Loading the chapter…</p>
       <div class="fic-note" id="reader-error" role="alert" hidden>

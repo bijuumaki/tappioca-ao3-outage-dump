@@ -481,7 +481,7 @@
 
     /* Reader: #read/<fic-id>/<chapter>. The chapter list comes from ?action=fic, the text from ?action=text. */
     var readerTitle = document.getElementById("reader-title");
-    var readerChapter = document.getElementById("reader-chapter");
+    var readerCount = document.getElementById("reader-count");
     var readerBar = document.getElementById("reader-bar");
     var chapterSelect = document.getElementById("chapter-select");
     var readerLoading = document.getElementById("reader-loading");
@@ -546,7 +546,6 @@
       lastOpen = [ficId, chapterArg, userNav];
       setReader("loading");
       readerBar.hidden = true;
-      readerChapter.hidden = true;
       readerTitle.textContent = ficCache[ficId] ? ficCache[ficId].title : "Loading…";
       getFic(ficId).then(function (fic) {
         if (token !== readToken) return null;
@@ -576,9 +575,8 @@
       setReader("text");
 
       readerBar.hidden = !multi;
-      readerChapter.hidden = !multi;
       if (multi) {
-        readerChapter.textContent = "Chapter " + n + " of " + chapters.length;
+        readerCount.textContent = chapters.length + " chapters";
         while (chapterSelect.firstChild) chapterSelect.removeChild(chapterSelect.firstChild);
         chapters.forEach(function (ch) {
           var opt = make("option", null, chapterLabel(ch));
