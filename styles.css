@@ -1,0 +1,615 @@
+:root { color-scheme: light; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+img { max-width: 100%; }
+[hidden]:not([hidden=until-found i]) { display: none !important; }
+
+/* Layout: full-bleed teal header over a three-column page (sidebar | main | sort and search on the fic list).
+     Under 1240px sort and search move above the fic cards; under 900px the sidebar and toggles move into the menu drawer.
+     Mirrors the Figma "homepage" frame, about 1630 x 1159. */
+  :root {
+    --bg: #f5f5f5;
+    --ink: #111111;
+    --header-bg: #78a39f;
+    --header-ink: #111111;
+    --nav-bg: #3f6663;
+    --nav-ink: #111111;
+    --links-bg: #c6bec7;
+    --links-ink: #111111;
+    --box-bg: #698c91;
+    --box-ink: #111111;
+    --howdy: #8b3253;
+    --focus: #1d4fd8;
+    --hint: #141b1d;
+    --font-fancy: "IM Fell English SC", Georgia, "Times New Roman", serif;
+    --font-display: var(--font-fancy);
+    --font-body: "Inclusive Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-ui: system-ui, -apple-system, "Segoe UI", sans-serif;
+    /* Lucida Sans and Tahoma are system fonts: they show only on devices that have them */
+    --stack-lucida: "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, sans-serif;
+    --stack-cantarell: "Cantarell", system-ui, sans-serif;
+    --stack-tahoma: Tahoma, Verdana, "Segoe UI", sans-serif;
+    --stack-crimson: "Crimson Pro", Georgia, serif;
+    --stack-imfell: "IM Fell English", Georgia, serif;
+    --stack-cormorant: "Cormorant Garamond", Georgia, serif;
+    --radius-card: 20px;
+    --radius-panel: 15px;
+    --pad-left: clamp(16px, 3.1vw, 50px);
+    --pad-right: clamp(16px, 6vw, 99px);
+    /* Text size: --fs is the smallest text on the page (set by the header slider, never below 10pt; default 14pt).
+       --u scales every other text size from the design's 19px base. */
+    --fs: 14pt;
+    --u: calc(var(--fs) / 19);
+    /* How solid the page shapes are: the rest lets the paper texture show through (fill only, text stays solid) */
+    --solid: 20%;
+    --paper: url(assets/paper.jpg);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #222831;
+      --ink: #ecefee;
+      --header-bg: #2f4947;
+      --header-ink: #f0f5f4;
+      --nav-bg: #22403d;
+      --nav-ink: #e8f0ee;
+      --links-bg: #4a444b;
+      --links-ink: #efeaef;
+      --box-ink: #ecefee;
+      --howdy: #e68aa8;
+      --focus: #9bb8ff;
+      --hint: #b9bcbc;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #222831;
+    --ink: #ecefee;
+    --header-bg: #2f4947;
+    --header-ink: #f0f5f4;
+    --nav-bg: #22403d;
+    --nav-ink: #e8f0ee;
+    --links-bg: #4a444b;
+    --links-ink: #efeaef;
+    --box-ink: #ecefee;
+    --howdy: #e68aa8;
+    --focus: #9bb8ff;
+    --hint: #b9bcbc;
+    color-scheme: dark;
+  }
+  /* Font choice from the Aa panel: swaps the display and body faces (the site title keeps its own) */
+  :root[data-font="lucida"] { --font-display: var(--stack-lucida); --font-body: var(--stack-lucida); }
+  :root[data-font="cantarell"] { --font-display: var(--stack-cantarell); --font-body: var(--stack-cantarell); }
+  :root[data-font="tahoma"] { --font-display: var(--stack-tahoma); --font-body: var(--stack-tahoma); }
+  :root[data-font="crimson"] { --font-display: var(--stack-crimson); --font-body: var(--stack-crimson); }
+  :root[data-font="imfell"] { --font-display: var(--stack-imfell); --font-body: var(--stack-imfell); }
+  :root[data-font="cormorant"] { --font-display: var(--stack-cormorant); --font-body: var(--stack-cormorant); }
+  /* The default display font is a small-caps face; in the sans serif choices every letter of that text, capitals included, is set in small caps */
+  :root:is([data-font="lucida"], [data-font="cantarell"], [data-font="tahoma"]) :is(.links-card, .label, .guest-box, .howdy, .list-heading, .fic-title, .fic-empty, .list-tools) {
+    font-variant-caps: all-small-caps;
+  }
+  /* Menu open: the page behind does not scroll */
+  :root.menu-open { overflow: hidden; }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+  }
+
+  /* Paper texture behind the whole site, multiplied into the page color so the grain tints the background */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: var(--paper) center / cover no-repeat;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) body::before { opacity: 0.6; } }
+  :root[data-theme="dark"] body::before { opacity: 0.6; }
+
+  ::selection { background: var(--howdy); color: var(--bg); }
+
+  a { color: inherit; text-decoration: none; text-underline-offset: 4px; }
+  a:hover { text-decoration: underline; }
+  a[aria-current="page"] { text-decoration: underline; }
+  a:focus-visible,
+  button:focus-visible,
+  input[type="range"]:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  /* The focus color is read against the surface it sits on, so colored surfaces use their own ink */
+  .site-header { --focus: var(--header-ink); }
+  .nav-card { --focus: var(--nav-ink); }
+  [tabindex="-1"]:focus { outline: none; }
+
+  .skip-link {
+    position: absolute;
+    left: 16px;
+    top: -120px;
+    z-index: 30;
+    padding: 12px 16px;
+    background: var(--box-bg);
+    color: var(--box-ink);
+    border-radius: var(--radius-panel);
+    font-family: var(--font-ui);
+    font-size: 14pt;
+  }
+  .skip-link:focus { top: calc(12px + env(safe-area-inset-top, 0px)); }
+
+  /* Header band */
+  .site-header {
+    background: var(--header-bg);
+    color: var(--header-ink);
+  }
+  .site-header-inner {
+    max-width: 1630px;
+    margin: 0 auto;
+    min-height: 139px;
+    padding-block: 20px;
+    padding-left: max(var(--pad-left), env(safe-area-inset-left, 0px));
+    padding-right: max(88px, env(safe-area-inset-right, 0px));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .tools { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding-left: 33px; }
+  /* Text options panel: hidden until the Aa button is clicked */
+  .size-panel {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 41px;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: calc(100vw - 32px);
+    padding: 16px 20px;
+    background: var(--box-bg);
+    color: var(--box-ink);
+    border-radius: var(--radius-panel);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+    font-family: var(--font-ui);
+    font-size: 14pt;
+  }
+  .size-row { display: flex; align-items: center; gap: 12px; }
+  .size-panel input[type="range"] { width: 160px; max-width: 100%; accent-color: var(--box-ink); }
+  .size-panel output { min-width: 3.4ch; font-variant-numeric: tabular-nums; }
+  .font-field { display: flex; flex-direction: column; gap: 6px; }
+  .font-field select {
+    font: inherit;
+    background: var(--box-bg);
+    color: inherit;
+    border: 2px solid currentColor;
+    border-radius: 10px;
+    padding: 8px 10px;
+    min-height: 44px;
+    cursor: pointer;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .tool {
+    background: none;
+    border: 0;
+    margin: 0;
+    padding: 12px;
+    color: inherit;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-ui);
+  }
+  .tool svg { display: block; width: 20px; height: 20px; stroke-width: 3.2; }
+  /* Theme toggle shows the moon in light mode and a sun (switch to day mode) in dark mode */
+  #theme-toggle .icon-sun { display: none; }
+  #theme-toggle[aria-pressed="true"] svg { display: none; }
+  #theme-toggle[aria-pressed="true"] .icon-sun { display: block; }
+  .tool-aa { font-size: 20px; line-height: 20px; min-width: 20px; }
+  /* The site title keeps its decorative face in every font mode */
+  .site-title {
+    margin: 0;
+    font-family: var(--font-fancy);
+    font-weight: 400;
+    font-size: calc(32 * var(--u));
+    line-height: 1.2;
+    text-align: right;
+    text-wrap: balance;
+    min-width: 0;
+  }
+
+  /* Page body */
+  .page {
+    max-width: 1630px;
+    margin: 0 auto;
+    min-height: 1020px;
+    padding-top: 25px;
+    padding-bottom: 67px;
+    padding-left: max(var(--pad-left), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--pad-right), env(safe-area-inset-right, 0px));
+    display: grid;
+    grid-template-columns: 302px minmax(0, 1fr) 255px;
+    grid-template-rows: auto 1fr;
+    column-gap: 40px;
+    align-items: start;
+    overflow-wrap: break-word;
+  }
+
+  .sidebar { display: flex; flex-direction: column; min-width: 0; grid-column: 1; grid-row: 1 / span 2; }
+
+  .card { border-radius: var(--radius-card); }
+
+  .nav-card {
+    /* No card shape behind the page links, on desktop and in the phone menu */
+    background: none;
+    border-radius: 0;
+    color: var(--nav-ink);
+    padding: 8px 0;
+  }
+  .nav-card ul {
+    margin: 0;
+    padding: 0 0 0 26px;
+    list-style: disc;
+    font-family: var(--font-fancy); /* menu list always uses IM Fell English SC, like the site title */
+    font-size: calc(23 * var(--u));
+  }
+  .nav-card li { line-height: calc(43 * var(--u)); }
+  .nav-card li::marker { font-size: calc(18 * var(--u)); }
+
+  .links-card {
+    margin-top: 33px;
+    background: color-mix(in srgb, var(--links-bg) var(--solid), transparent);
+    color: var(--links-ink);
+    padding: 43px 27px 24px;
+    font-family: var(--font-display);
+  }
+  .links-title {
+    margin: 0 0 38px;
+    font-weight: 400;
+    font-size: calc(19 * var(--u));
+    line-height: calc(24 * var(--u));
+  }
+  .links-card ul {
+    margin: 0;
+    padding: 0 0 0 21px;
+    list-style: disc;
+    font-size: calc(19 * var(--u));
+  }
+  .links-card li { line-height: calc(34 * var(--u)); }
+
+  .label {
+    margin: 31px 0 13px;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: calc(19 * var(--u));
+    line-height: calc(24 * var(--u));
+  }
+
+  .box {
+    background: color-mix(in srgb, var(--box-bg) var(--solid), transparent);
+    color: var(--box-ink);
+  }
+  .guest-box {
+    width: 100%;
+    max-width: 295px;
+    min-height: 165px;
+    padding: 37px 31px;
+    font-family: var(--font-display);
+    font-size: calc(19 * var(--u));
+    line-height: calc(24 * var(--u));
+  }
+  .guest-box p { margin: 0; }
+
+  /* Main column */
+  .welcome {
+    min-width: 0;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+  .view-home { padding-top: 126px; }
+  .welcome-inner {
+    max-width: 780px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .howdy {
+    margin: 0 0 25px;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: calc(50 * var(--u));
+    line-height: calc(60 * var(--u));
+    color: var(--howdy);
+    text-wrap: balance;
+  }
+  .howdy .emoji {
+    margin-left: 14px;
+    font-size: calc(46 * var(--u));
+    line-height: 1;
+    vertical-align: middle;
+  }
+  .welcome-inner p {
+    margin: 0 0 1lh;
+    font-size: calc(25 * var(--u));
+    line-height: calc(33 * var(--u));
+    text-wrap: pretty;
+  }
+  .welcome-inner p:last-child { margin-bottom: 0; }
+
+  /* Powered-by sits at the bottom of the sidebar, under the guest book, at the same width */
+  .aside { min-width: 0; max-width: 295px; }
+  .aside .label { margin-bottom: 13px; }
+  .powered-box {
+    width: 100%;
+    min-height: 115px;
+  }
+
+  /* Fic list view: opens from the nav's List link and the Quick fic links */
+  .list-heading {
+    margin: 4px 0 17px;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: calc(26 * var(--u));
+    line-height: 1.5;
+    text-wrap: balance;
+  }
+  .fic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    max-width: 755px;
+  }
+  .fic-card {
+    background: color-mix(in srgb, var(--box-bg) var(--solid), transparent);
+    color: var(--box-ink);
+    border-radius: var(--radius-card);
+    padding: 21px 43px 18px;
+  }
+  .fic-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: calc(var(--fs) * 24 / 14); /* 24pt at the default text size, scales with the Aa slider */
+    line-height: 1.25;
+  }
+  .fic-rule {
+    width: 278px;
+    max-width: 100%;
+    height: 0;
+    margin: 7px 0 0;
+    border-top: 1px solid currentColor;
+  }
+  .fic-meta {
+    margin-top: 8px;
+    font-family: var(--font-body);
+    font-size: var(--fs); /* 14pt at the default text size, follows the Aa slider */
+    line-height: normal;
+  }
+  .fic-meta p { margin: 0; }
+  .fic-meta .summary-label { margin-top: 1lh; }
+  .fic-empty {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: calc(19 * var(--u));
+  }
+  .link-btn {
+    margin: 0 0 0 0.5ch;
+    padding: 0;
+    background: none;
+    border: 0;
+    font: inherit;
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    cursor: pointer;
+  }
+
+  .list-tools {
+    grid-column: 3;
+    grid-row: 1;
+    min-width: 0;
+    padding-top: 100px;
+    font-family: var(--font-display);
+    font-size: calc(19 * var(--u));
+  }
+  .sort-title {
+    margin: 0 0 6px 4px;
+    font-weight: 400;
+    font-size: calc(24 * var(--u));
+    line-height: 1.3;
+  }
+  .sort-list, .sort-sub {
+    margin: 0;
+    padding-left: 22px;
+    list-style: disc;
+  }
+  .sort-sub { padding-left: 20px; }
+  .sort-list li { line-height: calc(29 * var(--u)); }
+  .sort-btn {
+    background: none;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .sort-btn:hover { text-decoration: underline; }
+  .sort-btn[aria-pressed="true"] { text-decoration: underline; text-underline-offset: 4px; }
+  .list-rule {
+    margin: 28px 0 0;
+    border-top: 1px solid var(--ink);
+  }
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    margin-top: 23px;
+    padding: 0 14px 0 20px;
+    background: color-mix(in srgb, var(--box-bg) var(--solid), transparent);
+    color: var(--box-ink);
+    border-radius: 999px;
+  }
+  .search input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+    outline: 0;
+    font: inherit;
+    color: inherit;
+    caret-color: var(--box-ink);
+  }
+  .search input::placeholder { color: var(--hint); opacity: 1; }
+  .search button {
+    display: grid;
+    place-items: center;
+    padding: 4px;
+    background: none;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+  }
+  .search button svg { display: block; width: 20px; height: 20px; }
+  .search:focus-within { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+  /* Sort and search sit above the cards once the right column is gone */
+  .view-list .list-tools {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    max-width: 755px;
+    margin-bottom: 17px;
+    padding-top: 0;
+  }
+  .view-list .list-rule { display: none; }
+  .view-list .search { width: 100%; max-width: 320px; margin-top: 0; }
+
+  /* Menu drawer (phone only): holds the nav, quick links, guest book, powered-by and the theme and Aa toggles */
+  .menu-btn { display: none; }
+  .drawer-layer[hidden], .size-panel[hidden] { display: none; }
+  .drawer-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+  }
+  .drawer-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+  }
+  .drawer {
+    position: relative;
+    width: min(86vw, 340px);
+    height: 100%;
+    overflow: hidden;
+    /* 80% opaque panel (fill and paper texture live on ::before so text stays solid) with a blurred page behind it.
+       The panel itself never scrolls; .drawer-scroll inside does, so the fill covers the full height evenly. */
+    isolation: isolate;
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    color: var(--ink);
+    box-shadow: 6px 0 24px rgba(0, 0, 0, 0.25);
+  }
+  .drawer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.8;
+    background-color: var(--bg);
+    background-image: var(--paper);
+    background-size: cover;
+    background-blend-mode: multiply;
+    pointer-events: none;
+  }
+  .drawer-scroll {
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-block: calc(16px + env(safe-area-inset-top, 0px)) calc(24px + env(safe-area-inset-bottom, 0px));
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: 16px;
+    box-sizing: border-box;
+  }
+  .drawer-close { align-self: flex-end; }
+  .drawer #drawer-content { display: flex; flex-direction: column; gap: 20px; }
+  .drawer #drawer-tools { margin-top: auto; }
+  .drawer .tools { padding-left: 0; color: var(--ink); }
+  .drawer .size-panel {
+    position: static;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 8px;
+    box-shadow: none;
+  }
+  .drawer .sidebar { max-width: none; }
+  .drawer .aside { max-width: none; }
+  .drawer .guest-box { max-width: none; }
+
+  @media (min-width: 901px) {
+    .drawer-layer { display: none !important; }
+  }
+
+  /* Touch: every control gets a 44px target */
+  @media (pointer: coarse) {
+    .nav-card a, .links-card a, .sort-btn { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; }
+    .search { height: 48px; }
+    .search button { padding: 12px; }
+  }
+
+  /* Tablet and small laptop: the right column folds under the main column */
+  @media (max-width: 1239px) {
+    .page {
+      grid-template-columns: 302px minmax(0, 1fr);
+      grid-template-rows: 1fr auto;
+      min-height: 0;
+    }
+    .welcome { grid-column: 2; grid-row: 1; }
+  }
+
+  /* Phone: header becomes menu button + title, the sidebar moves into the drawer */
+  @media (max-width: 900px) {
+    .site-header-inner {
+      padding-right: max(16px, env(safe-area-inset-right, 0px));
+      min-height: 72px;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      gap: 12px;
+    }
+    .menu-btn { display: grid; }
+    .tools { padding-left: 0; }
+    .size-panel { left: 0; }
+    .site-title { font-size: calc(26 * var(--u)); text-align: left; flex: 1; }
+    .page {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: none;
+      row-gap: 32px;
+      padding-bottom: 48px;
+    }
+    .sidebar { max-width: 420px; }
+    .sidebar, .welcome { grid-column: 1; grid-row: auto; }
+    .view-home { padding-top: 24px; }
+    .welcome-inner p { font-size: calc(22 * var(--u)); line-height: calc(30 * var(--u)); }
+    .howdy { font-size: calc(42 * var(--u)); line-height: calc(52 * var(--u)); }
+  }

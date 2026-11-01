@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tappioca’s AO3 Outage Fanwork Dump</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Inclusive+Sans&family=Cantarell&family=Crimson+Pro&family=IM+Fell+English&family=Cormorant+Garamond&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" id="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <button class="tool menu-btn" id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
+      <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+        <path d="M7 12h26M7 20h26M7 28h26"/>
+      </svg>
+    </button>
+    <div class="tools">
+      <button class="tool" id="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M27 30A13 13 0 1 1 15.5 8a10.5 10.5 0 0 0 11.5 22z"/>
+          <path d="M30 3v8M26 7h8"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="20" cy="20" r="7"/>
+          <path d="M20 4v4M20 32v4M4 20h4M32 20h4M8.7 8.7l2.8 2.8M28.5 28.5l2.8 2.8M31.3 8.7l-2.8 2.8M11.5 28.5l-2.8 2.8"/>
+        </svg>
+      </button>
+      <button class="tool tool-aa" id="aa-toggle" type="button" aria-label="Aa text options" aria-expanded="false" aria-controls="size-panel">Aa</button>
+      <div class="size-panel" id="size-panel" role="group" aria-label="Text options" hidden>
+        <div class="size-row">
+          <label class="sr-only" for="size-slider">Text size in points</label>
+          <input id="size-slider" type="range" min="10" max="24" step="2" value="14">
+          <output id="size-out" for="size-slider">14pt</output>
+        </div>
+        <div class="font-field">
+          <label for="font-select">Font</label>
+          <select id="font-select">
+            <option value="default">Default</option>
+            <optgroup label="Sans serif">
+              <option value="lucida">Lucida Sans</option>
+              <option value="cantarell">Cantarell</option>
+              <option value="tahoma">Tahoma</option>
+            </optgroup>
+            <optgroup label="Serif">
+              <option value="crimson">Crimson Pro</option>
+              <option value="imfell">IM Fell English</option>
+              <option value="cormorant">Cormorant Garamond</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+    </div>
+    <p class="site-title">Tappioca’s ao3 Outage Fanwork Dump</p>
+  </div>
+</header>
+
+<div class="drawer-layer" id="drawer-layer" hidden>
+  <div class="drawer-backdrop" data-close></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="drawer-scroll">
+      <button class="tool drawer-close" id="drawer-close" type="button" aria-label="Close menu">
+        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+          <path d="M10 10l20 20M30 10L10 30"/>
+        </svg>
+      </button>
+      <div id="drawer-content"></div>
+      <div id="drawer-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div class="page">
+  <aside class="sidebar" aria-label="Site menu">
+    <nav class="card nav-card" aria-label="Main">
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#disclaimer">Disclaimer</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#list">List</a></li>
+        <li><a href="#links">Links</a></li>
+        <li><a href="#comms">Comms open!</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="welcome" id="main">
+    <section class="view view-home" id="view-home">
+      <div class="welcome-inner">
+        <h1 class="howdy" tabindex="-1">Howdy!!<span class="emoji" aria-hidden="true">🤠</span></h1>
+        <p>welcome! if you’re here, thanks for your interest in “where might tappioca have stowed her fics during the ao3 outage?” (asked no one ever, but hey i like to think someone might have wanted to re/read/continue reading when the outage happened).</p>
+        <p>you might know me for some art i’ve done (both ok and questionable), mostly the leon/ashley ship. i’ll fill out the whole “about” section in the nav bar on the side later.</p>
+        <p>you’ll find here the stuff i posted on ao3 here, as well as links to my other fanwork. and probably some originals, but that’s just for me (and for my friend jq).</p>
+        <p>contact me through the links provided if you have any requests or prompts. or commissions, i’d love those. my medication ain’t cheap lol.</p>
+        <p>happy reading!</p>
+      </div>
+    </section>
+
+    <section class="view view-soon" id="view-soon" hidden>
+      <div class="welcome-inner">
+        <h1 class="list-heading" id="soon-heading" tabindex="-1">Coming soon</h1>
+        <p>this page isn’t ready yet. check back later!</p>
+      </div>
+    </section>
+
+    <section class="view view-list" id="view-list" hidden>
+      <h1 class="list-heading" tabindex="-1">Tappioca’s fanfiction stories</h1>
+      <div class="fic-list" id="fic-list">
+        <!-- Cards below hold placeholder text: titles and values in (parentheses) and the lorem ipsum summary.
+             To add a real fic, copy a card and replace the text after each label, keeping the data-field attributes.
+             Placeholders are ignored by search and sorted last; real values are used automatically. -->
+        <article class="fic-card">
+          <h2 class="fic-title">(fic #1 title)</h2>
+          <div class="fic-rule" aria-hidden="true"></div>
+          <div class="fic-meta">
+            <p data-field="fandom">FANDOM: (media title)</p>
+            <p data-field="rating">RATING: (rating)</p>
+            <p data-field="words">WORD COUNT: (numerical value)</p>
+            <p data-field="relationships">RELATIONSHIPS:</p>
+            <p class="summary-label">SUMMARY:</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In mollis rutrum rhoncus. Suspendisse potenti. Mauris congue odio ipsum, at sodales risus efficitur nec. In hac habitasse platea dictumst. Integer consectetur dolor nulla, nec facilisis lectus vestibulum sed. Cras porttitor ut eros et gravida. Duis quis interdum ipsum. Nullam cursus, lacus sed cursus laoreet, elit quam tristique lorem, nec scelerisque justo lacus sed mi. Curabitur quis fermentum urna, quis rhoncus dolor. Cras convallis orci ac nulla</p>
+          </div>
+        </article>
+        <article class="fic-card">
+          <h2 class="fic-title">(fic #2 title)</h2>
+          <div class="fic-rule" aria-hidden="true"></div>
+          <div class="fic-meta">
+            <p data-field="fandom">FANDOM: (media title)</p>
+            <p data-field="rating">RATING: (rating)</p>
+            <p data-field="words">WORD COUNT: (numerical value)</p>
+            <p data-field="relationships">RELATIONSHIPS:</p>
+            <p class="summary-label">SUMMARY:</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In mollis rutrum rhoncus. Suspendisse potenti. Mauris congue odio ipsum, at sodales risus efficitur nec. In hac habitasse platea dictumst. Integer consectetur dolor nulla, nec facilisis lectus vestibulum sed. Cras porttitor ut eros et gravida. Duis quis interdum ipsum. Nullam cursus, lacus sed cursus laoreet, elit quam tristique lorem, nec scelerisque justo lacus sed mi. Curabitur quis fermentum urna, quis rhoncus dolor. Cras convallis orci ac nulla</p>
+          </div>
+        </article>
+        <article class="fic-card">
+          <h2 class="fic-title">(fic #3 title)</h2>
+          <div class="fic-rule" aria-hidden="true"></div>
+          <div class="fic-meta">
+            <p data-field="fandom">FANDOM: (media title)</p>
+            <p data-field="rating">RATING: (rating)</p>
+            <p data-field="words">WORD COUNT: (numerical value)</p>
+            <p data-field="relationships">RELATIONSHIPS:</p>
+            <p class="summary-label">SUMMARY:</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In mollis rutrum rhoncus. Suspendisse potenti. Mauris congue odio ipsum, at sodales risus efficitur nec. In hac habitasse platea dictumst. Integer consectetur dolor nulla, nec facilisis lectus vestibulum sed. Cras porttitor ut eros et gravida. Duis quis interdum ipsum. Nullam cursus, lacus sed cursus laoreet, elit quam tristique lorem, nec scelerisque justo lacus sed mi. Curabitur quis fermentum urna, quis rhoncus dolor. Cras convallis orci ac nulla</p>
+          </div>
+        </article>
+      </div>
+      <p class="fic-empty" id="fic-empty" hidden>No fics match that search. <button class="link-btn" id="clear-search" type="button">Clear search</button></p>
+      <p class="sr-only" id="list-status" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <div class="list-tools" id="list-tools" hidden>
+    <div class="sort">
+      <h2 class="sort-title" id="sort-title">Sort by:</h2>
+      <ul class="sort-list" aria-labelledby="sort-title">
+        <li><button class="sort-btn" type="button" data-sort="fandom" aria-pressed="false">Fandom</button></li>
+        <li><button class="sort-btn" type="button" data-sort="rating" aria-pressed="false">Rating</button></li>
+        <li>Word count
+          <ul class="sort-sub">
+            <li><button class="sort-btn" type="button" data-sort="words-desc" aria-pressed="false">Longest to shortest</button></li>
+            <li><button class="sort-btn" type="button" data-sort="words-asc" aria-pressed="false">Shortest to longest</button></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="list-rule" aria-hidden="true"></div>
+    <form class="search" id="search-form" role="search">
+      <label class="sr-only" for="fic-search">Search the dump</label>
+      <input id="fic-search" type="search" placeholder="Search the dump..." autocomplete="off">
+      <button type="submit" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="10.5" cy="10.5" r="6.5"/>
+          <path d="M15.5 15.5L21 21"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+
+</div>
+
+
+<script src="app.js"></script>
+</body>
+</html>
