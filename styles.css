@@ -31,6 +31,9 @@ img { max-width: 100%; }
     --stack-crimson: "Crimson Pro", Georgia, serif;
     --stack-imfell: "IM Fell English", Georgia, serif;
     --stack-cormorant: "Cormorant Garamond", Georgia, serif;
+    --shadow-panel: 0 6px 20px rgba(0, 0, 0, 0.18);
+    --shadow-drawer: 6px 0 24px rgba(0, 0, 0, 0.25);
+    --scrim: rgba(0, 0, 0, 0.45);
     --radius-card: 20px;
     --reader-width: 44em; /* the reading column, in units of the reading text size so it keeps the same line length at any size */
     --reader-leading: 1.7;
@@ -119,9 +122,7 @@ img { max-width: 100%; }
   a { color: inherit; text-decoration: none; text-underline-offset: 4px; }
   a:hover { text-decoration: underline; }
   a[aria-current="page"] { text-decoration: underline; }
-  a:focus-visible,
-  button:focus-visible,
-  input[type="range"]:focus-visible {
+  :where(a, button, input[type="range"]):focus-visible {
     outline: 3px solid var(--focus);
     outline-offset: 3px;
     border-radius: 6px;
@@ -177,7 +178,7 @@ img { max-width: 100%; }
     background: var(--box-bg);
     color: var(--box-ink);
     border-radius: var(--radius-panel);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+    box-shadow: var(--shadow-panel);
     font-family: var(--font-ui);
     font-size: 14pt;
   }
@@ -618,7 +619,7 @@ img { max-width: 100%; }
   .drawer-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: var(--scrim);
   }
   .drawer {
     position: relative;
@@ -631,7 +632,7 @@ img { max-width: 100%; }
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
     color: var(--ink);
-    box-shadow: 6px 0 24px rgba(0, 0, 0, 0.25);
+    box-shadow: var(--shadow-drawer);
   }
   .drawer::before {
     content: "";
