@@ -84,7 +84,7 @@ Last audit (before the reader work): 15/20, Good. Open items: untested real touc
 
 1. Fic data: `apps-script/Code.gs` groups chapters (done and deployed). The `#list` cards are built from the library JSON (done). Details come from optional `---` front matter in each file (title, fandom, rating, words, relationships, summary, tags); missing ones are filled in (title from the file name, fandom from the folder, word count from the text).
 2. Reader view: `#read/<fic-id>/<chapter>` with previous/next, a chapter menu, and the Aa font, size and theme (done for Markdown: italics, bold, headings, quotes, links, scene breaks; a line of only dashes, stars or ornament symbols is a scene break and shows the `--scene-break` token). Still to do: EPUB.
-3. Reading progress: remembered per reader in their own browser (localStorage), no accounts. "Continue reading" on the card.
+3. Reading progress (done): remembered per reader in their own browser (`fic-site-progress` in localStorage), no accounts. It stores the furthest point reached (chapter and how far down) and only moves forward, so scrolling up to a link or re-reading an earlier chapter never loses the place. "Continue reading" on the card; the card buttons are rebuilt from it each time the list opens.
 4. Search, tags and sort on the real data (fandom, rating, longest and shortest word count, relationships).
 5. First real fic: "moribund" (Bijuu will supply the Markdown export and the fic details; do not guess the details).
 6. Later: Neocities build (built folder, relative paths) and WordPress theme.

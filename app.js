@@ -184,6 +184,8 @@
       if (scrollTop) window.scrollTo(0, 0);
     }
     function route(userNav) {
+      flushProgress();
+      activeRead = null;
       var name = routeName();
       var parts = name.split("/");
       var showRead = parts[0] === "read" && !!parts[1]; /* #read/<fic-id>/<chapter> */
@@ -195,7 +197,7 @@
       viewRead.hidden = !showRead;
       if (showSoon) soonHeading.textContent = soonRoutes[name] + ": coming soon";
       listToolsEl.hidden = !showList;
-      if (showList) loadLibrary(false);
+      if (showList) { refreshActions(); loadLibrary(false); }
       document.title = showList ? "Tappioca’s fanfiction stories" : (showSoon ? soonRoutes[name] + " (coming soon)" : baseTitle);
       var current = showList || showSoon ? name : (showRead ? "list" : (name === "" || name === "home" ? "home" : ""));
       if (showRead) openReader(safeDecode(parts[1]), parts[2], !!userNav);
@@ -298,17 +300,54 @@
       summary.setAttribute("data-field", "summary");
       meta.appendChild(summary);
       card.appendChild(meta);
+      card.setAttribute("data-title", fic.title || PLACEHOLDER.title);
+      card.setAttribute("data-chapters", String(fic.chapterCount || 0));
+      card.setAttribute("data-readable", fic.readable === false ? "no" : "yes");
+      fillActions(card);
+      return card;
+    }
+
+
+    /* Reading progress: saved in this browser only (no accounts). One entry per fic, the furthest point reached:
+       the chapter and how far down it (0 to 1). It only moves forward, so scrolling back up to reach a link,
+       or re-reading an earlier chapter, never loses the reader's place. */
+    var PROGRESS_KEY = "fic-site-progress";
+    function getProgress(ficId) {
+      var all = readSaved(PROGRESS_KEY);
+      var entry = all && all[ficId];
+      return entry && entry.chapter >= 1 ? entry : null;
+    }
+    function saveProgress(ficId, chapter, pos) {
+      var all = readSaved(PROGRESS_KEY) || {};
+      var old = all[ficId];
+      if (old && (old.chapter > chapter || (old.chapter === chapter && old.pos >= pos))) return;
+      all[ficId] = { chapter: chapter, pos: Math.round(pos * 1000) / 1000, at: Date.now() };
+      writeSaved(PROGRESS_KEY, all);
+    }
+    /* The button on a card: "Start reading", or "Continue reading" once the reader has begun */
+    function fillActions(card) {
+      var old = card.querySelector(".fic-actions");
+      if (old) card.removeChild(old);
+      var id = card.getAttribute("data-fic-id");
+      var title = card.getAttribute("data-title");
+      var count = parseInt(card.getAttribute("data-chapters"), 10) || 0;
       var actions = make("p", "fic-actions");
-      if (fic.readable === false || !fic.chapterCount) {
+      if (card.getAttribute("data-readable") === "no" || !count) {
         actions.appendChild(make("span", "fic-soon", "(can’t be read here yet)"));
       } else {
-        var go = make("a", "fic-btn", "Start reading");
-        go.setAttribute("href", readLink(fic.id, 1));
-        go.setAttribute("aria-label", "Start reading " + (fic.title || PLACEHOLDER.title));
+        var saved = getProgress(id);
+        var chapter = saved ? Math.min(saved.chapter, count) : 1;
+        var resuming = !!saved && (chapter > 1 || saved.pos > 0.02);
+        var go = make("a", "fic-btn", resuming ? "Continue reading" : "Start reading");
+        go.setAttribute("href", readLink(id, resuming ? chapter : 1));
+        go.setAttribute("aria-label", (resuming ? "Continue reading " : "Start reading ") + title + (resuming && count > 1 ? ", chapter " + chapter + " of " + count : ""));
         actions.appendChild(go);
+        if (resuming && count > 1) actions.appendChild(make("span", "fic-progress", "Chapter " + chapter + " of " + count));
       }
       card.appendChild(actions);
-      return card;
+    }
+    function refreshActions() {
+      Array.prototype.forEach.call(ficList.children, fillActions);
     }
 
     var libraryLoadedAt = 0;
@@ -445,6 +484,25 @@
     var textOrder = [];
     var readToken = 0; /* a newer request makes an older answer ignore itself */
     var lastOpen = null;
+    var activeRead = null; /* the chapter on screen, while progress is being saved */
+    var saveTimer = 0;
+
+    function readPosition() {
+      var top = readerText.getBoundingClientRect().top + window.pageYOffset;
+      var height = readerText.offsetHeight || 1;
+      return Math.max(0, Math.min(1, (window.pageYOffset - top) / height));
+    }
+    function flushProgress() {
+      clearTimeout(saveTimer);
+      saveTimer = 0;
+      if (activeRead && !viewRead.hidden) saveProgress(activeRead.id, activeRead.n, readPosition());
+    }
+    window.addEventListener("scroll", function () {
+      if (!activeRead || saveTimer) return;
+      saveTimer = setTimeout(flushProgress, 500);
+    }, { passive: true });
+    window.addEventListener("pagehide", flushProgress);
+    document.addEventListener("visibilitychange", function () { if (document.hidden) flushProgress(); });
 
     function getFic(id) {
       if (ficCache[id]) return Promise.resolve(ficCache[id]);
@@ -525,7 +583,17 @@
       readerPager.hidden = !multi;
 
       document.title = (fic.title || PLACEHOLDER.title) + (multi ? ", chapter " + n : "");
-      if (userNav) { window.scrollTo(0, 0); readerTitle.focus({ preventScroll: true }); }
+      /* Remember this chapter; if it is the one the reader was last in, return them to where they stopped */
+      var saved = getProgress(fic.id);
+      var resume = saved && saved.chapter === n && saved.pos > 0.02 ? saved.pos : 0;
+      saveProgress(fic.id, n, resume);
+      activeRead = { id: fic.id, n: n };
+      if (userNav) readerTitle.focus({ preventScroll: true });
+      if (resume) {
+        window.scrollTo(0, readerText.getBoundingClientRect().top + window.pageYOffset + resume * readerText.offsetHeight);
+      } else if (userNav) {
+        window.scrollTo(0, 0);
+      }
       if (n < chapters.length) getChapterText(chapters[n]).catch(function () {}); /* the next chapter, ready before it is asked for */
     }
 

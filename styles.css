@@ -432,7 +432,8 @@ img { max-width: 100%; }
 
   /* Card buttons and the reader's links: outlined pills, 44px tall */
   .fic-actions { margin: 14px 0 0; font-size: var(--fs); }
-  .fic-soon { font-family: var(--font-body); }
+  .fic-soon, .fic-progress { font-family: var(--font-body); }
+  .fic-progress { margin-left: 14px; }
   .fic-btn {
     display: inline-flex;
     align-items: center;
