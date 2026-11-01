@@ -417,7 +417,7 @@ img { max-width: 100%; }
     line-height: 1.5;
   }
   .fic-note p { margin: 0 0 6px; }
-  .fic-note .link-btn { margin-left: 0; min-height: 44px; }
+  .fic-note .link-btn { margin-left: 0; display: inline-flex; align-items: center; min-height: 44px; }
   .link-btn {
     margin: 0 0 0 0.5ch;
     padding: 0;
@@ -674,7 +674,7 @@ img { max-width: 100%; }
 
   /* Touch: every control gets a 44px target */
   @media (pointer: coarse) {
-    .nav-card a, .links-card a, .sort-btn { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; }
+    .nav-card a, .links-card a, .sort-btn, .reader-back a { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; }
     .search { height: 48px; }
     .search button { padding: 12px; }
   }
