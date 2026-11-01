@@ -48,7 +48,8 @@ Naming convention for chapters: files named `<Title> - <N>.md` (space, dash, spa
 ```
 index.html     page structure (all views live here)
 styles.css     all styling, tokens first
-app.js         routing, theme, text options, search and sort
+app.js         routing, theme, text options, library loading, list, reader, search and sort
+markdown.js    small Markdown renderer for the reader (builds elements, never HTML strings)
 assets/        paper.jpg texture
 apps-script/   Code.gs, the Google Apps Script that serves the Drive library (source of record)
 docs/          sample-fic.md, the Markdown format for a fic's details and chapters
@@ -60,7 +61,7 @@ CLAUDE.md      this file
 - Header band (teal, max 1630px): theme toggle (moon in light mode, sun in dark mode), **Aa** button opening a panel (text size 10 to 24pt in steps of 2, default 14; Font menu), and the site title.
 - Grid: left sidebar (302px, only the nav links now) | main | right column (255px, Sort by and search on the fic list only).
 - Under 1240px the right column goes away and Sort by and search stack above the fic cards. Under 900px the sidebar, theme toggle and Aa move into a modal menu drawer (done in JS by `place()`).
-- Views (hash routes): `#home` (and anything unknown) is the Howdy page. `#list` is the fic list. `#disclaimer`, `#about`, `#links` and `#comms` show a "coming soon" placeholder; Bijuu designs those pages in Claude Design and will bring them in. Avoid hash names claude.ai reserves in previews (settings, sidebar, customize, upgrade, downloads, comment-*).
+- Views (hash routes): `#home` (and anything unknown) is the Howdy page. `#list` is the fic list. `#read/<fic-id>/<chapter>` is the reader (a bare id or a bad chapter number is corrected to a valid one). `#disclaimer`, `#about`, `#links` and `#comms` show a "coming soon" placeholder; Bijuu designs those pages in Claude Design and will bring them in. Avoid hash names claude.ai reserves in previews (settings, sidebar, customize, upgrade, downloads, comment-*).
 - Placeholder convention: a value that is empty, fully wrapped in parentheses such as `(media title)`, or the lorem ipsum filler counts as a placeholder. Search ignores placeholders and sorting puts them last. Real values need no code change. "Saw (2004)" is real text, not a placeholder.
 
 ## Design decisions to keep
@@ -82,7 +83,7 @@ Last audit (before the reader work): 15/20, Good. Open items: untested real touc
 ## Reader roadmap (not built yet)
 
 1. Fic data: `apps-script/Code.gs` groups chapters (done and deployed). The `#list` cards are built from the library JSON (done). Details come from optional `---` front matter in each file (title, fandom, rating, words, relationships, summary, tags); missing ones are filled in (title from the file name, fandom from the folder, word count from the text).
-2. Reader view: `#read/<fic-id>/<chapter>`, chapters from headings, previous/next, a chapter menu, uses the Aa font, size and theme. Rich text from Markdown and EPUB (italics, bold, headings, scene breaks, links).
+2. Reader view: `#read/<fic-id>/<chapter>` with previous/next, a chapter menu, and the Aa font, size and theme (done for Markdown: italics, bold, headings, quotes, links, scene breaks; a line of only dashes, stars or ornament symbols is a scene break and shows the `--scene-break` token). Still to do: EPUB.
 3. Reading progress: remembered per reader in their own browser (localStorage), no accounts. "Continue reading" on the card.
 4. Search, tags and sort on the real data (fandom, rating, longest and shortest word count, relationships).
 5. First real fic: "moribund" (Bijuu will supply the Markdown export and the fic details; do not guess the details).

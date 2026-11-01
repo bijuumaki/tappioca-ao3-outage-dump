@@ -119,6 +119,27 @@
       <p class="fic-empty" id="fic-empty" hidden>No fics match that search. <button class="link-btn" id="clear-search" type="button">Clear search</button></p>
       <p class="sr-only" id="list-status" role="status" aria-live="polite"></p>
     </section>
+
+    <section class="view view-read" id="view-read" hidden>
+      <p class="reader-back"><a href="#list">← Back to the list</a></p>
+      <h1 class="list-heading reader-title" id="reader-title" tabindex="-1">Loading…</h1>
+      <p class="reader-chapter" id="reader-chapter" hidden></p>
+      <div class="reader-bar" id="reader-bar" hidden>
+        <label for="chapter-select">Chapter</label>
+        <select id="chapter-select"></select>
+      </div>
+      <p class="fic-note" id="reader-loading" role="status">Loading the chapter…</p>
+      <div class="fic-note" id="reader-error" role="alert" hidden>
+        <p id="reader-error-text"></p>
+        <button class="link-btn" id="reader-retry" type="button">Try again</button>
+        <a class="link-btn" href="#list">Back to the list</a>
+      </div>
+      <article class="reader-text" id="reader-text" hidden></article>
+      <nav class="reader-pager" id="reader-pager" aria-label="Chapter navigation" hidden>
+        <a class="fic-btn" id="reader-prev" href="#list" rel="prev">← Previous chapter</a>
+        <a class="fic-btn" id="reader-next" href="#list" rel="next">Next chapter →</a>
+      </nav>
+    </section>
   </main>
 
   <div class="list-tools" id="list-tools" hidden>
@@ -151,6 +172,7 @@
 </div>
 
 
+<script src="markdown.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -170,10 +170,14 @@
     /* Pages that are not built yet show a "coming soon" note instead of the Home page */
     var soonRoutes = { "disclaimer": "Disclaimer", "about": "About", "links": "Links", "comms": "Comms open!" };
     var viewSoon = document.getElementById("view-soon");
+    var viewRead = document.getElementById("view-read");
     var soonHeading = document.getElementById("soon-heading");
     var navLinks = Array.prototype.slice.call(document.querySelectorAll(".nav-card a, .links-card a"));
+    function safeDecode(v) { try { return decodeURIComponent(v); } catch (e) { return v; } }
     function routeName() { return (location.hash || "").replace(/^#/, ""); }
-    function activeView() { return !viewList.hidden ? viewList : (!viewSoon.hidden ? viewSoon : viewHome); }
+    function activeView() {
+      return !viewRead.hidden ? viewRead : (!viewList.hidden ? viewList : (!viewSoon.hidden ? viewSoon : viewHome));
+    }
     function focusView(scrollTop) {
       var h = activeView().querySelector("h1");
       h.focus({ preventScroll: true });
@@ -181,16 +185,20 @@
     }
     function route(userNav) {
       var name = routeName();
+      var parts = name.split("/");
+      var showRead = parts[0] === "read" && !!parts[1]; /* #read/<fic-id>/<chapter> */
       var showList = listRoutes.indexOf(name) !== -1;
       var showSoon = soonRoutes.hasOwnProperty(name);
-      viewHome.hidden = showList || showSoon;
+      viewHome.hidden = showList || showSoon || showRead;
       viewList.hidden = !showList;
       viewSoon.hidden = !showSoon;
+      viewRead.hidden = !showRead;
       if (showSoon) soonHeading.textContent = soonRoutes[name] + ": coming soon";
       listToolsEl.hidden = !showList;
       if (showList) loadLibrary(false);
       document.title = showList ? "Tappioca’s fanfiction stories" : (showSoon ? soonRoutes[name] + " (coming soon)" : baseTitle);
-      var current = showList || showSoon ? name : (name === "" || name === "home" ? "home" : "");
+      var current = showList || showSoon ? name : (showRead ? "list" : (name === "" || name === "home" ? "home" : ""));
+      if (showRead) openReader(safeDecode(parts[1]), parts[2], !!userNav);
       navLinks.forEach(function (a) {
         if (current && a.getAttribute("href") === "#" + current) a.setAttribute("aria-current", "page");
         else a.removeAttribute("aria-current");
@@ -290,6 +298,16 @@
       summary.setAttribute("data-field", "summary");
       meta.appendChild(summary);
       card.appendChild(meta);
+      var actions = make("p", "fic-actions");
+      if (fic.readable === false || !fic.chapterCount) {
+        actions.appendChild(make("span", "fic-soon", "(can’t be read here yet)"));
+      } else {
+        var go = make("a", "fic-btn", "Start reading");
+        go.setAttribute("href", readLink(fic.id, 1));
+        go.setAttribute("aria-label", "Start reading " + (fic.title || PLACEHOLDER.title));
+        actions.appendChild(go);
+      }
+      card.appendChild(actions);
       return card;
     }
 
@@ -408,6 +426,114 @@
       searchInput.value = "";
       filterCards();
       searchInput.focus();
+    });
+
+    /* Reader: #read/<fic-id>/<chapter>. The chapter list comes from ?action=fic, the text from ?action=text. */
+    var readerTitle = document.getElementById("reader-title");
+    var readerChapter = document.getElementById("reader-chapter");
+    var readerBar = document.getElementById("reader-bar");
+    var chapterSelect = document.getElementById("chapter-select");
+    var readerLoading = document.getElementById("reader-loading");
+    var readerError = document.getElementById("reader-error");
+    var readerErrorText = document.getElementById("reader-error-text");
+    var readerText = document.getElementById("reader-text");
+    var readerPager = document.getElementById("reader-pager");
+    var readerPrev = document.getElementById("reader-prev");
+    var readerNext = document.getElementById("reader-next");
+    var ficCache = {}; /* fic id -> the fic with its chapter list, kept for this visit */
+    var textCache = {}; /* chapter file id -> text, the last few chapters read */
+    var textOrder = [];
+    var readToken = 0; /* a newer request makes an older answer ignore itself */
+    var lastOpen = null;
+
+    function getFic(id) {
+      if (ficCache[id]) return Promise.resolve(ficCache[id]);
+      return libraryGet({ action: "fic", id: id }).then(function (fic) { ficCache[id] = fic; return fic; });
+    }
+    function getChapterText(chapter) {
+      if (textCache.hasOwnProperty(chapter.id)) return Promise.resolve(textCache[chapter.id]);
+      return libraryGet({ action: "text", id: chapter.id }).then(function (data) {
+        textCache[chapter.id] = String(data.text || "");
+        textOrder.push(chapter.id);
+        while (textOrder.length > 6) delete textCache[textOrder.shift()];
+        return textCache[chapter.id];
+      });
+    }
+    function setReader(state, message) {
+      readerLoading.hidden = state !== "loading";
+      readerError.hidden = state !== "error";
+      readerText.hidden = state !== "text";
+      if (state !== "text") readerPager.hidden = true;
+      if (state === "error") readerErrorText.textContent = message;
+    }
+    function chapterLabel(ch) {
+      return /^chapter\s+\d/i.test(ch.title || "") ? ch.title : ch.n + ". " + (ch.title || "Chapter " + ch.n);
+    }
+    function readLink(ficId, n) { return "#read/" + encodeURIComponent(ficId) + "/" + n; }
+
+    function openReader(ficId, chapterArg, userNav) {
+      var token = ++readToken;
+      lastOpen = [ficId, chapterArg, userNav];
+      setReader("loading");
+      readerBar.hidden = true;
+      readerChapter.hidden = true;
+      readerTitle.textContent = ficCache[ficId] ? ficCache[ficId].title : "Loading…";
+      getFic(ficId).then(function (fic) {
+        if (token !== readToken) return null;
+        var chapters = fic.chapters || [];
+        if (fic.readable === false || !chapters.length) throw new Error("This fic can’t be read here yet.");
+        var n = parseInt(chapterArg, 10);
+        var fixed = isNaN(n) || n < 1 ? 1 : Math.min(n, chapters.length);
+        if (String(fixed) !== String(chapterArg)) { location.replace(readLink(ficId, fixed)); return null; }
+        var chapter = chapters[n - 1];
+        readerTitle.textContent = fic.title || PLACEHOLDER.title;
+        return getChapterText(chapter).then(function (text) {
+          if (token !== readToken) return;
+          showChapter(fic, n, text, userNav);
+        });
+      }).catch(function (err) {
+        if (token !== readToken) return;
+        readerTitle.textContent = ficCache[ficId] ? ficCache[ficId].title : "Couldn’t open this fic";
+        setReader("error", err.message);
+      });
+    }
+
+    function showChapter(fic, n, text, userNav) {
+      var chapters = fic.chapters;
+      var multi = chapters.length > 1;
+      while (readerText.firstChild) readerText.removeChild(readerText.firstChild);
+      renderMarkdown(text, readerText);
+      setReader("text");
+
+      readerBar.hidden = !multi;
+      readerChapter.hidden = !multi;
+      if (multi) {
+        readerChapter.textContent = "Chapter " + n + " of " + chapters.length;
+        while (chapterSelect.firstChild) chapterSelect.removeChild(chapterSelect.firstChild);
+        chapters.forEach(function (ch) {
+          var opt = make("option", null, chapterLabel(ch));
+          opt.value = String(ch.n);
+          chapterSelect.appendChild(opt);
+        });
+        chapterSelect.value = String(n);
+        chapterSelect.setAttribute("data-fic-id", fic.id);
+      }
+      readerPrev.hidden = !multi || n <= 1;
+      readerNext.hidden = !multi || n >= chapters.length;
+      if (!readerPrev.hidden) readerPrev.setAttribute("href", readLink(fic.id, n - 1));
+      if (!readerNext.hidden) readerNext.setAttribute("href", readLink(fic.id, n + 1));
+      readerPager.hidden = !multi;
+
+      document.title = (fic.title || PLACEHOLDER.title) + (multi ? ", chapter " + n : "");
+      if (userNav) { window.scrollTo(0, 0); readerTitle.focus({ preventScroll: true }); }
+      if (n < chapters.length) getChapterText(chapters[n]).catch(function () {}); /* the next chapter, ready before it is asked for */
+    }
+
+    chapterSelect.addEventListener("change", function () {
+      location.hash = readLink(chapterSelect.getAttribute("data-fic-id"), chapterSelect.value);
+    });
+    document.getElementById("reader-retry").addEventListener("click", function () {
+      if (lastOpen) openReader(lastOpen[0], lastOpen[1], true);
     });
 
     syncTheme();
