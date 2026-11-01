@@ -14,7 +14,7 @@ Source of the fics: Bijuu writes in Ellipsus and exports Markdown (`.md`) or EPU
 
 Adding a fic therefore never needs a commit or a Vercel deployment. The reader calls the web app (ideally from a Vercel serverless function or the browser, whichever works; test CORS) and caches results.
 
-Naming convention for chapters: files named `<Title> - <N>.md` (for example `MORIBUND - 1.md`) are chapters of one fic. **The script does not group them yet**; it currently lists each file as its own fic. Updating `apps-script/Code.gs` to group chapters, and to scale to a large library (cache is about 100 KB, read only changed files), is a known next task. Bijuu has to paste the new script into script.google.com and redeploy (Deploy, Manage deployments, edit, New version); the repo copy is the source of record, with `FOLDER_ID` left as a placeholder. `.epub` files are listed but not readable yet.
+Naming convention for chapters: files named `<Title> - <N>.md` (space, dash, space, a number of up to 3 digits; for example `MORIBUND - 1.md`) in the same folder are chapters of one fic, in number order. Other names are one-chapter fics. The script (`apps-script/Code.gs`) groups them and also serves: `<web app link>?action=fic&id=<fic id>` (the fic with its chapter list: n, id, title, words) and `<web app link>?action=text&id=<chapter file id>` (one chapter's text). The library list has one entry per fic, with `chapterCount`. It remembers what it learned about each file (refreshed when the file is edited), so only new or changed files are read, and the list is cached in pieces. Bijuu has to paste a changed script into script.google.com (keeping her `FOLDER_ID`) and redeploy (Deploy, Manage deployments, edit, New version); the repo copy is the source of record, with `FOLDER_ID` left as a placeholder. Her library is under 20 fics, one of them about 296k words; the rest are much shorter. `.epub` files are listed but not readable yet.
 
 ## Working with Bijuu
 
@@ -81,7 +81,7 @@ Last audit (before the reader work): 15/20, Good. Open items: untested real touc
 
 ## Reader roadmap (not built yet)
 
-1. Fic data: update `apps-script/Code.gs` (group `Title - N` files into one fic with ordered chapters; scale to a large library), then load the library JSON from the web app and build the cards in `#list` from it. Details come from optional `---` front matter in each file (title, fandom, rating, words, relationships, summary, tags); missing ones are filled in (title from the file name, fandom from the folder, word count from the text).
+1. Fic data: `apps-script/Code.gs` now groups chapters (done, once she redeploys it). Load the library JSON from the web app and build the cards in `#list` from it. Details come from optional `---` front matter in each file (title, fandom, rating, words, relationships, summary, tags); missing ones are filled in (title from the file name, fandom from the folder, word count from the text).
 2. Reader view: `#read/<fic-id>/<chapter>`, chapters from headings, previous/next, a chapter menu, uses the Aa font, size and theme. Rich text from Markdown and EPUB (italics, bold, headings, scene breaks, links).
 3. Reading progress: remembered per reader in their own browser (localStorage), no accounts. "Continue reading" on the card.
 4. Search, tags and sort on the real data (fandom, rating, longest and shortest word count, relationships).
