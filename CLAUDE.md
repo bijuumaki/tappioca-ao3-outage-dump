@@ -12,9 +12,9 @@ Source of the fics: Bijuu writes in Ellipsus and exports Markdown (`.md`) or EPU
 - One fic's text: `<web app link>?action=text&id=<fileId>`
 - Current web app link (not secret; it only serves that folder): `https://script.google.com/macros/s/AKfycbzp6QNwpXQCtwJrba7PSS3qWA-Y6fljaQ9pckKFvWm8NrFuiokibS6kg8RhUlD7KuECfg/exec`
 
-Adding a fic therefore never needs a commit or a Vercel deployment. The reader calls the web app (ideally from a Vercel serverless function or the browser, whichever works; test CORS) and caches results.
+Adding a fic therefore never needs a commit or a Vercel deployment. The reader calls the web app straight from the browser (tested in Chromium: CORS works, the web app answers every origin with `access-control-allow-origin: *`, so no serverless function is needed). Requests are plain GETs with no custom headers, which keeps them free of CORS preflights; keep it that way, because Apps Script cannot answer a preflight. The list is cached in localStorage (`fic-site-library`) so it shows at once and then refreshes.
 
-Naming convention for chapters: files named `<Title> - <N>.md` (for example `MORIBUND - 1.md`) are chapters of one fic. **The script does not group them yet**; it currently lists each file as its own fic. Updating `apps-script/Code.gs` to group chapters, and to scale to a large library (cache is about 100 KB, read only changed files), is a known next task. Bijuu has to paste the new script into script.google.com and redeploy (Deploy, Manage deployments, edit, New version); the repo copy is the source of record, with `FOLDER_ID` left as a placeholder. `.epub` files are listed but not readable yet.
+Naming convention for chapters: files named `<Title> - <N>.md` (space, dash, space, a number of up to 3 digits; for example `MORIBUND - 1.md`) in the same folder are chapters of one fic, in number order. Other names are one-chapter fics. The script (`apps-script/Code.gs`) groups them and also serves: `<web app link>?action=fic&id=<fic id>` (the fic with its chapter list: n, id, title, words) and `<web app link>?action=text&id=<chapter file id>` (one chapter's text). The library list has one entry per fic, with `chapterCount`. It remembers what it learned about each file (refreshed when the file is edited), so only new or changed files are read, and the list is cached in pieces. Bijuu has to paste a changed script into script.google.com (keeping her `FOLDER_ID`) and redeploy (Deploy, Manage deployments, edit, New version); the repo copy is the source of record, with `FOLDER_ID` left as a placeholder. Her library is under 20 fics, one of them about 296k words; the rest are much shorter. **`.epub` files are readable.** The script opens an epub with Apps Script's built-in `Utilities.unzip` (no dependency), takes the chapters from the book's reading order (skipping the nav page and short cover or title pages), turns each chapter's XHTML into the same Markdown the reader already renders, and names a chapter by its first heading. An epub is one fic, and its chapter ids are `<file id>~<n>` (so `?action=text&id=<file id>~2` is its second chapter). The book's own title and description become the fic's title and summary when it has them; an epub cannot carry rating or relationships, so those stay placeholders. A file name like `Anam_Cara` shows as "Anam Cara". The conversion is tested only on a synthetic epub (not on Bijuu's real files), so expect to tune it when a real one looks off.
 
 ## Working with Bijuu
 
@@ -48,7 +48,8 @@ Naming convention for chapters: files named `<Title> - <N>.md` (for example `MOR
 ```
 index.html     page structure (all views live here)
 styles.css     all styling, tokens first
-app.js         routing, theme, text options, search and sort
+app.js         routing, theme, text options, library loading, list, reader, search and sort
+markdown.js    small Markdown renderer for the reader (builds elements, never HTML strings)
 assets/        paper.jpg texture
 apps-script/   Code.gs, the Google Apps Script that serves the Drive library (source of record)
 docs/          sample-fic.md, the Markdown format for a fic's details and chapters
@@ -60,14 +61,14 @@ CLAUDE.md      this file
 - Header band (teal, max 1630px): theme toggle (moon in light mode, sun in dark mode), **Aa** button opening a panel (text size 10 to 24pt in steps of 2, default 14; Font menu), and the site title.
 - Grid: left sidebar (302px, only the nav links now) | main | right column (255px, Sort by and search on the fic list only).
 - Under 1240px the right column goes away and Sort by and search stack above the fic cards. Under 900px the sidebar, theme toggle and Aa move into a modal menu drawer (done in JS by `place()`).
-- Views (hash routes): `#home` (and anything unknown) is the Howdy page. `#list` is the fic list. `#disclaimer`, `#about`, `#links` and `#comms` show a "coming soon" placeholder; Bijuu designs those pages in Claude Design and will bring them in. Avoid hash names claude.ai reserves in previews (settings, sidebar, customize, upgrade, downloads, comment-*).
+- Views (hash routes): `#home` (and anything unknown) is the Howdy page. `#list` is the fic list. `#read/<fic-id>/<chapter>` is the reader (a bare id or a bad chapter number is corrected to a valid one). `#disclaimer`, `#about`, `#links` and `#comms` show a "coming soon" placeholder; Bijuu designs those pages in Claude Design and will bring them in. Avoid hash names claude.ai reserves in previews (settings, sidebar, customize, upgrade, downloads, comment-*).
 - Placeholder convention: a value that is empty, fully wrapped in parentheses such as `(media title)`, or the lorem ipsum filler counts as a placeholder. Search ignores placeholders and sorting puts them last. Real values need no code change. "Saw (2004)" is real text, not a placeholder.
 
 ## Design decisions to keep
 
 - Light background `#f5f5f5`, dark `#222831`. All boxes `#698c91` in both themes, with `#111` text in light and `#ecefee` in dark. Header `#78a39f` light / `#2f4947` dark. "Howdy" `#8b3253` light / `#e68aa8` dark.
 - Display face **IM Fell English SC**, body face **Inclusive Sans**. The site title and the nav menu list are locked to IM Fell English SC in every font mode.
-- Font menu: Default; Sans serif: Lucida Sans, Cantarell, Tahoma; Serif: Crimson Pro, IM Fell English, Cormorant Garamond. Lucida Sans and Tahoma are system fonts and only show on devices that have them. The three sans choices also apply all-small-caps to display text; serif choices do not. Choices are saved in localStorage (`fic-site-theme`, `fic-site-font`, `fic-site-size`), always inside try/catch.
+- Font menu: Default; Sans serif: Lucida Sans, Cantarell, Tahoma; Serif: Crimson Pro, IM Fell English, Cormorant Garamond. Lucida Sans and Tahoma are system fonts and only show on devices that have them. The three sans choices also apply all-small-caps to display text; serif choices do not. Only the two default faces load up front (non-blocking); each Font-menu web font is fetched when it is picked, from `applyFont` in `app.js`. Choices are saved in localStorage (`fic-site-theme`, `fic-site-font`, `fic-site-size`), always inside try/catch.
 - Text size: `--fs` is the base (default 14pt, 10 to 24 in steps of 2). `--u = --fs / 19` scales everything else. Fic titles are `--fs * 24/14`, fic details are `--fs`. Line heights scale with it.
 - Paper texture: a fixed `body::before` layer, `mix-blend-mode: multiply`, lighter in dark mode. Cards and boxes use `color-mix(... var(--solid), transparent)` with `--solid: 20%`, so the paper shows through. The Aa panel stays opaque. The phone menu drawer is 80% opaque (fill and texture on its own layer so text stays solid) with a 14px backdrop blur on the drawer only.
 - Removed on purpose: Quick fic links, Guest book, Powered by, and the card shape behind the nav links. Do not bring them back unless asked.
@@ -81,9 +82,9 @@ Last audit (before the reader work): 15/20, Good. Open items: untested real touc
 
 ## Reader roadmap (not built yet)
 
-1. Fic data: update `apps-script/Code.gs` (group `Title - N` files into one fic with ordered chapters; scale to a large library), then load the library JSON from the web app and build the cards in `#list` from it. Details come from optional `---` front matter in each file (title, fandom, rating, words, relationships, summary, tags); missing ones are filled in (title from the file name, fandom from the folder, word count from the text).
-2. Reader view: `#read/<fic-id>/<chapter>`, chapters from headings, previous/next, a chapter menu, uses the Aa font, size and theme. Rich text from Markdown and EPUB (italics, bold, headings, scene breaks, links).
-3. Reading progress: remembered per reader in their own browser (localStorage), no accounts. "Continue reading" on the card.
+1. Fic data: `apps-script/Code.gs` groups chapters (done and deployed). The `#list` cards are built from the library JSON (done). Details come from optional `---` front matter in each file (title, fandom, rating, words, relationships, summary, tags); missing ones are filled in (title from the file name, fandom from the folder, word count from the text).
+2. Reader view: `#read/<fic-id>/<chapter>` with previous/next, a chapter menu, and the Aa font, size and theme (done for Markdown: italics, bold, headings, quotes, links, scene breaks; a line of only dashes, stars or ornament symbols is a scene break and shows the `--scene-break` token). EPUB works too, converted by `apps-script/Code.gs` (see above).
+3. Reading progress (done): remembered per reader in their own browser (`fic-site-progress` in localStorage), no accounts. It stores the furthest point reached (chapter and how far down) and only moves forward, so scrolling up to a link or re-reading an earlier chapter never loses the place. "Continue reading" on the card; the card buttons are rebuilt from it each time the list opens.
 4. Search, tags and sort on the real data (fandom, rating, longest and shortest word count, relationships).
 5. First real fic: "moribund" (Bijuu will supply the Markdown export and the fic details; do not guess the details).
 6. Later: Neocities build (built folder, relative paths) and WordPress theme.
