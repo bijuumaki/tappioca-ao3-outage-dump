@@ -31,6 +31,7 @@
  * EPUB files work too. An .epub is one fic: its chapters are the book's own reading order, each chapter's title is
  * its first heading, and the book's own title and description (when it has them) become the fic's title and summary.
  * An epub has nowhere for the other details, so rating and relationships stay as placeholders on the site.
+ * The Preface, title page and Afterword that an Archive of Our Own download adds are left out of the chapters.
  *
  * Web app links:
  *   <web app link>                       -> the library list (one entry per fic)
@@ -161,7 +162,7 @@ function fillInfo_(files, cache) {
 
   // An epub is opened once (when new or changed) to learn its chapters; the answer is remembered like the rest.
   files.filter(function (f) { return f.format === 'epub'; }).forEach(function (f) {
-    var key = 'e1:' + f.id + ':' + f.updated.getTime();
+    var key = 'e2:' + f.id + ':' + f.updated.getTime();
     var raw = cache.get(key);
     if (raw) { f.info = JSON.parse(raw); return; }
     f.info = epubInfo_(f.file);
@@ -331,7 +332,7 @@ function getEpubText_(fileId, n) {
   // Only epubs inside the library folder can be served.
   if (!isInside_(file) || !/\.epub$/i.test(file.getName())) throw new Error('Not found.');
   var cache = CacheService.getScriptCache();
-  var key = 'c1:' + fileId + ':' + n + ':' + file.getLastUpdated().getTime();
+  var key = 'c2:' + fileId + ':' + n + ':' + file.getLastUpdated().getTime();
   var cached = getChunked_(cache, key);
   var chapter;
   if (cached) {
@@ -380,7 +381,19 @@ function epubStructure_(read) {
   var summary = xmlText_(opf, 'dc:description');
   if (title) meta.title = title;
   if (summary) meta.summary = summary;
-  return { meta: meta, chapters: chapters };
+
+  // The pages an Archive of Our Own download wraps around a story are not chapters.
+  var story = chapters.filter(function (c) { return !isArchiveWrapper_(c, title); });
+  return { meta: meta, chapters: story.length ? story : chapters };
+}
+
+// The "Preface" info page, the title page and the "Afterword" that an Archive of Our Own epub adds around the story.
+// They are recognized by what they say (and are short), so a real chapter is never mistaken for one.
+function isArchiveWrapper_(chapter, bookTitle) {
+  if (chapter.words >= 600) return false;
+  if (/Posted originally on the \[?Archive of Our Own/i.test(chapter.md)) return true;
+  if (/drop by the Archive and comment/i.test(chapter.md)) return true;
+  return chapter.words < 150 && !!bookTitle && chapter.title.toLowerCase() === bookTitle.toLowerCase() && /^by\s/m.test(chapter.md);
 }
 
 function attr_(tag, name) {
