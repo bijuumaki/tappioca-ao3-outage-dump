@@ -57,8 +57,20 @@
 
     /* Font choice: "default" or one of the options in the select */
     var fontNames = ["lucida", "cantarell", "tahoma", "crimson", "imfell", "cormorant"];
+    /* Web fonts for the Font menu are fetched only once chosen (Lucida Sans and Tahoma are system fonts) */
+    var webFonts = { cantarell: "Cantarell", crimson: "Crimson+Pro", imfell: "IM+Fell+English", cormorant: "Cormorant+Garamond" };
+    var fontsLoaded = {};
+    function loadWebFont(v) {
+      if (!webFonts[v] || fontsLoaded[v]) return;
+      fontsLoaded[v] = true;
+      var link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "https://fonts.googleapis.com/css2?family=" + webFonts[v] + "&display=swap";
+      document.head.appendChild(link);
+    }
     function applyFont(v) {
       if (fontNames.indexOf(v) === -1) v = "default";
+      loadWebFont(v);
       if (v === "default") root.removeAttribute("data-font"); else root.setAttribute("data-font", v);
       fontSel.value = v;
     }
