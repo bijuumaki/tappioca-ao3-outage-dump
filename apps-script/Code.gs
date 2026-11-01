@@ -27,7 +27,10 @@
  *   Story text...
  * Put the details in the FIRST chapter. Anything you leave out is worked out for you
  * (title from the file name, fandom from the folder, word count from the text).
- * .epub files are listed but not readable yet.
+ *
+ * EPUB files work too. An .epub is one fic: its chapters are the book's own reading order, each chapter's title is
+ * its first heading, and the book's own title and description (when it has them) become the fic's title and summary.
+ * An epub has nowhere for the other details, so rating and relationships stay as placeholders on the site.
  *
  * Web app links:
  *   <web app link>                       -> the library list (one entry per fic)
@@ -155,6 +158,15 @@ function fillInfo_(files, cache) {
   if (Object.keys(fresh).length) {
     try { cache.putAll(fresh, FILE_CACHE_SECONDS); } catch (err) { /* remembering is optional */ }
   }
+
+  // An epub is opened once (when new or changed) to learn its chapters; the answer is remembered like the rest.
+  files.filter(function (f) { return f.format === 'epub'; }).forEach(function (f) {
+    var key = 'e1:' + f.id + ':' + f.updated.getTime();
+    var raw = cache.get(key);
+    if (raw) { f.info = JSON.parse(raw); return; }
+    f.info = epubInfo_(f.file);
+    try { cache.put(key, JSON.stringify(f.info), FILE_CACHE_SECONDS); } catch (err) { /* remembering is optional */ }
+  });
 }
 
 function infoKey_(f) {
@@ -167,7 +179,7 @@ function group_(files) {
   var byKey = {};
   files.forEach(function (f) {
     var m = f.isText ? f.base.match(/^(.+?)\s+-\s+(\d{1,3})$/) : null;
-    var title = m ? m[1].trim() : f.base;
+    var title = niceTitle_(m ? m[1].trim() : f.base);
     f.n = m ? parseInt(m[2], 10) : 1;
     f.groupTitle = title;
     if (!m) {
@@ -235,8 +247,16 @@ function group_(files) {
     if (first.isText) {
       // A one-chapter fic can state its own word count in its details.
       fic.words = g.length === 1 && /^[\d,]+$/.test(meta.words || '') ? parseInt(meta.words.replace(/,/g, ''), 10) : total;
+    } else if (first.info && first.info.chapters && first.info.chapters.length) {
+      // An epub's chapters live inside the file, so a chapter's id is "<file id>~<number>".
+      var cs = first.info.chapters;
+      fic.chapters = cs.map(function (c, i) {
+        return { n: i + 1, id: first.id + '~' + (i + 1), title: c.title || (cs.length > 1 ? 'Chapter ' + (i + 1) : fic.title), words: c.words };
+      });
+      fic.words = first.info.words;
+      fic.readable = true;
     } else {
-      fic.chapters = []; // an .epub is listed but not readable yet
+      fic.chapters = []; // an epub that could not be opened is listed but not readable
     }
     return fic;
   });
@@ -247,6 +267,8 @@ function group_(files) {
 
 function getText_(id) {
   if (!id) throw new Error('Missing id.');
+  var tilde = String(id).indexOf('~');
+  if (tilde > 0) return getEpubText_(id.slice(0, tilde), parseInt(id.slice(tilde + 1), 10));
   var file = DriveApp.getFileById(id);
   // Only files inside the library folder can ever be served, even if someone guesses another file's ID.
   if (!isInside_(file)) throw new Error('Not found.');
@@ -269,6 +291,215 @@ function isInside_(item) {
     if (parent.getId() === FOLDER_ID || isInside_(parent)) return true;
   }
   return false;
+}
+
+// ---------- epub ----------
+
+// An .epub is a zip of XHTML files. Utilities.unzip is built into Apps Script, so nothing needs installing.
+function readEpub_(file) {
+  var blobs = Utilities.unzip(file.getBlob().setContentType('application/zip'));
+  var byName = {};
+  var byBase = {};
+  blobs.forEach(function (b) {
+    var name = b.getName();
+    byName[name] = b;
+    byBase[name.slice(name.lastIndexOf('/') + 1).toLowerCase()] = b;
+  });
+  return epubStructure_(function (name) {
+    var b = byName[name] || byBase[name.slice(name.lastIndexOf('/') + 1).toLowerCase()];
+    return b ? b.getDataAsString('UTF-8') : null;
+  });
+}
+
+// What the library list needs from an epub: the chapter list, without the text itself.
+function epubInfo_(file) {
+  try {
+    var epub = readEpub_(file);
+    var total = 0;
+    var chapters = epub.chapters.map(function (c) {
+      total += c.words;
+      return { title: c.title, words: c.words };
+    });
+    return { meta: epub.meta, words: total, chapters: chapters };
+  } catch (err) {
+    return { meta: {}, words: null, chapters: [], failed: String((err && err.message) || err) };
+  }
+}
+
+function getEpubText_(fileId, n) {
+  var file = DriveApp.getFileById(fileId);
+  // Only epubs inside the library folder can be served.
+  if (!isInside_(file) || !/\.epub$/i.test(file.getName())) throw new Error('Not found.');
+  var cache = CacheService.getScriptCache();
+  var key = 'c1:' + fileId + ':' + n + ':' + file.getLastUpdated().getTime();
+  var cached = getChunked_(cache, key);
+  var chapter;
+  if (cached) {
+    chapter = JSON.parse(cached);
+  } else {
+    var c = readEpub_(file).chapters[n - 1];
+    if (!c) throw new Error('Not found.');
+    chapter = { title: c.title, words: c.words, text: c.md };
+    putChunked_(cache, key, JSON.stringify(chapter), FILE_CACHE_SECONDS);
+  }
+  return { id: fileId + '~' + n, title: chapter.title, meta: {}, words: chapter.words, text: chapter.text };
+}
+
+// Pure function (no Google services), so it can be tested anywhere: read(name) returns a file's text, or null.
+function epubStructure_(read) {
+  var container = read('META-INF/container.xml') || '';
+  var opfPath = (container.match(/full-path\s*=\s*["']([^"']+)["']/i) || [])[1];
+  var opf = opfPath ? read(opfPath) : null;
+  if (!opf) throw new Error('This epub has no content list.');
+  var dir = opfPath.indexOf('/') === -1 ? '' : opfPath.slice(0, opfPath.lastIndexOf('/') + 1);
+
+  var manifest = {};
+  (opf.match(/<item\b[^>]*>/gi) || []).forEach(function (tag) {
+    var id = attr_(tag, 'id');
+    if (id) manifest[id] = { href: attr_(tag, 'href'), type: attr_(tag, 'media-type'), props: attr_(tag, 'properties') };
+  });
+
+  var chapters = [];
+  (opf.match(/<itemref\b[^>]*>/gi) || []).forEach(function (tag) {
+    var idref = attr_(tag, 'idref');
+    var item = manifest[idref];
+    if (!item || !item.href || attr_(tag, 'linear') === 'no') return;
+    if (!/html/i.test(item.type || '') || /\bnav\b/.test(item.props || '')) return;
+    var html = read(resolvePath_(dir, item.href));
+    if (html == null) return;
+    var conv = htmlToMarkdown_(html);
+    var words = countWords_(conv.md);
+    if (!words) return;
+    // A short cover, title page or contents page is not a chapter.
+    if (words < 40 && /cover|title|toc|nav|copyright|dedication/i.test(idref + ' ' + item.href)) return;
+    chapters.push({ title: conv.heading, words: words, md: conv.md });
+  });
+
+  var meta = {};
+  var title = xmlText_(opf, 'dc:title');
+  var summary = xmlText_(opf, 'dc:description');
+  if (title) meta.title = title;
+  if (summary) meta.summary = summary;
+  return { meta: meta, chapters: chapters };
+}
+
+function attr_(tag, name) {
+  var m = tag.match(new RegExp('\\s' + name + '\\s*=\\s*(?:"([^"]*)"|\'([^\']*)\')', 'i'));
+  return m ? (m[1] != null ? m[1] : m[2]) : '';
+}
+
+function xmlText_(xml, tag) {
+  var m = xml.match(new RegExp('<' + tag + '\\b[^>]*>([\\s\\S]*?)</' + tag + '>', 'i'));
+  if (!m) return '';
+  // Descriptions are often HTML stored as escaped text, so decode, drop the tags, and decode what was inside them.
+  var text = decodeEntities_(m[1]).replace(/<[^>]*>/g, ' ');
+  return decodeEntities_(text).replace(/\s+/g, ' ').trim();
+}
+
+// Joins an epub file's link to the folder of the content list ("../" and "%20" included).
+function resolvePath_(dir, href) {
+  var h = String(href).split('#')[0];
+  try { h = decodeURIComponent(h); } catch (err) { /* keep it as written */ }
+  var out = [];
+  (dir + h).split('/').forEach(function (part) {
+    if (part === '..') out.pop();
+    else if (part !== '.' && part !== '') out.push(part);
+  });
+  return out.join('/');
+}
+
+function decodeEntities_(s) {
+  var named = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', ndash: '\u2013', mdash: '\u2014',
+    hellip: '\u2026', lsquo: '\u2018', rsquo: '\u2019', ldquo: '\u201C', rdquo: '\u201D' };
+  return String(s).replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, function (m, e) {
+    if (e.charAt(0) === '#') {
+      var n = e.charAt(1).toLowerCase() === 'x' ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10);
+      try { return n ? String.fromCodePoint(n) : m; } catch (err) { return m; }
+    }
+    var v = named[e.toLowerCase()];
+    return v == null ? m : v;
+  });
+}
+
+// Chapter XHTML to the same Markdown the site already reads: headings, paragraphs, italics, bold, links,
+// quotes, line breaks and scene breaks. Anything else (images, tables, styling) is dropped, keeping its text.
+function htmlToMarkdown_(html) {
+  var HARD = '\uE001', BQ_OPEN = '\uE002', BQ_CLOSE = '\uE003';
+  var s = String(html).replace(/^\uFEFF/, '');
+  var body = s.match(/<body\b[^>]*>([\s\S]*)<\/body>/i);
+  if (body) s = body[1];
+  s = s.replace(/<!--[\s\S]*?-->/g, '').replace(/<(script|style|head|svg|nav)\b[\s\S]*?<\/\1>/gi, '');
+  // Spaces just inside an emphasis tag would break the Markdown, so they move outside it.
+  s = s.replace(/(<(?:em|i|strong|b|del|s|strike)\b[^>]*>)(\s+)/gi, '$2$1').replace(/(\s+)(<\/(?:em|i|strong|b|del|s|strike)>)/gi, '$2$1');
+
+  var out = '';
+  var spans = [];
+  var links = [];
+  var blocks = /^(p|div|section|article|aside|header|footer|figure|figcaption|tr|ul|ol|dl|dt|dd|table|pre|address|main)$/;
+  s.split(/(<[^>]*>)/).forEach(function (part) {
+    if (part.charAt(0) !== '<') {
+      var text = decodeEntities_(part).replace(/[\s\u00A0]+/g, ' ').replace(/([\\*_`~\[\]])/g, '\\$1');
+      if (/(^|\n)\s*$/.test(out)) text = text.replace(/^\s*([#>])/, '\\$1');
+      out += text;
+      return;
+    }
+    var m = part.match(/^<\s*(\/?)\s*([a-zA-Z][a-zA-Z0-9:]*)/);
+    if (!m) return;
+    var closing = m[1] === '/';
+    var name = m[2].toLowerCase();
+    if (name === 'br') out += HARD;
+    else if (name === 'hr') out += '\n\n---\n\n';
+    else if (/^h[1-6]$/.test(name)) out += closing ? '\n\n' : '\n\n' + new Array(parseInt(name.charAt(1), 10) + 1).join('#') + ' ';
+    else if (name === 'blockquote') out += closing ? BQ_CLOSE + '\n\n' : '\n\n' + BQ_OPEN;
+    else if (name === 'li') out += closing ? '\n\n' : '\n\n- ';
+    else if (blocks.test(name)) out += '\n\n';
+    else if (name === 'strong' || name === 'b') out += '**';
+    else if (name === 'em' || name === 'i') out += '*';
+    else if (name === 'del' || name === 's' || name === 'strike') out += '~~';
+    else if (name === 'span') {
+      if (closing) { out += spans.pop() || ''; return; }
+      var style = attr_(part, 'style');
+      var mark = /italic/i.test(style) ? '*' : (/bold|font-weight:\s*[6-9]00/i.test(style) ? '**' : '');
+      spans.push(mark);
+      out += mark;
+    } else if (name === 'a') {
+      if (closing) {
+        var href = links.pop();
+        if (href) out += '](' + href.replace(/\(/g, '%28').replace(/\)/g, '%29') + ')';
+        return;
+      }
+      var target = attr_(part, 'href');
+      var ok = /^(https?:|mailto:)/i.test(target);
+      links.push(ok ? target : '');
+      if (ok) out += '[';
+    }
+  });
+
+  // Quotes: innermost first, every line gets "> ".
+  var quote = new RegExp(BQ_OPEN + '([^' + BQ_OPEN + ']*?)' + BQ_CLOSE);
+  while (quote.test(out)) {
+    out = out.replace(quote, function (m, inner) {
+      var lines = inner.split('\n').map(function (l) { return l.trim(); }).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+      return '\n\n' + lines.split('\n').map(function (l) { return l ? '> ' + l : '>'; }).join('\n') + '\n\n';
+    });
+  }
+
+  var md = out.split('\n').map(function (line) {
+    line = line.replace(new RegExp('^[\\s' + HARD + ']+|[\\s' + HARD + ']+$', 'g'), '').replace(new RegExp(' *' + HARD + ' *', 'g'), '  \n');
+    var plain = line.replace(/\\(.)/g, '$1').trim();
+    // A line of only stars, dashes or similar marks is a scene break.
+    if (/^[*_~=\u2013\u2014\u2022\u00b7\-\s]+$/.test(plain) && plain.replace(/\s/g, '').length >= 3) return '---';
+    return line;
+  }).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+
+  var h = md.match(/^#{1,6}[ \t]+(.+?)[ \t#]*$/m);
+  var heading = h ? h[1].replace(/\\(.)/g, '$1').replace(/[*_~`]/g, '').trim() : '';
+  return { md: md, heading: heading };
+}
+
+// "Anam_Cara" (a file name with underscores and no spaces) reads better as "Anam Cara".
+function niceTitle_(name) {
+  return name.indexOf(' ') === -1 && name.indexOf('_') !== -1 ? name.replace(/_/g, ' ') : name;
 }
 
 // ---------- helpers ----------
