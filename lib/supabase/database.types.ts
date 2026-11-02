@@ -6,6 +6,12 @@ export type Database = {
   __InternalSupabase: { PostgrestVersion: "14.18" };
   public: {
     Tables: {
+      admins: {
+        Row: { user_id: string };
+        Insert: { user_id: string };
+        Update: { user_id?: string };
+        Relationships: [];
+      };
       categories: {
         Row: { id: number; name: string; slug: string };
         Insert: { id?: never; name: string; slug: string };

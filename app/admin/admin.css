@@ -1,0 +1,11 @@
+/* Admin look: placeholder until Task 2 brings the canvas themes. */
+.admin { min-height: 100vh; padding: 32px 24px; }
+.a-page { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+.a-narrow { max-width: 420px; }
+.a-title { margin: 0; font-family: var(--font-heading); font-size: 32px; font-weight: 400; }
+.a-muted { margin: 0; color: var(--muted); font-size: 14px; }
+.a-form { display: flex; flex-direction: column; gap: 14px; }
+.a-field { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.a-field input { min-height: 44px; padding: 0 10px; font: inherit; font-size: 16px; text-transform: none; }
+.a-button, .a-button-primary { min-height: 44px; padding: 0 16px; font: inherit; cursor: pointer; }
+.a-alert { margin: 0; font-weight: 600; }

@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
 import { IM_Fell_English, Inclusive_Sans } from "next/font/google";
-import DisplayOptions from "@/components/DisplayOptions";
-import SiteFooter from "@/components/SiteFooter";
-import SiteNav from "@/components/SiteNav";
 import { PREFS_BOOT_SCRIPT } from "@/lib/client/prefs";
 import "./tokens.css";
 import "./globals.css";
@@ -18,14 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: PREFS_BOOT_SCRIPT }} />
       </head>
-      <body>
-        <div className="site">
-          <SiteNav />
-          <DisplayOptions />
-          {children}
-          <SiteFooter />
-        </div>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
