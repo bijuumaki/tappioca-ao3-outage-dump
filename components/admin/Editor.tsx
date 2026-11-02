@@ -45,6 +45,8 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
   const [size, setSize] = useState(16);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dirty = useRef(false);
+  const [restored, setRestored] = useState(false);
+  const backupKey = `fic-admin-draft-${chapterId}`;
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -61,24 +63,74 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
   const fields = useRef({ title, notesBefore, notesAfter });
   fields.current = { title, notesBefore, notesAfter };
 
-  const save = useCallback(async (force = false) => {
+  const inFlight = useRef<Promise<boolean> | null>(null);
+  const save = useCallback(async (force = false): Promise<boolean> => {
+    if (inFlight.current) {
+      const ok = await inFlight.current;
+      if (!dirty.current && !force) return ok;
+    }
     if (!editor || (!dirty.current && !force)) return true;
     dirty.current = false;
     setState("saving");
-    const res = await saveChapter(chapterId, {
+    const pending = saveChapter(chapterId, {
       title: fields.current.title, notes_before: fields.current.notesBefore, notes_after: fields.current.notesAfter, body: editor.getHTML(),
     }).catch(() => ({ ok: false as const, reason: "error" as const }));
-    if (res.ok) { setState("saved"); return true; }
+    const run = pending.then(() => true, () => false);
+    inFlight.current = run;
+    const res = await pending;
+    if (inFlight.current === run) inFlight.current = null;
+    if (res.ok) {
+      setState("saved");
+      if (!dirty.current) { try { localStorage.removeItem(backupKey); } catch { /* storage blocked */ } }
+      return true;
+    }
     dirty.current = true;
     setState(res.reason);
     return false;
-  }, [chapterId, editor]);
+  }, [chapterId, editor, backupKey]);
+
+  /* Every change is also kept in this browser until the server has it, so a lost sign-in or a crash loses nothing. */
+  const backup = useCallback(() => {
+    if (!editor) return;
+    try {
+      localStorage.setItem(backupKey, JSON.stringify({ ...fields.current, body: editor.getHTML(), at: Date.now() }));
+    } catch { /* storage blocked */ }
+  }, [editor, backupKey]);
 
   const schedule = useCallback(() => {
     dirty.current = true;
+    queueMicrotask(backup);
     setState("idle");
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => void save(), 3000);
+  }, [save, backup]);
+
+  useEffect(() => { if (dirty.current) backup(); }, [title, notesBefore, notesAfter, backup]);
+
+  /* Bring back text that was never saved (for example after the sign-in ran out). */
+  useEffect(() => {
+    if (!editor) return;
+    let saved: { title: string; notesBefore: string; notesAfter: string; body: string } | null = null;
+    try { saved = JSON.parse(localStorage.getItem(backupKey) ?? "null"); } catch { saved = null; }
+    if (!saved) return;
+    const differs = saved.body !== editor.getHTML() || saved.title !== initial.title
+      || saved.notesBefore !== initial.notes_before || saved.notesAfter !== initial.notes_after;
+    if (!differs) { try { localStorage.removeItem(backupKey); } catch { /* */ } return; }
+    editor.commands.setContent(saved.body, { emitUpdate: false });
+    setTitle(saved.title); setNotesBefore(saved.notesBefore); setNotesAfter(saved.notesAfter);
+    setWords(countWords(saved.body));
+    setRestored(true);
+    dirty.current = true;
+    timer.current = setTimeout(() => void save(), 1000);
+  }, [editor]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* Warn before leaving with unsaved text; retry saving when coming back to this tab. */
+  useEffect(() => {
+    const warn = (e: BeforeUnloadEvent) => { if (dirty.current) { e.preventDefault(); e.returnValue = ""; } };
+    const retry = () => { if (dirty.current) void save(); };
+    window.addEventListener("beforeunload", warn);
+    window.addEventListener("focus", retry);
+    return () => { window.removeEventListener("beforeunload", warn); window.removeEventListener("focus", retry); };
   }, [save]);
 
   useEffect(() => {
@@ -127,6 +179,7 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
 
   return (
     <div className="a-editor">
+      {restored && <p className="a-restored" role="status">Brought back text that hadn’t been saved yet. It’s saving now.</p>}
       <PublishBar ficId={ficId} chapterId={chapterId} publishAt={publishAt} save={() => save(true)} />
       <div role="toolbar" aria-label="Formatting" className="a-toolbar-row">
         {btn("Undo", I.undo, undefined, () => chain().undo().run())}
@@ -188,6 +241,7 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
       <div className="a-statusbar">
         <span className="a-wordcount">{words === 1 ? "1 word" : `${words.toLocaleString("en-US")} words`}</span>
         <span className="a-save-state" role="status" data-state={state}>{SAVE_LABEL[state]}</span>
+        {state === "signed_out" && <a href="/admin/login" target="_blank" rel="noopener" className="a-link">Sign in (opens a new tab)</a>}
       </div>
     </div>
   );

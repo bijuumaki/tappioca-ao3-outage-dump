@@ -78,6 +78,23 @@ describe.skipIf(!hasSecret())("publishing", async () => {
     await expect(publishChapterAt(db, chapterId, new Date(Date.now() - 60_000), { future: true })).rejects.toThrow(/future/);
   });
 
+  test("unpublishing the only live chapter takes the story off the site too", async () => {
+    const { ficId, chapterId } = await draftStory("e2e-pub-e");
+    await publishChapterAt(db, chapterId, new Date());
+    await unpublishChapter(db, chapterId);
+    expect((await db.from("fics").select("publish_at").eq("id", ficId).single()).data!.publish_at).toBeNull();
+    expect((await createReaderClient().from("fics").select("slug").eq("slug", "e2e-pub-e")).data).toEqual([]);
+  });
+
+  test("rescheduling later moves the story's date with it", async () => {
+    const { ficId, chapterId } = await draftStory("e2e-pub-f");
+    const monday = new Date(Date.now() + 2 * 86_400_000), friday = new Date(Date.now() + 5 * 86_400_000);
+    await publishChapterAt(db, chapterId, monday, { future: true });
+    await publishChapterAt(db, chapterId, friday, { future: true });
+    const at = (await db.from("fics").select("publish_at").eq("id", ficId).single()).data!.publish_at!;
+    expect(Date.parse(at)).toBe(friday.getTime());
+  });
+
   test("unpublishing puts the chapter back to draft", async () => {
     const { chapterId } = await draftStory("e2e-pub-d");
     await publishChapterAt(db, chapterId, new Date());

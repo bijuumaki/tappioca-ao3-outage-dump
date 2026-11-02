@@ -73,3 +73,16 @@ test("cover image: upload shows a preview, remove clears it", async ({ page }) =
   await page.getByRole("button", { name: "Remove" }).click();
   await expect(page.locator(".a-cover img")).toHaveCount(0);
 });
+
+test("a 2 MB phone photo uploads as a cover", async ({ page }) => {
+  await signIn(page);
+  await page.getByRole("link", { name: "New Story" }).click();
+  await page.waitForURL(/\/admin\/stories\/\d+$/);
+  await page.getByLabel("Story title").fill("(e2e big cover)");
+  await page.getByRole("button", { name: "Save details" }).click();
+  const fs = await import("node:fs");
+  const png = fs.readFileSync("tests/e2e/fixtures/cover.png");
+  const big = Buffer.concat([png, Buffer.alloc(2 * 1024 * 1024)]);
+  await page.getByLabel("Upload image").setInputFiles({ name: "photo.png", mimeType: "image/png", buffer: big });
+  await expect(page.locator(".a-cover img")).toBeVisible({ timeout: 15_000 });
+});

@@ -49,3 +49,45 @@ test("scheduling for tomorrow shows scheduled and stays off the public site", as
   const res = await page.goto("/fics/e2e-publish-later");
   expect(res!.status()).toBe(404);
 });
+
+test("publish saves the title and details even without pressing Save details", async ({ page }) => {
+  await signIn(page);
+  await page.getByRole("link", { name: "New Story" }).click();
+  await page.waitForURL(/\/admin\/stories\/\d+$/);
+  await page.getByLabel("Story title").fill("(e2e publish titled)");
+  await page.getByLabel("Summary").fill("(e2e unsaved summary)");
+  await page.locator(".a-editor .ProseMirror").click();
+  await page.keyboard.type("(e2e body)");
+  await page.getByRole("button", { name: "Publish", exact: true }).click();
+  await expect(page.locator(".a-pub-state")).toHaveText(/published/i);
+  const res = await page.goto("/fics/e2e-publish-titled");
+  expect(res!.status()).toBe(200);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("(e2e publish titled)");
+  await expect(page.locator("main")).toContainText("(e2e unsaved summary)");
+});
+
+test("story details save on their own after typing stops", async ({ page }) => {
+  await signIn(page);
+  await page.getByRole("link", { name: "New Story" }).click();
+  await page.waitForURL(/\/admin\/stories\/\d+$/);
+  await page.getByLabel("Story title").fill("(e2e publish autosave details)");
+  await page.getByLabel("Tags", { exact: true }).fill("(e2e auto tag)");
+  await expect(page.locator(".a-saved")).toBeVisible({ timeout: 10_000 });
+  await page.reload();
+  await expect(page.getByLabel("Story title")).toHaveValue("(e2e publish autosave details)");
+  await expect(page.getByLabel("Tags", { exact: true })).toHaveValue("(e2e auto tag)");
+});
+
+test("publishing while the details are still saving keeps the right title and address", async ({ page }) => {
+  await signIn(page);
+  await page.getByRole("link", { name: "New Story" }).click();
+  await page.waitForURL(/\/admin\/stories\/\d+$/);
+  await page.locator(".a-editor .ProseMirror").click();
+  await page.keyboard.type("(e2e race body)");
+  await page.getByLabel("Story title").fill("(e2e publish race)");
+  await page.waitForTimeout(2050);
+  await page.getByRole("button", { name: "Publish", exact: true }).click();
+  await expect(page.locator(".a-pub-state")).toHaveText(/published/i);
+  const res = await page.goto("/fics/e2e-publish-race");
+  expect(res!.status()).toBe(200);
+});

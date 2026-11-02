@@ -89,3 +89,29 @@ test("color set on a whole paragraph survives opening in the editor", async ({ p
   await page.locator(".a-story", { hasText: "(sample fic)" }).getByRole("link", { name: "edit" }).click();
   await expect(page.locator('.a-editor .ProseMirror p[style*="color"]')).toHaveCount(1);
 });
+
+test("unsaved text is kept in this browser and comes back after a reload", async ({ page, context }) => {
+  await newStory(page, "(e2e editor backup)");
+  const editUrl = page.url();
+  await editor(page).click();
+  await page.keyboard.type("kept");
+  await saved(page);
+  await context.clearCookies();
+  await page.keyboard.type(" safely");
+  await expect(page.locator(".a-save-state")).toHaveText(/not saved: sign in again/i, { timeout: 10_000 });
+  await expect(page.getByRole("link", { name: /sign in/i })).toHaveAttribute("target", "_blank");
+  await signIn(page);
+  await page.goto(editUrl);
+  await expect(editor(page)).toContainText("kept safely");
+  await expect(page.locator(".a-restored")).toBeVisible();
+});
+
+test("notes keep symbols and line breaks", async ({ page }) => {
+  await newStory(page, "(e2e editor notes)");
+  await page.getByText("Notes before the chapter").click();
+  await page.getByLabel("Notes before the chapter").fill("Tom & Jerry <3\nsecond line");
+  await saved(page);
+  await page.reload();
+  await page.getByText("Notes before the chapter").click();
+  await expect(page.getByLabel("Notes before the chapter")).toHaveValue("Tom & Jerry <3\nsecond line");
+});

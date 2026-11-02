@@ -6,6 +6,7 @@ import ChapterList from "@/components/admin/ChapterList";
 import CoverImage from "@/components/admin/CoverImage";
 import Editor from "@/components/admin/Editor";
 import StoryDetails from "@/components/admin/StoryDetails";
+import { htmlToNotes } from "@/lib/admin/notes";
 import { getAdminStory } from "@/lib/admin/queries";
 import { mediaUrl } from "@/lib/content/media";
 import type { TagType } from "@/lib/content/types";
@@ -55,7 +56,7 @@ export default async function EditStoryPage({ params, searchParams }: Props) {
           </label>
           {chapter ? (
             <Editor key={chapter.id} chapterId={chapter.id} ficId={story.id} publishAt={chapter.publish_at} initial={{
-              title: chapter.title ?? "", notes_before: chapter.notes_before, notes_after: chapter.notes_after, body: chapter.body,
+              title: chapter.title ?? "", notes_before: htmlToNotes(chapter.notes_before), notes_after: htmlToNotes(chapter.notes_after), body: chapter.body,
             }} />
           ) : <p className="a-muted">This story has no chapters yet. Add one from the list.</p>}
         </section>

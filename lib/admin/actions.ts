@@ -5,8 +5,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 import type { TagType } from "@/lib/content/types";
 import { createSessionClient, requireAdmin } from "@/lib/supabase/session";
-import { sanitizeRichText } from "@/lib/richtext/allowlist";
 import { prepareChapter } from "./chapter";
+import { notesToHtml } from "./notes";
 import { publishChapterAt, unpublishChapter } from "./publish";
 import { slugify } from "@/lib/text/slug";
 import { storyDetailsFromForm, uniqueSlug } from "./story-form";
@@ -126,8 +126,8 @@ export async function saveChapter(chapterId: number, input: ChapterInput): Promi
   const { body, word_count } = prepareChapter(input.body);
   const { data, error } = await db.from("chapters").update({
     title: input.title.trim() || null,
-    notes_before: sanitizeRichText(input.notes_before),
-    notes_after: sanitizeRichText(input.notes_after),
+    notes_before: notesToHtml(input.notes_before),
+    notes_after: notesToHtml(input.notes_after),
     body, word_count,
   }).eq("id", chapterId).select("fic_id, publish_at").maybeSingle();
   if (error || !data) return { ok: false, reason: error ? "error" : "signed_out" };

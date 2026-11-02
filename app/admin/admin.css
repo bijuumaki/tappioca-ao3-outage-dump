@@ -174,3 +174,4 @@
 .a-schedule { flex: 1 1 100%; align-items: flex-end; }
 .a-preview { margin: -32px -24px; padding: 24px 16px 64px; background: var(--bg); color: var(--ink); min-height: 100vh; }
 .a-preview-flag { max-width: var(--page-width); margin: 0 auto 24px; padding: 10px 14px; border: 1px dashed var(--border); border-radius: 10px; font-size: 14px; }
+.a-restored { margin: 0; padding: 8px 12px; border: 1px dashed var(--a-border); border-radius: 6px; font-size: 14px; }

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { publishChapter, scheduleChapter, unpublish, type PublishResult } from "@/lib/admin/actions";
 import { formatDate } from "@/lib/format/dates";
+import { saveDetailsNow } from "@/lib/client/details-saver";
 
 type Status = "published" | "scheduled" | "draft";
 const statusOf = (at: string | null): Status => (!at ? "draft" : Date.parse(at) > Date.now() ? "scheduled" : "published");
@@ -18,7 +19,7 @@ export default function PublishBar({ ficId, chapterId, publishAt, save }: {
 
   async function run(fn: () => Promise<PublishResult>) {
     setBusy(true); setError(null);
-    const okSave = await save();
+    const okSave = (await saveDetailsNow()) && (await save());
     if (!okSave) { setBusy(false); setError("Save didn’t go through, so nothing was published."); return; }
     const res = await fn().catch(() => ({ ok: false as const, error: "Something went wrong. Try again." }));
     setBusy(false);
@@ -28,8 +29,10 @@ export default function PublishBar({ ficId, chapterId, publishAt, save }: {
 
   async function preview() {
     const tab = window.open("", "_blank");
-    await save();
-    if (tab) tab.location.href = `/admin/stories/${ficId}/preview/${chapterId}`;
+    const ok = (await saveDetailsNow()) && (await save());
+    if (!tab) return;
+    if (!ok) { tab.close(); setError("Save didn’t go through, so the preview would be out of date."); return; }
+    tab.location.href = `/admin/stories/${ficId}/preview/${chapterId}`;
   }
 
   const label = status === "published" ? `Published${at ? ` · ${formatDate(at)}` : ""}`
