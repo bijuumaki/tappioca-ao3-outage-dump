@@ -122,6 +122,7 @@ Only Bijuu's account can sign in (Supabase login, limited to her email).
 - **Styling**: plain CSS with every color, font and size as a custom property (as now), ported from the current `styles.css`. No CSS framework, so Bijuu's design maps straight onto the tokens.
 - **Publishing**: a published item shows within seconds. Scheduled items are filtered by their time, so they appear exactly on time without waiting for a job.
 - **Emails**: a Supabase scheduled job checks every 5 minutes for items that went live and sends one email per item to confirmed subscribers through **Resend**. Every email has a one-click unsubscribe. (Vercel's free plan only allows a daily scheduled job, which is why this runs in Supabase.)
+- **Emails to Bijuu**: Resend emails Bijuu's own inbox (her Resend account email, which needs no domain) when a comment waits for approval, when someone subscribes, and when an email to subscribers fails.
 - **Spam**: a hidden honeypot field, a rate limit per browser and per network address, a length limit, and the approve-first-comment rule.
 - **Images**: resized and served in modern formats by Next.js.
 
@@ -160,5 +161,5 @@ Until Bijuu's Claude Design is ready, pages use the current tokens (colors, IM F
 
 ## Open items
 
-- **Email needs a domain.** Resend can only send to other people from a domain you own (about $10 to $15 a year). Without one, subscribing works through RSS only, and email can be switched on later.
+- **Subscriber email needs a domain.** Emails to Bijuu work now. Resend only sends to other people from a domain she owns (about $10 to $15 a year). Until then, readers subscribe through RSS, the email signup is hidden, and it gets switched on when a domain is added.
 - **Real export files.** Bijuu will provide a sample of Ellipsus's "Copy as HTML" output (the main path), plus an `.md` and an `.epub`, for testing the converter.
