@@ -1,16 +1,21 @@
 "use client";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { setPassword, type SetPasswordState } from "@/lib/admin/auth-actions";
 
 export default function SetPasswordForm() {
   const [tokens, setTokens] = useState<{ access: string; refresh: string } | null | undefined>(undefined);
   const [state, action, pending] = useActionState<SetPasswordState, FormData>(setPassword, { error: null });
 
+  const read = useRef<{ access: string; refresh: string } | null | undefined>(undefined);
+
+  /* Read the one-time sign-in from the link exactly once, then clear it from the address bar. */
   useEffect(() => {
+    if (read.current !== undefined) { setTokens(read.current); return; }
     const hash = new URLSearchParams(window.location.hash.slice(1));
     const access = hash.get("access_token");
     const refresh = hash.get("refresh_token");
-    setTokens(access && refresh ? { access, refresh } : null);
+    read.current = access && refresh ? { access, refresh } : null;
+    setTokens(read.current);
     if (access) history.replaceState(null, "", window.location.pathname);
   }, []);
 
