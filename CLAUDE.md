@@ -80,9 +80,17 @@ The look comes from Bijuu's Claude Design canvas "Tappioca Fic Archive" (https:/
 - Add an admin: `npx tsx scripts/create-admin.ts <email>` (sends a Supabase invite to set a password at `/admin/set-password`). Never write the address into the repo.
 - Admin themes use `--a-*` tokens in `app/admin/admin.css`; choice saved in `fic-admin-theme`. Editor view font/size: `fic-admin-editor-font`, `fic-admin-editor-size` (never stored in stories).
 
+## Admin screens added in Plan 2b
+
+- **Pages** (`/admin/pages`): edit the Howdy, The Archive, About, Disclaimer, Links and Comms texts (autosave).
+- **Uploads** (`/admin/uploads`): one folder per fic. Files go from the browser straight to the private `uploads` bucket with one-time signed addresses (Vercel limits request bodies to 4.5 MB), then `processUploads` converts them to **draft** chapters. `Title - N.ext` names are chapter N of one fic; an `.epub` is a whole fic; the same chapter number again replaces the text after keeping a version. Accepted: .html .htm .md .markdown .txt .docx .epub, up to 25 MB each.
+- **Conversion library** (`lib/convert/*`): every input becomes the allowed rich-text format (`htmlToChapter` reads inline-style bold/italic/underline from Ellipsus, Google Docs and Word; `prepareChapter` uses it for every save). Images are identified by their first bytes (`sniffImage`), never by name or declared type.
+- **Editor extras**: Paste HTML box, Add picture button (shrunk in the browser first, stored in the public `media` bucket), Share a preview link (`/preview/<token>`, secret UUID, revocable, `preview_chapter()` database function, noindex), Earlier versions (newest 20 per chapter; autosave at most every 10 minutes, always on publish/upload-replace/restore).
+- Not yet built (Plan 2c): image posts, tag and category screens, comments, hearts, subscribers, emails.
+
 ## Tests and the live database
 
-There is one Supabase project, and the live site reads it. Tests add their own sample content at the start of a run (`tests/support/fixtures.ts`, via Vitest and Playwright global setup) and remove it at the end, so samples are public only while tests run. Admin tests use the accounts `e2e-admin@tappioca.test` and `e2e-reader@tappioca.test` (password `E2E_ADMIN_PASSWORD` in `.env.local`) and delete the "(e2e …)" stories they make. Tests need `SUPABASE_SECRET_KEY` and `E2E_ADMIN_PASSWORD` in `.env.local`. `supabase/seed.sql` is reference only; don't run it against the live project.
+There is one Supabase project, and the live site reads it. Tests add their own sample content at the start of a run (so **don't run tests while Bijuu is writing**: sample stories appear on the live site for the length of a run) (`tests/support/fixtures.ts`, via Vitest and Playwright global setup) and remove it at the end, so samples are public only while tests run. Admin tests use the accounts `e2e-admin@tappioca.test` and `e2e-reader@tappioca.test` (password `E2E_ADMIN_PASSWORD` in `.env.local`) and delete the "(e2e …)" stories they make. Tests need `SUPABASE_SECRET_KEY` and `E2E_ADMIN_PASSWORD` in `.env.local`. `supabase/seed.sql` is reference only; don't run it against the live project.
 
 ## Checking your work
 
