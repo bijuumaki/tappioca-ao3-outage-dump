@@ -1,0 +1,48 @@
+/* All colors, fonts and sizes are tokens here. Nothing else in the CSS hard-codes them. */
+:root {
+  color-scheme: light;
+  --bg: #f5f5f5;
+  --ink: #111111;
+  --header-bg: #78a39f;
+  --header-ink: #111111;
+  --box-bg: #698c91;
+  --box-ink: #111111;
+  --howdy: #8b3253;
+  --focus: #1d4fd8;
+  --focus-page: #1d4fd8;
+  --font-fancy: var(--nf-fancy, "IM Fell English SC"), Georgia, "Times New Roman", serif;
+  --font-display: var(--font-fancy);
+  --font-body: var(--nf-body, "Inclusive Sans"), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --stack-lucida: "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, sans-serif;
+  --stack-cantarell: "Cantarell", system-ui, sans-serif;
+  --stack-tahoma: Tahoma, Verdana, "Segoe UI", sans-serif;
+  --stack-crimson: "Crimson Pro", Georgia, serif;
+  --stack-imfell: "IM Fell English", Georgia, serif;
+  --stack-cormorant: "Cormorant Garamond", Georgia, serif;
+  --shadow-panel: 0 6px 20px rgba(0, 0, 0, 0.18);
+  --radius-panel: 15px;
+  --reader-width: 44em;
+  --fs: 14pt;
+  --u: calc(var(--fs) / 19);
+  --solid: 20%;
+  --paper: url(/paper.jpg);
+  --paper-dark-opacity: 0.6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #222831; --ink: #ecefee; --header-bg: #2f4947; --header-ink: #f0f5f4;
+    --box-ink: #ecefee; --howdy: #e68aa8; --focus: #9bb8ff; --focus-page: #9bb8ff; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #222831; --ink: #ecefee; --header-bg: #2f4947; --header-ink: #f0f5f4;
+  --box-ink: #ecefee; --howdy: #e68aa8; --focus: #9bb8ff; --focus-page: #9bb8ff; color-scheme: dark;
+}
+
+/* Font choice from the Aa panel */
+:root[data-font="lucida"] { --font-display: var(--stack-lucida); --font-body: var(--stack-lucida); }
+:root[data-font="cantarell"] { --font-display: var(--stack-cantarell); --font-body: var(--stack-cantarell); }
+:root[data-font="tahoma"] { --font-display: var(--stack-tahoma); --font-body: var(--stack-tahoma); }
+:root[data-font="crimson"] { --font-display: var(--stack-crimson); --font-body: var(--stack-crimson); }
+:root[data-font="imfell"] { --font-display: var(--stack-imfell); --font-body: var(--stack-imfell); }
+:root[data-font="cormorant"] { --font-display: var(--stack-cormorant); --font-body: var(--stack-cormorant); }
