@@ -6,6 +6,10 @@ import type { Database } from "@/lib/supabase/database.types";
 import type { TagType } from "@/lib/content/types";
 import { createSessionClient, requireAdmin } from "@/lib/supabase/session";
 import { prepareChapter } from "./chapter";
+import { htmlToChapter } from "@/lib/convert/html";
+import { extractDataUriImages } from "@/lib/convert/images";
+import { NOT_AN_IMAGE, storeImage } from "./media";
+import { sniffImage } from "@/lib/convert/images";
 import { notesToHtml } from "./notes";
 import { publishChapterAt, unpublishChapter } from "./publish";
 import { slugify } from "@/lib/text/slug";
@@ -85,20 +89,23 @@ export async function addChapter(ficId: number): Promise<void> {
   redirect(`/admin/stories/${ficId}?chapter=${data.id}`);
 }
 
-const IMAGE_TYPES: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif", "image/avif": "avif" };
-
 export async function uploadCover(ficId: number, _prev: SaveState, form: FormData): Promise<SaveState> {
   const { db } = await requireAdmin();
   const file = form.get("cover");
   if (!(file instanceof File) || file.size === 0) return { ok: false, savedAt: null, error: "Choose an image first." };
-  const ext = IMAGE_TYPES[file.type];
-  if (!ext) return { ok: false, savedAt: null, error: "That file isn’t a JPG, PNG, WebP, GIF or AVIF image." };
   if (file.size > 5 * 1024 * 1024) return { ok: false, savedAt: null, error: "That image is over 5 MB." };
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const kind = sniffImage(bytes);
+  if (!kind) return { ok: false, savedAt: null, error: NOT_AN_IMAGE };
   const { data: fic } = await db.from("fics").select("slug, cover_path").eq("id", ficId).single();
-  const path = `fics/${ficId}/cover-${Date.now()}.${ext}`;
-  const up = await db.storage.from("media").upload(path, file, { contentType: file.type });
+  const path = `fics/${ficId}/cover-${Date.now()}.${kind.ext}`;
+  const up = await db.storage.from("media").upload(path, bytes, { contentType: kind.type });
   if (up.error) return { ok: false, savedAt: null, error: "The upload didn’t go through. Try again." };
-  await db.from("fics").update({ cover_path: path }).eq("id", ficId);
+  const upd = await db.from("fics").update({ cover_path: path }).eq("id", ficId);
+  if (upd.error) {
+    await db.storage.from("media").remove([path]);
+    return { ok: false, savedAt: null, error: "Couldn’t save the cover. Try again." };
+  }
   if (fic?.cover_path?.startsWith("fics/")) await db.storage.from("media").remove([fic.cover_path]);
   revalidatePath(`/admin/stories/${ficId}`);
   refreshPublic(fic?.slug);
@@ -176,4 +183,16 @@ export async function unpublish(chapterId: number): Promise<PublishResult> {
   const { ficId, slug } = await unpublishChapter(db, chapterId);
   await afterPublish(ficId, slug);
   return { ok: true, status: "draft", at: null };
+}
+
+/* Paste HTML: cleans it into the allowed format and stores any embedded pictures as files. */
+export async function convertPastedHtml(ficId: number, html: string): Promise<string> {
+  const { db } = await requireAdmin();
+  if (html.length > 4_000_000) return "";
+  const withFiles = await extractDataUriImages(html, async (bytes) => {
+    const stored = await storeImage(db, ficId, bytes);
+    if (!stored.ok) throw new Error(stored.error);
+    return stored.url;
+  }).catch(() => html.replace(/<img\b[^>]*\bsrc="data:[^"]*"[^>]*>/gi, ""));
+  return htmlToChapter(withFiles);
 }

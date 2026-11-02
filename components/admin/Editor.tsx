@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { saveChapter, type ChapterInput } from "@/lib/admin/actions";
 import { editorExtensions } from "@/lib/admin/editor-extensions";
 import EditorToolbar from "./EditorToolbar";
+import ImageButton from "./ImageButton";
+import PasteHtml from "./PasteHtml";
 import PublishBar from "./PublishBar";
 import { loadWebFont, readPref, writePref } from "@/lib/client/prefs";
 import { countWords } from "@/lib/text/words";
@@ -132,7 +134,11 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
     <div className="a-editor">
       {restored && <p className="a-restored" role="status">Brought back text that hadn’t been saved yet. It’s saving now.</p>}
       <PublishBar ficId={ficId} chapterId={chapterId} publishAt={publishAt} save={() => save(true)} />
-      <EditorToolbar editor={editor} font={font} size={size} onFont={pickFont} onSize={changeSize} />
+      <EditorToolbar editor={editor} font={font} size={size} onFont={pickFont} onSize={changeSize}><ImageButton editor={editor} ficId={ficId} /></EditorToolbar>
+      <PasteHtml ficId={ficId} onUse={(html, mode) => {
+        if (mode === "replace") editor.chain().focus().setContent(html, { emitUpdate: true }).run();
+        else editor.chain().focus("end").insertContent(html).run();
+      }} />
 
       <label className="a-title-field">
         <span className="sr-only">Chapter title</span>

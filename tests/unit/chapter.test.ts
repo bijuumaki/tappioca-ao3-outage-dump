@@ -20,3 +20,13 @@ test("alignment and color are kept", () => {
 test("an empty editor counts zero words", () => {
   expect(prepareChapter("<p></p>").word_count).toBe(0);
 });
+
+test("a raw Google Docs paste isn't wrapped in one big <strong>", () => {
+  const out = prepareChapter('<b style="font-weight:normal" id="docs-internal-guid-x"><p dir="ltr"><span style="font-weight:700">Hi</span> there</p></b>');
+  expect(out.body).toBe("<p><strong>Hi</strong> there</p>");
+});
+
+test("styles written as inline CSS (Ellipsus, Word) become real formatting", () => {
+  const out = prepareChapter('<p><span style="font-style:italic;text-decoration:underline">x</span></p>');
+  expect(out.body).toBe("<p><em><u>x</u></em></p>");
+});
