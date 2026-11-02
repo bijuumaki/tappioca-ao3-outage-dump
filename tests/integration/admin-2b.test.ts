@@ -109,3 +109,48 @@ describe.skipIf(!hasSecret())("upload bin", () => {
     expect(anon.data ?? []).toEqual([]);
   });
 });
+
+describe.skipIf(!hasSecret())("versions", async () => {
+  const { saveVersion, restoreVersionTo, KEEP_VERSIONS } = await import("@/lib/admin/versions");
+  let db: Awaited<ReturnType<typeof signedInClient>>;
+  let ficId: number;
+  let chapterId: number;
+
+  beforeAll(async () => {
+    await ensureAdmin(TEST_ADMIN.email, TEST_ADMIN.password);
+    db = await signedInClient(TEST_ADMIN.email, TEST_ADMIN.password);
+    const { data: fic } = await db.from("fics").insert({ slug: `e2e-versions-${Date.now()}`, title: "(e2e versions)", category_id: 1 }).select("id").single();
+    ficId = fic!.id;
+    const { data: ch } = await db.from("chapters").insert({ fic_id: ficId, position: 1, body: "<p>start</p>", word_count: 1 }).select("id").single();
+    chapterId = ch!.id;
+  });
+  afterAll(async () => { await secretClient().from("fics").delete().eq("id", ficId); });
+
+  test("only the newest 20 versions are kept", async () => {
+    for (let i = 1; i <= KEEP_VERSIONS + 5; i++) {
+      await db.from("chapters").update({ body: `<p>v${i}</p>` }).eq("id", chapterId);
+      expect(await saveVersion(db, chapterId, "publish", Date.now() + i * 1000)).toBe(true);
+    }
+    const { data } = await db.from("chapter_versions").select("body").eq("chapter_id", chapterId).order("created_at", { ascending: false });
+    expect(data).toHaveLength(KEEP_VERSIONS);
+    expect(data![0].body).toBe(`<p>v${KEEP_VERSIONS + 5}</p>`);
+    expect(data![KEEP_VERSIONS - 1].body).toBe("<p>v6</p>");
+  }, 90_000);
+
+  test("a second autosave within 10 minutes makes no new version", async () => {
+    const now = Date.now() + 10_000_000;
+    expect(await saveVersion(db, chapterId, "autosave", now)).toBe(true);
+    expect(await saveVersion(db, chapterId, "autosave", now + 60_000)).toBe(false);
+  });
+
+  test("restoring brings back the old text and keeps the replaced text as a version", async () => {
+    await db.from("chapters").update({ body: "<p>current text</p>" }).eq("id", chapterId);
+    const { data: old } = await db.from("chapter_versions").select("id").eq("chapter_id", chapterId).eq("body", "<p>v10</p>").single();
+    const restored = await restoreVersionTo(db, old!.id);
+    expect(restored?.body).toBe("<p>v10</p>");
+    const { data: ch } = await db.from("chapters").select("body").eq("id", chapterId).single();
+    expect(ch!.body).toBe("<p>v10</p>");
+    const { data: kept } = await db.from("chapter_versions").select("body, reason").eq("chapter_id", chapterId).eq("reason", "restore");
+    expect(kept!.map((v) => v.body)).toContain("<p>current text</p>");
+  });
+});

@@ -8,6 +8,7 @@ import ImageButton from "./ImageButton";
 import PasteHtml from "./PasteHtml";
 import PreviewLinks from "./PreviewLinks";
 import PublishBar from "./PublishBar";
+import VersionsPanel from "./VersionsPanel";
 import { loadWebFont, readPref, writePref } from "@/lib/client/prefs";
 import { countWords } from "@/lib/text/words";
 
@@ -136,6 +137,12 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
       {restored && <p className="a-restored" role="status">Brought back text that hadn’t been saved yet. It’s saving now.</p>}
       <PublishBar ficId={ficId} chapterId={chapterId} publishAt={publishAt} save={() => save(true)} />
       <PreviewLinks chapterId={chapterId} />
+      <VersionsPanel chapterId={chapterId} flush={() => save(true)} onRestored={(r) => {
+        editor.commands.setContent(r.body, { emitUpdate: false });
+        setTitle(r.title); setNotesBefore(r.notes_before); setNotesAfter(r.notes_after); setWords(countWords(r.body));
+        dirty.current = false; setState("saved");
+        try { localStorage.removeItem(backupKey); } catch { /* storage blocked */ }
+      }} />
       <EditorToolbar editor={editor} font={font} size={size} onFont={pickFont} onSize={changeSize}><ImageButton editor={editor} ficId={ficId} /></EditorToolbar>
       <PasteHtml ficId={ficId} onUse={(html, mode) => {
         if (mode === "replace") editor.chain().focus().setContent(html, { emitUpdate: true }).run();

@@ -13,6 +13,7 @@ import { setTags, takenSlugs } from "./story-store";
 import { sniffImage } from "@/lib/convert/images";
 import { notesToHtml } from "./notes";
 import { publishChapterAt, unpublishChapter } from "./publish";
+import { saveVersion } from "./versions";
 import { slugify } from "@/lib/text/slug";
 import { storyDetailsFromForm, uniqueSlug } from "./story-form";
 
@@ -106,6 +107,8 @@ export async function saveChapter(chapterId: number, input: ChapterInput): Promi
   const { data: { user } } = await db.auth.getUser();
   if (!user) return { ok: false, reason: "signed_out" };
   const { body, word_count } = prepareChapter(input.body);
+  const { data: current } = await db.from("chapters").select("body").eq("id", chapterId).maybeSingle();
+  if (current && current.body !== body) await saveVersion(db, chapterId, "autosave");
   const { data, error } = await db.from("chapters").update({
     title: input.title.trim() || null,
     notes_before: notesToHtml(input.notes_before),
@@ -131,6 +134,7 @@ async function afterPublish(ficId: number, slug: string) {
 export async function publishChapter(chapterId: number): Promise<PublishResult> {
   const { db } = await requireAdmin();
   try {
+    await saveVersion(db, chapterId, "publish");
     const { ficId, slug } = await publishChapterAt(db, chapterId, new Date());
     await afterPublish(ficId, slug);
     return { ok: true, status: "published", at: new Date().toISOString() };
