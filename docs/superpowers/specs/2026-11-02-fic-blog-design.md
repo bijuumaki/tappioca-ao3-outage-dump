@@ -58,25 +58,31 @@ This replaces the old plan in `CLAUDE.md` (fics in Google Drive served by Apps S
 
 Every body (chapters, posts, pages) is stored as clean HTML limited to this set:
 
-paragraphs, bold, italic, underline, strikethrough, headings, block quotes, bulleted and numbered lists, links, text alignment (left, center, right), scene breaks, and images (with optional caption).
+paragraphs, bold, italic, underline, strikethrough, text color, highlight color, headings, block quotes, bulleted and numbered lists, links, text alignment (left, center, right, justified), scene breaks, and images (with optional caption).
 
-The editor, pasting and uploads all produce this same format, so the reader shows everything the same way. Anything outside the set (fonts, colors, scripts, styles from the source file) is dropped. A sanitizer runs on the server before anything is saved, so nothing unsafe can reach a reader. If Bijuu needs something else (for example colored text for texting scenes), it gets added to the set on purpose.
+**HTML is the main way in.** Bijuu finds HTML the most faithful to the formatting she intends. Ellipsus has no `.html` file export, but its "Copy as HTML" keeps links, colors, text decorations and alignment (it drops fonts, indents and custom paragraph spacing). The format set above is chosen to keep everything that copy carries.
+
+The editor, pasting and uploads all produce this same format, so the reader shows everything the same way. Anything outside the set (fonts, scripts, embedded styles other than color and alignment) is dropped. A sanitizer runs on the server before anything is saved, so nothing unsafe can reach a reader.
+
+Colors show exactly as written. In whichever theme a color would fall below 4.5:1 contrast against the background, the reader lightens or darkens it just enough to stay readable, keeping its hue.
 
 ## Writing and uploading
 
 **Editor** (Tiptap): a toolbar for the formats above and drag-and-drop images. Pasted Google Docs or Word text keeps its formatting within the set. It autosaves drafts every few seconds.
 
+**Paste HTML**: a box on the editor screen where Bijuu pastes what Ellipsus's "Copy as HTML" produced. It shows a preview, then fills the chapter. No file needed.
+
 **Upload**: anywhere the editor is, plus "New fic from files":
 
 | File | What happens |
 |---|---|
+| `.html`, `.htm` | The main format. Cleaned down to the format set, keeping colors and alignment. |
 | `.md`, `.markdown` | Markdown becomes rich text. Optional `---` front matter (title, fandom, rating, relationships, summary, tags) fills in the fic details. |
 | `.txt` | Each blank-line-separated block becomes a paragraph. |
-| `.html`, `.htm` | Cleaned down to the format set. |
 | `.docx` | Converted with formatting kept (bold, italics, headings, lists, images). |
 | `.epub` | One fic. Each chapter in the book's reading order becomes a chapter (skipping the cover, title and nav pages). The book's title and description fill in the fic's title and summary. Its images are kept. |
 
-- Upload several files named `<Title> - <N>.md` (the old naming rule) and they become chapters 1 to N of one fic, in number order.
+- Upload several files named `<Title> - <N>.html` or `<Title> - <N>.md` (the old naming rule) and they become chapters 1 to N of one fic, in number order.
 - Images inside files are moved into the site's image storage.
 - A line of only dashes, stars or ornament symbols becomes a scene break, as in the old reader.
 - After an upload Bijuu sees a preview of the result, then saves it as a draft. It stays fully editable in the editor afterwards.
@@ -155,4 +161,4 @@ Until Bijuu's Claude Design is ready, pages use the current tokens (colors, IM F
 ## Open items
 
 - **Email needs a domain.** Resend can only send to other people from a domain you own (about $10 to $15 a year). Without one, subscribing works through RSS only, and email can be switched on later.
-- **Real export files.** Bijuu will provide a sample Ellipsus `.md` and `.epub` for testing the converter.
+- **Real export files.** Bijuu will provide a sample of Ellipsus's "Copy as HTML" output (the main path), plus an `.md` and an `.epub`, for testing the converter.
