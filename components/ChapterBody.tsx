@@ -3,7 +3,7 @@ import RichText from "./RichText";
 import ReadingProgress from "./ReadingProgress";
 
 /* Notes, text and end notes of one chapter, with reading progress. */
-export default function ChapterBody({ id, chapter }: { id: string; chapter: Chapter }) {
+export default function ChapterBody({ id, chapter }: { id: string; chapter: Pick<Chapter, "notes_before" | "body" | "notes_after"> }) {
   return (
     <ReadingProgress id={id}>
       <div className="page">
