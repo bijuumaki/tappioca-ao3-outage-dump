@@ -80,3 +80,15 @@ describe.skipIf(!configured)("reader queries", async () => {
     expect(await q.getPage("nonsense")).toBeNull();
   });
 });
+
+describe.skipIf(!configured)("tags", () => {
+  test("a tag used only by a draft fic is hidden from readers", async () => {
+    const { data } = await createReaderClient().from("tags").select("slug").eq("slug", "draft-only-tag");
+    expect(data).toEqual([]);
+  });
+
+  test("a tag used by a published fic is visible", async () => {
+    const { data } = await createReaderClient().from("tags").select("slug").eq("slug", "sample-fandom");
+    expect(data).toEqual([{ slug: "sample-fandom" }]);
+  });
+});

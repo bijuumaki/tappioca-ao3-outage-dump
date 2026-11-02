@@ -51,3 +51,8 @@ where p.slug = 'sample-art';
 
 insert into public.post_tags (post_id, tag_id)
 select p.id, t.id from public.posts p join public.tags t on t.slug in ('sample-fandom', 'sample-tag') where p.slug = 'sample-art';
+
+-- A tag only a draft uses: readers must not see it.
+insert into public.tags (type, name, slug) values ('relationship', '(draft-only tag)', 'draft-only-tag');
+insert into public.fic_tags (fic_id, tag_id)
+select f.id, t.id from public.fics f, public.tags t where f.slug = 'sample-draft' and t.slug = 'draft-only-tag';
