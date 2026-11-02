@@ -154,7 +154,7 @@ Only Bijuu's account can sign in (Supabase login, limited to her email).
 - **Styling**: plain CSS with every color, font and size as a custom property (as now), ported from the current `styles.css`. No CSS framework, so Bijuu's design maps straight onto the tokens.
 - **Publishing**: a published item shows within seconds. Scheduled items are filtered by their time, so they appear exactly on time without waiting for a job.
 - **Emails**: a Supabase scheduled job checks every 5 minutes for items that went live and sends one email per item to confirmed subscribers through **Resend**. Every email has a one-click unsubscribe. (Vercel's free plan only allows a daily scheduled job, which is why this runs in Supabase.)
-- **Emails to Bijuu**: Resend emails Bijuu's own inbox (her Resend account email, which needs no domain) when a comment waits for approval, when someone subscribes, and when an email to subscribers fails.
+- **Emails to Bijuu**: Resend emails Bijuu's own inbox (her Resend account email, which needs no domain; already set up in Resend). The address is kept out of the public repo: it lives in the `ALERT_EMAIL` setting in Vercel and `.env.local`. Alerts go out when a comment waits for approval, when someone subscribes, and when an email to subscribers fails.
 - **Spam**: a hidden honeypot field, a rate limit per browser and per network address, a length limit, and the approve-first-comment rule.
 - **Images**: resized and served in modern formats by Next.js.
 
