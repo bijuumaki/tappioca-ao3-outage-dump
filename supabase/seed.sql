@@ -1,4 +1,4 @@
--- Development sample content. Placeholders only: never real fic details.
+-- Reference copy of the test sample content (the tests add it themselves: tests/support/fixtures.ts). Do not run against the live project.
 -- Re-runnable: clears content tables first (categories and pages stay).
 delete from public.fic_tags; delete from public.post_tags; delete from public.post_images;
 delete from public.chapters; delete from public.fics; delete from public.posts; delete from public.tags;

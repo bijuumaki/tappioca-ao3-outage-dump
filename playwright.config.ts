@@ -5,6 +5,7 @@ export default defineConfig({
   fullyParallel: true,
   reporter: "line",
   globalSetup: "./tests/e2e/global-setup.ts",
+  globalTeardown: "./tests/e2e/global-teardown.ts",
   use: { baseURL: "http://localhost:3000" },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {

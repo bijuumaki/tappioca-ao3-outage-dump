@@ -73,6 +73,16 @@ The look comes from Bijuu's Claude Design canvas "Tappioca Fic Archive" (https:/
 - Tap targets are at least 44px. Text contrast at least 4.5:1 in every theme.
 - Editor ("write mode", Plan 2) follows the canvas Admin board, with toolbar items from the Figma WYSIWYG kit (file `FLtVHf4UtMyIQcpscOPC4X`).
 
+## Admin
+
+- `/admin` (Plan 2a): sign-in, Stories list, New Story / edit (details, cover, chapters, editor with autosave), Publish / Schedule / Unpublish / Preview. Only accounts in `public.admins` can write or see drafts (`private.is_admin()` in the policies).
+- Add an admin: `npx tsx scripts/create-admin.ts <email>` (sends a Supabase invite to set a password at `/admin/set-password`). Never write the address into the repo.
+- Admin themes use `--a-*` tokens in `app/admin/admin.css`; choice saved in `fic-admin-theme`. Editor view font/size: `fic-admin-editor-font`, `fic-admin-editor-size` (never stored in stories).
+
+## Tests and the live database
+
+There is one Supabase project, and the live site reads it. Tests add their own sample content at the start of a run (`tests/support/fixtures.ts`, via Vitest and Playwright global setup) and remove it at the end, so samples are public only while tests run. Admin tests use the accounts `e2e-admin@tappioca.test` and `e2e-reader@tappioca.test` (password `E2E_ADMIN_PASSWORD` in `.env.local`) and delete the "(e2e …)" stories they make. Tests need `SUPABASE_SECRET_KEY` and `E2E_ADMIN_PASSWORD` in `.env.local`. `supabase/seed.sql` is reference only; don't run it against the live project.
+
 ## Checking your work
 
 Look at the rendered page, not just the code. Run `npm test` and `npm run e2e`. Take Playwright screenshots at 1440, 820 and 390 wide in all four themes, at 10pt and 20pt. Check: no sideways scroll, text contrast of at least 4.5:1, visible focus rings, Escape closes the Aa panel.

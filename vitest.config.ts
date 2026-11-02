@@ -11,6 +11,8 @@ export default defineConfig(({ mode }) => ({
   },
   test: {
     include: ["tests/unit/**/*.test.ts", "tests/integration/**/*.test.ts"],
+    globalSetup: ["tests/support/vitest-global.ts"],
+    fileParallelism: false,
     env: loadEnv(mode, process.cwd(), ""),
   },
 }));
