@@ -65,3 +65,13 @@ export function adaptColor(color: string, background: string, minContrast = 4.5)
   }
   return step < 0 ? "#000000" : "#ffffff";
 }
+
+/* Near-black and near-white with almost no color in them: what Docs, Word and other editors stamp on
+   ordinary text. These follow the theme's own ink instead of being kept as a color. */
+export function isPlainInk(color: string): boolean {
+  const rgb = parseColor(color);
+  if (!rgb) return false;
+  const max = Math.max(rgb.r, rgb.g, rgb.b) / 255, min = Math.min(rgb.r, rgb.g, rgb.b) / 255;
+  const lightness = (max + min) / 2;
+  return max - min <= 0.08 && (lightness <= 0.12 || lightness >= 0.94);
+}

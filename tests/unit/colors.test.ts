@@ -42,3 +42,18 @@ test("rendering keeps alignment next to colors", () => {
   expect(out).toContain("text-align:center");
   expect(out).toContain("--c-l:");
 });
+
+test("black from Docs or Word is treated as normal text color", () => {
+  for (const c of ["#000000", "rgb(0, 0, 0)", "black", "#0e101a", "#111111"]) {
+    const out = renderRichText(`<p><span style="color:${c}">a</span></p>`);
+    expect(out, c).not.toContain("rt-c");
+    expect(out, c).not.toContain("style");
+  }
+});
+test("white text is treated as normal text color too", () => {
+  expect(renderRichText('<p style="color:#ffffff">a</p>')).not.toContain("rt-c");
+});
+test("a real grey or a dark color is still kept", () => {
+  expect(renderRichText('<p style="color:#808080">a</p>')).toContain("rt-c");
+  expect(renderRichText('<p style="color:#8b3253">a</p>')).toContain("rt-c");
+});

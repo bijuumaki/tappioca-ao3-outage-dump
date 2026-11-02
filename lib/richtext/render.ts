@@ -1,5 +1,5 @@
 import { sanitizeRichText } from "./allowlist";
-import { adaptColor, parseColor } from "./colors";
+import { adaptColor, isPlainInk, parseColor } from "./colors";
 
 /* Theme colors the reader adapts against. Kept in step with app/tokens.css. */
 export const THEME = {
@@ -21,7 +21,7 @@ function rewriteStyle(style: string): { style: string; classes: string[] } {
     const prop = decl.slice(0, i).trim().toLowerCase();
     const value = decl.slice(i + 1).trim();
     if (prop === "text-align") out.push(`text-align:${value}`);
-    else if (prop === "color" && parseColor(value)) {
+    else if (prop === "color" && parseColor(value) && !isPlainInk(value)) {
       out.push(`--c-l:${adaptColor(value, THEME.light.bg)}`, `--c-d:${adaptColor(value, THEME.dark.bg)}`);
       classes.push("rt-c");
     } else if (prop === "background-color" && parseColor(value)) {
