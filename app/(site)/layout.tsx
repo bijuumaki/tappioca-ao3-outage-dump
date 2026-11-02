@@ -1,11 +1,11 @@
 import DisplayOptions from "@/components/DisplayOptions";
 import SiteFooter from "@/components/SiteFooter";
-import SiteNav from "@/components/SiteNav";
+import SiteTitle from "@/components/SiteTitle";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="site">
-      <SiteNav />
+      <SiteTitle />
       <DisplayOptions />
       {children}
       <SiteFooter />

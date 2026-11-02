@@ -59,11 +59,18 @@ export default function DisplayOptions() {
     return () => window.removeEventListener("tappioca:toggle-options", toggle);
   }, []);
 
+  /* On wide screens the panel pushes a chapter over instead of covering it. */
+  useEffect(() => {
+    document.documentElement.toggleAttribute("data-dock", open && !!reader);
+    return () => document.documentElement.removeAttribute("data-dock");
+  }, [open, reader]);
+
   const root = () => document.documentElement;
   function pickTheme(v: string) { root().setAttribute("data-theme", v); writePref("fic-site-theme", v); setTheme(v); }
   function changeSize(n: number) {
     const v = clampSize(n);
-    root().style.setProperty("--fs", `${v}pt`);
+    root().style.setProperty("--fs", String(v / 14));
+    root().style.setProperty("--read", `${v}pt`);
     writePref("fic-site-size", String(v));
     setSize(v);
   }
@@ -83,11 +90,12 @@ export default function DisplayOptions() {
     <>
       <button ref={button} type="button" className="aa-button" data-hidden={hidden && !open} aria-label="Display options"
         aria-expanded={open} aria-controls="display-options" onClick={() => setOpen(!open)} onFocus={() => setHidden(false)}>Aa</button>
-      <section ref={panel} id="display-options" className="options-panel" aria-label="Display options" hidden={!open}>
+      <section ref={panel} id="display-options" className="options-panel" role="dialog" aria-label="Display options" hidden={!open}>
+        <button type="button" className="options-close" onClick={() => { setOpen(false); button.current?.focus(); }}>Close</button>
         {reader && reader.chapters.length > 1 && (
           <div className="options-field">
             <label htmlFor="options-chapter">Chapter</label>
-            <select id="options-chapter" value={reader.n} onChange={(e) => { setOpen(false); router.push(`/fics/${reader.slug}/${e.target.value}`); }}>
+            <select id="options-chapter" value={reader.n} onChange={(e) => { setOpen(false); router.push(`/fics/${reader.slug}/${e.target.value}`); window.scrollTo(0, 0); }}>
               {reader.chapters.map((c) => <option key={c.n} value={c.n}>{c.label}</option>)}
             </select>
           </div>

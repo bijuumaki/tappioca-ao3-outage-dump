@@ -14,7 +14,7 @@ test.afterAll(cleanUp);
 
 async function newStory(page: Page, title: string) {
   await signIn(page);
-  await page.getByRole("link", { name: "New Story" }).click();
+  await page.getByRole("link", { name: "Add new story" }).click();
   await page.waitForURL(/\/admin\/stories\/\d+$/);
   await page.getByLabel("Story title").fill(title);
   await page.getByRole("button", { name: "Save details" }).click();

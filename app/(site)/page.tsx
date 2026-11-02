@@ -1,5 +1,4 @@
 import Link from "next/link";
-import FicCard from "@/components/FicCard";
 import PostCard from "@/components/PostCard";
 import RichText from "@/components/RichText";
 import { mediaUrl } from "@/lib/content/media";
@@ -10,20 +9,12 @@ export const revalidate = 60;
 
 const ROWS = [["/disclaimer", "Disclaimer"], ["/about", "About"], ["/fics", "Fic List"], ["/links", "Links"]] as const;
 
-function BookIcon() {
-  return (
-    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2z" /><path d="M4 19a2 2 0 0 1 2-2h14" />
-    </svg>
-  );
-}
-
 export default async function Home() {
   const [home, howdy, archive] = await Promise.all([getHomeData(), getSnippet("howdy"), getSnippet("archive")]);
   const f = home.featured;
   return (
     <main className="page" id="main">
-      <h1 className="page-title">Tappioca’s Fic Archive</h1>
+      <h1 className="page-title home-title"><Link href="/">Tappioca’s Fic Archive</Link></h1>
       <section className="home-intro">
         <div className="home-side">
           <div className="photo" aria-hidden="true" />
@@ -43,9 +34,11 @@ export default async function Home() {
             <h2>Howdy</h2>
             {howdy ? <RichText html={howdy} /> : <p className="empty-note">(intro coming soon)</p>}
           </div>
-          {ROWS.map(([href, label]) => (
-            <Link key={href} href={href} className="home-row"><BookIcon /><span>{label}</span></Link>
-          ))}
+          <nav aria-label="Pages" className="pages-nav">
+            {ROWS.map(([href, label]) => (
+              <Link key={href} href={href} className="home-row"><span>{label}</span></Link>
+            ))}
+          </nav>
         </div>
       </section>
 
@@ -65,13 +58,6 @@ export default async function Home() {
           </Link>
         </>
       )}
-
-      <h2 className="section-bar">Recent Fics</h2>
-      {home.recentFics.length ? (
-        <section aria-label="Recent fics" className="card-grid">
-          {home.recentFics.map((fic) => <FicCard key={fic.slug} fic={fic} />)}
-        </section>
-      ) : <p className="empty-note">Nothing posted yet.</p>}
 
       {home.recentPosts.length > 0 && (
         <>

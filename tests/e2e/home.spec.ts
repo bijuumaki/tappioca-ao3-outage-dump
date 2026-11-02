@@ -7,7 +7,7 @@ test("home has the title, the archive box with counts, howdy and page buttons", 
   await expect(archive).toContainText("3 stories");
   await expect(archive.locator("li", { hasText: "(sample fandom)" })).toContainText("2");
   await expect(page.getByRole("heading", { name: "Howdy" })).toBeVisible();
-  await expect(page.locator(".home-row")).toHaveText(["Disclaimer", "About", "Fic List", "Links"]);
+  await expect(page.locator("nav[aria-label=\"Pages\"] .home-row")).toHaveText(["Disclaimer", "About", "Fic List", "Links"]);
 });
 
 test("featured fic is the one marked featured", async ({ page }) => {
@@ -16,13 +16,6 @@ test("featured fic is the one marked featured", async ({ page }) => {
   await expect(page.locator(".featured")).toHaveAttribute("href", "/fics/sample-fic");
   await expect(page.locator(".featured-meta")).toContainText("Teen and Up");
   await expect(page.locator(".featured-meta")).toContainText("675 words");
-});
-
-test("recent fics are newest-updated first and never drafts", async ({ page }) => {
-  await page.goto("/");
-  const titles = page.locator('[aria-label="Recent fics"] .card-title');
-  await expect(titles.first()).toHaveText("(sample fic)");
-  await expect(page.locator('[aria-label="Recent fics"]')).not.toContainText("(sample draft)");
 });
 
 test("recent art shows posts", async ({ page }) => {

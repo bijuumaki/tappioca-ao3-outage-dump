@@ -14,7 +14,7 @@ test.afterAll(cleanUp);
 
 async function write(page: Page, title: string, text: string) {
   await signIn(page);
-  await page.getByRole("link", { name: "New Story" }).click();
+  await page.getByRole("link", { name: "Add new story" }).click();
   await page.waitForURL(/\/admin\/stories\/\d+$/);
   await page.getByLabel("Story title").fill(title);
   await page.getByRole("button", { name: "Save details" }).click();
@@ -52,7 +52,7 @@ test("scheduling for tomorrow shows scheduled and stays off the public site", as
 
 test("publish saves the title and details even without pressing Save details", async ({ page }) => {
   await signIn(page);
-  await page.getByRole("link", { name: "New Story" }).click();
+  await page.getByRole("link", { name: "Add new story" }).click();
   await page.waitForURL(/\/admin\/stories\/\d+$/);
   await page.getByLabel("Story title").fill("(e2e publish titled)");
   await page.getByLabel("Summary").fill("(e2e unsaved summary)");
@@ -68,7 +68,7 @@ test("publish saves the title and details even without pressing Save details", a
 
 test("story details save on their own after typing stops", async ({ page }) => {
   await signIn(page);
-  await page.getByRole("link", { name: "New Story" }).click();
+  await page.getByRole("link", { name: "Add new story" }).click();
   await page.waitForURL(/\/admin\/stories\/\d+$/);
   await page.getByLabel("Story title").fill("(e2e publish autosave details)");
   await page.getByLabel("Tags", { exact: true }).fill("(e2e auto tag)");
@@ -80,7 +80,7 @@ test("story details save on their own after typing stops", async ({ page }) => {
 
 test("publishing while the details are still saving keeps the right title and address", async ({ page }) => {
   await signIn(page);
-  await page.getByRole("link", { name: "New Story" }).click();
+  await page.getByRole("link", { name: "Add new story" }).click();
   await page.waitForURL(/\/admin\/stories\/\d+$/);
   await page.locator(".a-editor .ProseMirror").click();
   await page.keyboard.type("(e2e race body)");

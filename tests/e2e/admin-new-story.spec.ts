@@ -19,7 +19,7 @@ test.afterAll(async () => { if (!process.env.KEEP_E2E) await cleanUp(); });
 
 test("new story: fill details, save, see it in the list, reopen with everything kept", async ({ page }) => {
   await signIn(page);
-  await page.getByRole("link", { name: "New Story" }).click();
+  await page.getByRole("link", { name: "Add new story" }).click();
   await page.waitForURL(/\/admin\/stories\/\d+$/);
   const editUrl = page.url();
 
@@ -50,7 +50,7 @@ test("new story: fill details, save, see it in the list, reopen with everything 
 
 test("chapters: a new story has chapter 1, and add chapter makes chapter 2", async ({ page }) => {
   await signIn(page);
-  await page.getByRole("link", { name: "New Story" }).click();
+  await page.getByRole("link", { name: "Add new story" }).click();
   await page.waitForURL(/\/admin\/stories\/\d+$/);
   await page.getByLabel("Story title").fill("(e2e chapters)");
   await page.getByRole("button", { name: "Save details" }).click();
@@ -64,7 +64,7 @@ test("chapters: a new story has chapter 1, and add chapter makes chapter 2", asy
 
 test("cover image: upload shows a preview, remove clears it", async ({ page }) => {
   await signIn(page);
-  await page.getByRole("link", { name: "New Story" }).click();
+  await page.getByRole("link", { name: "Add new story" }).click();
   await page.waitForURL(/\/admin\/stories\/\d+$/);
   await page.getByLabel("Story title").fill("(e2e cover)");
   await page.getByRole("button", { name: "Save details" }).click();
@@ -76,7 +76,7 @@ test("cover image: upload shows a preview, remove clears it", async ({ page }) =
 
 test("a 2 MB phone photo uploads as a cover", async ({ page }) => {
   await signIn(page);
-  await page.getByRole("link", { name: "New Story" }).click();
+  await page.getByRole("link", { name: "Add new story" }).click();
   await page.waitForURL(/\/admin\/stories\/\d+$/);
   await page.getByLabel("Story title").fill("(e2e big cover)");
   await page.getByRole("button", { name: "Save details" }).click();

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import ChapterBody from "@/components/ChapterBody";
-import ChapterNav from "@/components/ChapterNav";
+import ChapterNav, { TouchChapterNav } from "@/components/ChapterNav";
 import ReaderRegister from "@/components/ReaderRegister";
 import { getChapter } from "@/lib/content/queries";
 import { formatWords } from "@/lib/format/words";
@@ -39,6 +39,7 @@ export default async function ChapterPage({ params }: Props) {
           <h1 className="page-title"><Link href={`/fics/${slug}`}>{fic.title}</Link></h1>
           <p className="chapter-label">Chapter {chapter.n} of {count} · {formatWords(chapter.word_count)}</p>
           <div className="progress" aria-hidden="true"><div style={{ width: `${Math.round((chapter.n / count) * 100)}%` }} /></div>
+          <TouchChapterNav slug={slug} n={chapter.n} count={count} />
         </header>
         <h2 className="section-bar chapter-title">{chapter.title ?? `Chapter ${chapter.n}`}</h2>
         <ChapterBody id={`${slug}/${chapter.n}`} chapter={chapter} />

@@ -3,25 +3,25 @@
 :root, :root[data-theme="day"] {
   color-scheme: light;
   --bg: #EDF6F9; --ink: #204B57; --muted: #125E8A; --accent-text: #51344D; --tint: #83C5BE;
-  --card-bg: #EDF6F9; --border: #83C5BE; --field-border: #83C5BE; --bar: #83C5BE;
+  --card-bg: #EDF6F9; --border: #83C5BE; --field-border: #3F8590; --bar: #83C5BE;
   --accent-fill: #51344D; --on-accent: #EDF6F9;
 }
 :root[data-theme="lagoon"] {
   color-scheme: light;
-  --bg: #F6F1E7; --ink: #0A1517; --muted: #3C5558; --accent-text: #B9575A; --tint: #34B5A1;
+  --bg: #F6F1E7; --ink: #0A1517; --muted: #3C5558; --accent-text: #A84B4E; --tint: #34B5A1;
   --card-bg: #FBF8F2; --border: #E0C3A8; --field-border: #3C5558; --bar: #F1D5BC;
   --accent-fill: #34B5A1; --on-accent: #0A1517;
 }
 :root[data-theme="night"] {
   color-scheme: dark;
   --bg: #14262D; --ink: #EDF6F9; --muted: #83C5BE; --accent-text: #D8B4D1; --tint: #204B57;
-  --card-bg: #1B3540; --border: #2F5A66; --field-border: #2F5A66; --bar: #204B57;
+  --card-bg: #1B3540; --border: #2F5A66; --field-border: #6A9AA3; --bar: #204B57;
   --accent-fill: #D8B4D1; --on-accent: #14262D;
 }
 :root[data-theme="midnight"] {
   color-scheme: dark;
   --bg: #06141B; --ink: #CCD0CF; --muted: #9BA8AB; --accent-text: #CCD0CF; --tint: #253745;
-  --card-bg: #11212D; --border: #4A5C6A; --field-border: #4A5C6A; --bar: #253745;
+  --card-bg: #11212D; --border: #4A5C6A; --field-border: #74858F; --bar: #253745;
   --accent-fill: #CCD0CF; --on-accent: #06141B;
 }
 /* No saved choice and no script: follow the device. */
@@ -29,7 +29,7 @@
   :root:not([data-theme]) {
     color-scheme: dark;
     --bg: #14262D; --ink: #EDF6F9; --muted: #83C5BE; --accent-text: #D8B4D1; --tint: #204B57;
-    --card-bg: #1B3540; --border: #2F5A66; --field-border: #2F5A66; --bar: #204B57;
+    --card-bg: #1B3540; --border: #2F5A66; --field-border: #6A9AA3; --bar: #204B57;
     --accent-fill: #D8B4D1; --on-accent: #14262D;
   }
 }
@@ -39,6 +39,8 @@
   --font-heading: var(--nf-heading, "IM Fell English"), Georgia, serif;
   --font-body: var(--nf-body, "Inclusive Sans"), ui-sans-serif, system-ui, sans-serif;
   --font-reader: var(--font-body);
+  --font-title: var(--nf-heading, "IM Fell English"), Georgia, serif;   /* the site title keeps this face in every font choice */
+  --font-ui: var(--nf-body, "Inclusive Sans"), ui-sans-serif, system-ui, sans-serif;   /* Aa button and panel */
   --stack-lucida: "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, sans-serif;
   --stack-cantarell: "Cantarell", sans-serif;
   --stack-tahoma: Tahoma, Verdana, sans-serif;
@@ -48,17 +50,26 @@
   --page-width: 708px;
   --radius: 10px;
   --radius-small: 6px;
-  --fs: 14pt;          /* reading text size, 10 to 20pt */
+  --t13: max(12px, calc(13px * var(--fs)));
+  --t14: max(12px, calc(14px * var(--fs)));
+  --t15: max(12px, calc(15px * var(--fs)));
+  --t16: max(12px, calc(16px * var(--fs)));
+  --t17: max(12px, calc(17px * var(--fs)));
+  --h20: calc(20px * var(--fs));
+  --h24: calc(24px * var(--fs));
+  --h40: calc(clamp(30px, 7vw, 40px) * var(--fs));
+  --fs: 1;             /* whole-site text scale: chosen size / 14 (10 to 20pt -> 0.71 to 1.43) */
+  --read: 14pt;        /* chapter text size, 10 to 20pt */
   --lh: 1.7;           /* reading line spacing */
   --scene-break: "⁂";
 }
 :root[data-spacing="tight"] { --lh: 1.4; }
 :root[data-spacing="loose"] { --lh: 2.1; }
 
-/* Font choice from the Aa panel: changes reading text only */
-:root[data-font="lucida"] { --font-reader: var(--stack-lucida); }
-:root[data-font="cantarell"] { --font-reader: var(--stack-cantarell); }
-:root[data-font="tahoma"] { --font-reader: var(--stack-tahoma); }
-:root[data-font="crimson"] { --font-reader: var(--stack-crimson); }
-:root[data-font="imfell"] { --font-reader: var(--stack-imfell); }
-:root[data-font="cormorant"] { --font-reader: var(--stack-cormorant); }
+/* Font choice from the Aa panel: changes the whole site's text (the site title and the Aa panel keep their own faces) */
+:root[data-font="lucida"] { --font-body: var(--stack-lucida); --font-heading: var(--stack-lucida); --font-reader: var(--stack-lucida); }
+:root[data-font="cantarell"] { --font-body: var(--stack-cantarell); --font-heading: var(--stack-cantarell); --font-reader: var(--stack-cantarell); }
+:root[data-font="tahoma"] { --font-body: var(--stack-tahoma); --font-heading: var(--stack-tahoma); --font-reader: var(--stack-tahoma); }
+:root[data-font="crimson"] { --font-body: var(--stack-crimson); --font-heading: var(--stack-crimson); --font-reader: var(--stack-crimson); }
+:root[data-font="imfell"] { --font-body: var(--stack-imfell); --font-heading: var(--stack-imfell); --font-reader: var(--stack-imfell); }
+:root[data-font="cormorant"] { --font-body: var(--stack-cormorant); --font-heading: var(--stack-cormorant); --font-reader: var(--stack-cormorant); }

@@ -2,13 +2,6 @@ import { expect, test } from "@playwright/test";
 
 const bg = (page: import("@playwright/test").Page) => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
 
-test("site menu has the five pages, in order", async ({ page }) => {
-  await page.goto("/");
-  const links = page.locator('nav[aria-label="Site"] a');
-  await expect(links).toHaveText(["Home", "Disclaimer", "About", "Fic List", "Links"]);
-  await expect(links.nth(0)).toHaveAttribute("aria-current", "page");
-});
-
 test("starts in Day, and the theme choice is remembered", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/");
@@ -30,16 +23,19 @@ test("a dark-mode device starts in Night", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("data-theme", "night");
 });
 
-test("text size steps by 2 between 10 and 20pt and is remembered", async ({ page }) => {
+test("text size steps by 2 between 10 and 20pt, scales the whole site, and is remembered", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Display options" }).click();
-  const fs = () => page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--fs").trim());
-  expect(await fs()).toBe("14pt");
+  const read = () => page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--read").trim());
+  const titleSize = () => page.evaluate(() => parseFloat(getComputedStyle(document.querySelector("h1")!).fontSize));
+  expect(await read()).toBe("14pt");
+  const before = await titleSize();
   for (let i = 0; i < 3; i++) await page.getByRole("button", { name: "Larger text" }).click();
   await expect(page.getByRole("button", { name: "Larger text" })).toBeDisabled();
-  expect(await fs()).toBe("20pt");
+  expect(await read()).toBe("20pt");
+  expect(await titleSize()).toBeGreaterThan(before * 1.3);
   await page.reload();
-  expect(await fs()).toBe("20pt");
+  expect(await read()).toBe("20pt");
 });
 
 test("font loads only when picked", async ({ page }) => {
@@ -72,10 +68,9 @@ test("display options close with Escape and return focus", async ({ page }) => {
   await expect(aa).toBeFocused();
 });
 
-test("footer reads made with love by tappioca", async ({ page }) => {
+test("footer credits tappioca and the rightful owners", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator("footer")).toContainText("Made with");
-  await expect(page.locator("footer")).toContainText("by Tappioca");
+  await expect(page.locator("footer")).toHaveText("online web app made by tappioca. all intellectual properties belong to their rightful owners.");
 });
 
 test("text is shown lowercase, story text is not", async ({ page }) => {

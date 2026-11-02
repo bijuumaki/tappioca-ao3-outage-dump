@@ -43,6 +43,6 @@ function g(k){try{return s&&s.getItem(k)}catch(e){return null}}
 var t=g("fic-site-theme");if(${JSON.stringify(THEMES.map(([v]) => v))}.indexOf(t)<0)t=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"night":"day";r.setAttribute("data-theme",t);
 var f=g("fic-site-font"),w=${JSON.stringify(WEB_FONTS)};
 if(${JSON.stringify(FONT_NAMES)}.indexOf(f)>-1){r.setAttribute("data-font",f);if(w[f]){var l=document.createElement("link");l.rel="stylesheet";l.setAttribute("data-webfont",f);l.href="https://fonts.googleapis.com/css2?family="+w[f]+"&display=swap";document.head.appendChild(l);}}
-var z=parseFloat(g("fic-site-size"));if(!isNaN(z)){z=Math.max(${SIZE_MIN},Math.min(${SIZE_MAX},10+Math.round((z-10)/2)*2));r.style.setProperty("--fs",z+"pt");}
+var z=parseFloat(g("fic-site-size"));if(!isNaN(z)){z=Math.max(${SIZE_MIN},Math.min(${SIZE_MAX},10+Math.round((z-10)/2)*2));r.style.setProperty("--fs",String(z/14));r.style.setProperty("--read",z+"pt");}
 var p=g("fic-site-spacing");if(p==="tight"||p==="loose")r.setAttribute("data-spacing",p);
 })();`;

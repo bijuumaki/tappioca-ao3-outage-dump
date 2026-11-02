@@ -2,26 +2,28 @@
    Four themes; colors only live here. Falls back per the canvas: fieldBorder→border, bar→tint, accentFill→accentText, onAccent→pageBg. */
 .admin, .admin[data-admin-theme="day"] {
   --a-page-bg: #EDF6F9; --a-text: #204B57; --a-muted: #125E8A; --a-accent-text: #51344D; --a-tint: #83C5BE;
-  --a-card-bg: #EDF6F9; --a-border: #83C5BE; --a-field-border: #83C5BE; --a-bar: #83C5BE;
+  --a-card-bg: #EDF6F9; --a-border: #83C5BE; --a-field-border: #3F8590; --a-bar: #83C5BE;
   --a-accent-fill: #51344D; --a-on-accent: #EDF6F9; color-scheme: light;
 }
 .admin[data-admin-theme="lagoon"] {
-  --a-page-bg: #F6F1E7; --a-text: #0A1517; --a-muted: #3C5558; --a-accent-text: #B9575A; --a-tint: #34B5A1;
+  --a-page-bg: #F6F1E7; --a-text: #0A1517; --a-muted: #3C5558; --a-accent-text: #A84B4E; --a-tint: #34B5A1;
   --a-card-bg: #FBF8F2; --a-border: #E0C3A8; --a-field-border: #3C5558; --a-bar: #F1D5BC;
   --a-accent-fill: #34B5A1; --a-on-accent: #0A1517; color-scheme: light;
 }
 .admin[data-admin-theme="night"] {
   --a-page-bg: #14262D; --a-text: #EDF6F9; --a-muted: #83C5BE; --a-accent-text: #D8B4D1; --a-tint: #204B57;
-  --a-card-bg: #1B3540; --a-border: #2F5A66; --a-field-border: #2F5A66; --a-bar: #204B57;
+  --a-card-bg: #1B3540; --a-border: #2F5A66; --a-field-border: #6A9AA3; --a-bar: #204B57;
   --a-accent-fill: #D8B4D1; --a-on-accent: #14262D; color-scheme: dark;
 }
 .admin[data-admin-theme="midnight"] {
   --a-page-bg: #06141B; --a-text: #CCD0CF; --a-muted: #9BA8AB; --a-accent-text: #CCD0CF; --a-tint: #253745;
-  --a-card-bg: #11212D; --a-border: #4A5C6A; --a-field-border: #4A5C6A; --a-bar: #253745;
+  --a-card-bg: #11212D; --a-border: #4A5C6A; --a-field-border: #74858F; --a-bar: #253745;
   --a-accent-fill: #CCD0CF; --a-on-accent: #06141B; color-scheme: dark;
 }
 
 .admin {
+  --font-body: var(--nf-body, "Inclusive Sans"), ui-sans-serif, sans-serif;
+  --font-heading: var(--nf-heading, "IM Fell English"), Georgia, serif;
   min-height: 100vh;
   padding: calc(env(safe-area-inset-top, 0px) + 32px) max(24px, env(safe-area-inset-right, 0px))
     calc(env(safe-area-inset-bottom, 0px) + 40px) max(24px, env(safe-area-inset-left, 0px));
@@ -50,7 +52,7 @@
 .a-field textarea { padding: 10px; min-height: 96px; resize: vertical; }
 .a-button, .a-button-primary {
   appearance: none; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px;
-  border: 1px solid var(--a-border); border-radius: 6px; background: transparent; color: var(--a-text);
+  border: 1px solid var(--a-field-border); border-radius: 6px; background: transparent; color: var(--a-text);
   font: inherit; font-size: 14px; cursor: pointer; text-decoration: none;
 }
 .a-button-primary { min-height: 48px; padding: 0 18px; border: 0; border-radius: 8px; background: var(--a-accent-fill); color: var(--a-on-accent); font-size: 16px; font-weight: 600; }
@@ -60,7 +62,7 @@
 
 /* Aa button and theme panel */
 .a-aa {
-  appearance: none; flex: none; width: 52px; height: 52px; border: 1px solid var(--a-border); border-radius: 50%;
+  appearance: none; flex: none; width: 52px; height: 52px; border: 1px solid var(--a-field-border); border-radius: 50%;
   background: var(--a-tint); color: var(--a-text); font: inherit; font-size: 18px; font-weight: 600; text-transform: none; cursor: pointer;
 }
 .a-options {
@@ -69,7 +71,7 @@
   border: 1px solid var(--a-border); border-radius: 10px; background: var(--a-card-bg); font-size: 14px;
 }
 .a-choices { display: flex; flex-wrap: wrap; gap: 6px; }
-.a-choices button { appearance: none; min-height: 44px; padding: 0 10px; border: 1px solid var(--a-border); border-radius: 6px;
+.a-choices button { appearance: none; min-height: 44px; padding: 0 10px; border: 1px solid var(--a-field-border); border-radius: 6px;
   background: var(--a-page-bg); color: var(--a-text); font: inherit; cursor: pointer; }
 .a-choices button[aria-pressed="true"] { background: var(--a-tint); }
 
@@ -175,3 +177,20 @@
 .a-preview { margin: -32px -24px; padding: 24px 16px 64px; background: var(--bg); color: var(--ink); min-height: 100vh; }
 .a-preview-flag { max-width: var(--page-width); margin: 0 auto 24px; padding: 10px 14px; border: 1px dashed var(--border); border-radius: 10px; font-size: 14px; }
 .a-restored { margin: 0; padding: 8px 12px; border: 1px dashed var(--a-border); border-radius: 6px; font-size: 14px; }
+
+/* Add new story: big button in the header, a fixed bar along the bottom on phones */
+.a-add { display: inline-flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 22px; border-radius: 10px;
+  background: var(--a-accent-fill); color: var(--a-on-accent); font-size: 17px; font-weight: 600; text-decoration: none; }
+.a-add span { font-size: 22px; line-height: 1; }
+.a-add-bar { display: none; }
+.a-options .a-close { align-self: flex-end; }
+@media (max-width: 599px) {
+  .a-add-desktop { display: none; }
+  .a-add-bar {
+    display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 4; box-sizing: border-box;
+    padding: 10px max(12px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+    border-top: 1px solid var(--a-border); background: var(--a-page-bg);
+  }
+  .a-add-bar .a-add { display: flex; justify-content: center; }
+  .admin { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 96px); }
+}

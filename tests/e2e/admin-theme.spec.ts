@@ -40,3 +40,25 @@ test("the sign-in page uses the admin theme too", async ({ page }) => {
   await page.goto("/admin/login");
   await expect(page.locator(".admin")).toHaveAttribute("data-admin-theme", "day");
 });
+
+test("admin options are a dialog with Close, and Escape closes them", async ({ page }) => {
+  await signIn(page);
+  const aa = page.getByRole("button", { name: "Display options" });
+  await aa.click();
+  const dialog = page.getByRole("dialog", { name: "Display options" });
+  await dialog.getByRole("button", { name: "Close" }).click();
+  await expect(dialog).toBeHidden();
+  await aa.click();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(aa).toBeFocused();
+});
+
+test("admin field borders are the stronger ones", async ({ page }) => {
+  await signIn(page);
+  const expected: Record<string, string> = { day: "rgb(63, 133, 144)", lagoon: "rgb(60, 85, 88)", night: "rgb(106, 154, 163)", midnight: "rgb(116, 133, 143)" };
+  for (const [theme, color] of Object.entries(expected)) {
+    await page.evaluate((t) => document.querySelector(".admin")!.setAttribute("data-admin-theme", t), theme);
+    expect(await page.locator(".a-aa").evaluate((el) => getComputedStyle(el).borderTopColor), theme).toBe(color);
+  }
+});

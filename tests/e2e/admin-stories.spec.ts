@@ -40,9 +40,13 @@ test("the fandom filter narrows the list", async ({ page }) => {
 
 test("new story button and phone layout", async ({ page }) => {
   await signIn(page);
-  await expect(page.getByRole("link", { name: "New Story" })).toHaveAttribute("href", "/admin/stories/new");
+  await expect(page.getByRole("link", { name: "Add new story" })).toHaveAttribute("href", "/admin/stories/new");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload();
+  const bar = page.getByRole("group", { name: "Add story" });
+  await expect(bar.getByRole("link", { name: "Add new story" })).toBeVisible();
+  const box = await bar.boundingBox();
+  expect(Math.round(box!.y + box!.height)).toBe(844);
   await expect(page.locator(".a-story-head")).toBeHidden();
   const over = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(over).toBeLessThanOrEqual(0);
