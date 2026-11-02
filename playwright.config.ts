@@ -17,5 +17,7 @@ export default defineConfig({
     url: "http://localhost:3000",
     reuseExistingServer: true,
     timeout: 120_000,
+    /* The app talks to a local stand-in for the Google Drive bridge during tests, never the real Drive. */
+    env: { ...(process.env as Record<string, string>), DRIVE_BRIDGE_URL: "http://127.0.0.1:4011/exec", DRIVE_BRIDGE_TOKEN: "mock-token-for-browser-tests" },
   },
 });

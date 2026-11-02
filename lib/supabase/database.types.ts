@@ -105,9 +105,9 @@ export type Database = {
         ];
       };
       upload_files: {
-        Row: { chapter_id: number | null; created_at: string; error: string | null; fic_id: number | null; filename: string; id: number; kind: string; size: number; status: string; storage_path: string };
-        Insert: { chapter_id?: number | null; created_at?: string; error?: string | null; fic_id?: number | null; filename: string; id?: never; kind: string; size?: number; status: string; storage_path: string };
-        Update: { chapter_id?: number | null; created_at?: string; error?: string | null; fic_id?: number | null; filename?: string; id?: never; kind?: string; size?: number; status?: string; storage_path?: string };
+        Row: { chapter_id: number | null; created_at: string; drive_error: string | null; drive_file_id: string | null; drive_status: string | null; error: string | null; fic_id: number | null; filename: string; id: number; kind: string; size: number; status: string; storage_path: string };
+        Insert: { chapter_id?: number | null; created_at?: string; drive_error?: string | null; drive_file_id?: string | null; drive_status?: string | null; error?: string | null; fic_id?: number | null; filename: string; id?: never; kind: string; size?: number; status: string; storage_path: string };
+        Update: { chapter_id?: number | null; created_at?: string; drive_error?: string | null; drive_file_id?: string | null; drive_status?: string | null; error?: string | null; fic_id?: number | null; filename?: string; id?: never; kind?: string; size?: number; status?: string; storage_path?: string };
         Relationships: [];
       };
       chapter_versions: {
