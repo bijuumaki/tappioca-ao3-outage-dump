@@ -27,3 +27,56 @@ describe.skipIf(!configured)("what readers can see", () => {
     expect(error).not.toBeNull();
   });
 });
+
+describe.skipIf(!configured)("reader queries", async () => {
+  const q = await import("@/lib/content/queries");
+
+  test("getFic numbers visible chapters 1..3 and totals their words", async () => {
+    const fic = await q.getFic("sample-fic");
+    expect(fic!.chapters.map((c) => c.n)).toEqual([1, 2, 3]);
+    expect(fic!.totalWords).toBe(fic!.chapters.reduce((s, c) => s + c.word_count, 0));
+    expect(fic!.totalWords).toBe(10 + 660 + 5);
+  });
+
+  test("getChapter past the last visible chapter is null", async () => {
+    expect(await q.getChapter("sample-fic", 4)).toBeNull();
+    expect((await q.getChapter("sample-fic", 3))!.chapter.position).toBe(4);
+  });
+
+  test("getChapter rejects zero and non-integers", async () => {
+    expect(await q.getChapter("sample-fic", 0)).toBeNull();
+    expect(await q.getChapter("sample-fic", 1.5)).toBeNull();
+  });
+
+  test("getFic of a draft is null", async () => {
+    expect(await q.getFic("sample-draft")).toBeNull();
+  });
+
+  test("home feed has no draft or scheduled items, newest first", async () => {
+    const feed = await q.getHomeFeed();
+    expect(feed.some((i) => i.href.includes("sample-draft"))).toBe(false);
+    expect(feed.some((i) => i.title.includes("scheduled"))).toBe(false);
+    const times = feed.map((i) => Date.parse(i.publishedAt));
+    expect(times).toEqual([...times].sort((a, b) => b - a));
+  });
+
+  test("browse filters by category and sorts by length", async () => {
+    const art = await q.browse({ category: "art" });
+    expect(art.fics).toEqual([]);
+    expect(art.posts.map((p) => p.slug)).toEqual(["sample-art"]);
+    const longest = await q.browse({ sort: "longest" });
+    const words = longest.fics.map((f) => f.totalWords);
+    expect(words).toEqual([...words].sort((a, b) => b - a));
+  });
+
+  test("getTagItems lists fics and posts with that tag", async () => {
+    const res = await q.getTagItems("fandom", "sample-fandom");
+    expect(res!.fics.map((f) => f.slug).sort()).toEqual(["sample-fic", "sample-oneshot"]);
+    expect(res!.posts.map((p) => p.slug)).toEqual(["sample-art"]);
+  });
+
+  test("getPage only knows the four simple pages", async () => {
+    expect((await q.getPage("about"))!.title).toBe("About");
+    expect(await q.getPage("nonsense")).toBeNull();
+  });
+});
