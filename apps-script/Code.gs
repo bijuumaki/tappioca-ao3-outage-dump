@@ -162,7 +162,7 @@ function fillInfo_(files, cache) {
 
   // An epub is opened once (when new or changed) to learn its chapters; the answer is remembered like the rest.
   files.filter(function (f) { return f.format === 'epub'; }).forEach(function (f) {
-    var key = 'e3:' + f.id + ':' + f.updated.getTime();
+    var key = 'e4:' + f.id + ':' + f.updated.getTime();
     var raw = cache.get(key);
     if (raw) { f.info = JSON.parse(raw); return; }
     f.info = epubInfo_(f.file);
@@ -382,10 +382,12 @@ function epubStructure_(read) {
   if (title) meta.title = title;
   if (summary) meta.summary = summary;
 
-  // An Archive of Our Own download carries the work's rating on its Preface page.
+  // An Archive of Our Own download carries the work's rating and relationships on its Preface page.
   var preface = chapters.filter(function (c) { return isArchivePreface_(c); })[0];
   var rating = preface ? archiveField_(preface.md, 'Rating') : '';
   if (rating) meta.rating = rating;
+  var relationships = preface ? archiveField_(preface.md, 'Relationships') : '';
+  if (relationships) meta.relationships = relationships;
 
   // The pages an Archive of Our Own download wraps around a story are not chapters.
   var story = chapters.filter(function (c) { return !isArchiveWrapper_(c, title); });
