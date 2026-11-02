@@ -29,6 +29,7 @@ export default async function StoriesPage({ searchParams }: { searchParams: Prom
     <main className="a-page">
       <AdminHeader title="Stories">
         <Link href="/admin/stories/new" className="a-add a-add-desktop"><span aria-hidden="true">+</span>Add new story</Link>
+        <Link href="/admin/pages" className="a-button">Pages</Link>
         <form action={signOut}><button type="submit" className="a-button">Sign out</button></form>
       </AdminHeader>
 
