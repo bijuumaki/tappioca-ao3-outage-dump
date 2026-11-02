@@ -11,7 +11,7 @@ import { ACCEPTED_EXTENSIONS } from "./index-constants";
 import { textToChapter } from "./text";
 
 export { ConvertError } from "./errors";
-export { ACCEPTED_EXTENSIONS, MAX_DOCUMENT_BYTES } from "./index-constants";
+export { MAX_DOCUMENT_BYTES } from "./index-constants";
 
 export type Converted = { title: string; summary?: string; chapters: { title?: string; html: string }[]; meta?: MarkdownMeta };
 

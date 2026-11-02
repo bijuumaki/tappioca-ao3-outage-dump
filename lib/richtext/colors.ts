@@ -18,7 +18,7 @@ export function parseColor(input: string): RGB | null {
   return r <= 255 && g <= 255 && b <= 255 ? { r, g, b } : null;
 }
 
-export function toHex({ r, g, b }: RGB): string {
+function toHex({ r, g, b }: RGB): string {
   return "#" + [r, g, b].map((v) => Math.round(v).toString(16).padStart(2, "0")).join("");
 }
 

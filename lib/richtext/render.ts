@@ -15,7 +15,7 @@ const lightest = (list: string[]) => [...list].sort((a, b) => lightness(b) - lig
 
 /* Text colors are hardest to read on the darkest light background and the lightest dark one;
    highlights are hardest under the lightest dark-ink (light themes) and darkest light-ink (dark themes). */
-export const THEME = {
+const THEME = {
   light: { bg: darkest(LIGHT_BACKGROUNDS), ink: lightest(LIGHT_INKS) },
   dark: { bg: lightest(DARK_BACKGROUNDS), ink: darkest(DARK_INKS) },
 };

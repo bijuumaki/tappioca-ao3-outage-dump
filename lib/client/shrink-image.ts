@@ -1,4 +1,4 @@
-export const MAX_WIDTH = 2400;
+const MAX_WIDTH = 2400;
 const HEAVY_BYTES = 1_500_000;
 /* A server request can carry about 4.5 MB on Vercel; stay clear of that. */
 export const MAX_UPLOAD_BYTES = 4_000_000;

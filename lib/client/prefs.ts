@@ -7,14 +7,13 @@ export function writePref(key: string, value: string): void {
 }
 
 export const THEMES = [["day", "Day"], ["lagoon", "Lagoon"], ["night", "Night"], ["midnight", "Midnight"]] as const;
-export type ThemeName = (typeof THEMES)[number][0];
 export const SPACINGS = [["tight", "Tight"], ["normal", "Normal"], ["loose", "Loose"]] as const;
 export const FONTS = [
   ["default", "Default"], ["lucida", "Lucida Sans"], ["cantarell", "Cantarell"], ["tahoma", "Tahoma"],
   ["crimson", "Crimson Pro"], ["imfell", "IM Fell English"], ["cormorant", "Cormorant Garamond"],
 ] as const;
-export const FONT_NAMES = FONTS.map(([v]) => v).filter((v) => v !== "default");
-export const WEB_FONTS: Record<string, string> = {
+const FONT_NAMES = FONTS.map(([v]) => v).filter((v) => v !== "default");
+const WEB_FONTS: Record<string, string> = {
   cantarell: "Cantarell", crimson: "Crimson+Pro", imfell: "IM+Fell+English", cormorant: "Cormorant+Garamond",
 };
 export const SIZE_MIN = 10;

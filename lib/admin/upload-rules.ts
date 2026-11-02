@@ -1,6 +1,6 @@
 import { ACCEPTED_EXTENSIONS, MAX_DOCUMENT_BYTES } from "@/lib/convert/index-constants";
 
-export const MAX_FILES_PER_BATCH = 40;
+const MAX_FILES_PER_BATCH = 40;
 export type UploadProblem = { name: string; message: string };
 
 /* Checked in the browser before anything is sent, and again on the server before upload addresses are made. */

@@ -5,7 +5,7 @@ import { sniffImage } from "@/lib/convert/images";
 import { mediaUrl } from "@/lib/content/media";
 import type { Database } from "@/lib/supabase/database.types";
 
-export const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 export const NOT_AN_IMAGE = "That file isn’t a JPG, PNG, WebP, GIF or AVIF picture.";
 
 export type StoredImage = { ok: true; url: string; path: string } | { ok: false; error: string };

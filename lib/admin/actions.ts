@@ -1,23 +1,18 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/lib/supabase/database.types";
-import type { TagType } from "@/lib/content/types";
-import { createSessionClient, requireAdmin } from "@/lib/supabase/session";
-import { prepareChapter } from "./chapter";
 import { htmlToChapter } from "@/lib/convert/html";
-import { extractDataUriImages } from "@/lib/convert/images";
+import { extractDataUriImages, sniffImage } from "@/lib/convert/images";
+import { createSessionClient, requireAdmin } from "@/lib/supabase/session";
+import { slugify } from "@/lib/text/slug";
+import { prepareChapter } from "./chapter";
 import { NOT_AN_IMAGE, storeImage } from "./media";
-import { setTags, takenSlugs } from "./story-store";
-import { sniffImage } from "@/lib/convert/images";
 import { notesToHtml } from "./notes";
 import { publishChapterAt, unpublishChapter } from "./publish";
-import { saveVersion } from "./versions";
-import { slugify } from "@/lib/text/slug";
 import { storyDetailsFromForm, uniqueSlug } from "./story-form";
+import { setTags, takenSlugs } from "./story-store";
+import { saveVersion } from "./versions";
 
-type Db = SupabaseClient<Database>;
 export type SaveState = { ok: boolean; savedAt: string | null; error: string | null };
 
 /* Refresh the public pages a change could show up on. */
