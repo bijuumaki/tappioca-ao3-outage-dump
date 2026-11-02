@@ -2,6 +2,12 @@
 
 Date: 2026-11-02. Status: waiting for Bijuu's review.
 
+> **Status note (2026-11-03):** this is the original design. Where the build has moved on, `CLAUDE.md` is the current
+> description. Main differences: the visual design now comes from Bijuu's Claude Design canvas (four themes, no top menu,
+> Home with a Featured fic and no update feed); the sign-in page is `/admin-login`; Plan 2b added the Pages screen, Uploads,
+> Paste HTML, pictures in chapters, preview links and versions. Not built yet: image posts, tag and category screens,
+> comments, hearts, subscribers, emails and RSS.
+
 ## Goal
 
 A public blog for Bijuu's fanfics and art, like a small WordPress built around fics. Bijuu is the only author. Anyone can read without an account. Readers can comment, give hearts and subscribe.

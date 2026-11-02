@@ -51,7 +51,7 @@ lib/supabase/        Supabase clients and generated database types
 lib/content/         reader queries and chapter numbering
 lib/text/            word counts, slugs
 lib/richtext/        sanitizer, color adapting, rendering
-supabase/            migrations and development seed (placeholder content only)
+supabase/            migrations (every change to the database, in order)
 tests/unit/          Vitest
 tests/integration/   Vitest against the Supabase project (skipped without .env.local)
 tests/e2e/           Playwright
@@ -90,7 +90,7 @@ The look comes from Bijuu's Claude Design canvas "Tappioca Fic Archive" (https:/
 
 ## Tests and the live database
 
-There is one Supabase project, and the live site reads it. Tests add their own sample content at the start of a run (so **don't run tests while Bijuu is writing**: sample stories appear on the live site for the length of a run) (`tests/support/fixtures.ts`, via Vitest and Playwright global setup) and remove it at the end, so samples are public only while tests run. Admin tests use the accounts `e2e-admin@tappioca.test` and `e2e-reader@tappioca.test` (password `E2E_ADMIN_PASSWORD` in `.env.local`) and delete the "(e2e …)" stories they make. Tests need `SUPABASE_SECRET_KEY` and `E2E_ADMIN_PASSWORD` in `.env.local`. `supabase/seed.sql` is reference only; don't run it against the live project.
+There is one Supabase project, and the live site reads it. Tests add their own sample content at the start of a run (so **don't run tests while Bijuu is writing**: sample stories appear on the live site for the length of a run) (`tests/support/fixtures.ts`, via Vitest and Playwright global setup) and remove it at the end, so samples are public only while tests run. Admin tests use the accounts `e2e-admin@tappioca.test` and `e2e-reader@tappioca.test` (password `E2E_ADMIN_PASSWORD` in `.env.local`) and delete the "(e2e …)" stories they make. Tests need `SUPABASE_SECRET_KEY` and `E2E_ADMIN_PASSWORD` in `.env.local`. There is no seed file: `tests/support/fixtures.ts` is the one place the sample content is defined.
 
 ## Checking your work
 
