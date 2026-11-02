@@ -68,6 +68,37 @@ Colors show exactly as written. In whichever theme a color would fall below 4.5:
 
 ## Writing and uploading
 
+There are **two routes** for putting up a fic. Both end in the same chapters and the same reader pages.
+
+1. **Editor**: write or paste in the WordPress-style editor.
+2. **Upload bin**: drop files into the fic's folder.
+
+**Every fic has its own folder and its own path**, so stories never get mixed up:
+
+```
+Upload bin (dashboard)              Web address
+fics/
+  moribund/                   ->    /fics/moribund
+    MORIBUND - 1.html         ->    /fics/moribund/1
+    MORIBUND - 2.html         ->    /fics/moribund/2
+    images/                         (pictures used in this fic only)
+    cover.jpg
+  anam-cara/                  ->    /fics/anam-cara   (oneshot)
+    Anam Cara.html
+```
+
+How the upload bin works:
+
+- Creating a fic (by either route) creates its folder. Dropping files on an empty spot in the bin with "New fic" creates a new fic and folder, named from the files.
+- Files in a fic's folder become its chapters: `<Title> - <N>` names give the chapter numbers; otherwise they follow the order Bijuu arranges them in. An `.epub` dropped in fills the whole fic.
+- Dropping a file with the same chapter number again **replaces that chapter's text**. The previous text is kept as an earlier version (see below), so nothing is lost.
+- New uploads arrive as **drafts**. Bijuu publishes or schedules them as usual.
+- A picture named `cover.*` becomes the cover. Other pictures go in `images/` and can be placed in chapters.
+- The bin shows each file's state next to it: draft, scheduled, published, or "couldn't convert" (with the reason).
+- Files and editor stay in sync: a chapter edited in the editor shows as "edited on the site" in the bin. Re-uploading over it asks first, then replaces it.
+
+**Versions**: every save or replace keeps the previous text of the chapter. Bijuu can view and restore the last 20 versions per chapter.
+
 **Editor** (Tiptap): a toolbar for the formats above and drag-and-drop images. Pasted Google Docs or Word text keeps its formatting within the set. It autosaves drafts every few seconds.
 
 **Paste HTML**: a box on the editor screen where Bijuu pastes what Ellipsus's "Copy as HTML" produced. It shows a preview, then fills the chapter. No file needed.
@@ -107,7 +138,8 @@ Kept from the current site on every page: theme toggle, the Aa panel (size and f
 
 Only Bijuu's account can sign in (Supabase login, limited to her email).
 
-- **Fics**: list, create, edit details, add, reorder and upload chapters.
+- **Fics**: list, create, edit details, add and reorder chapters.
+- **Upload bin**: one folder per fic; drop, replace and remove files; see each file's state.
 - **Posts**: create and edit image posts and other categories.
 - **Editor screen**: Save draft, Schedule (date and time), Publish, Copy preview link, Revoke preview link.
 - **Comments**: pending queue; approve, hide, delete, reply; list of approved commenters.
