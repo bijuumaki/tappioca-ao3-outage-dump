@@ -1,7 +1,8 @@
 import Link from "next/link";
 import AdminHeader from "@/components/admin/AdminHeader";
 import { signOut } from "@/lib/admin/auth-actions";
-import { listAdminStories, type StoryStatus } from "@/lib/admin/queries";
+import { listAdminStories } from "@/lib/admin/queries";
+import type { StoryStatus } from "@/lib/admin/status";
 import { RATING_LABELS } from "@/lib/content/types";
 import { formatDate } from "@/lib/format/dates";
 import { requireAdmin } from "@/lib/supabase/session";

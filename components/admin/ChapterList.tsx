@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { addChapter } from "@/lib/admin/actions";
-import { statusOf } from "@/lib/admin/queries";
+import { statusOf } from "@/lib/admin/status";
 import type { Chapter } from "@/lib/content/types";
 
 export default function ChapterList({ ficId, chapters, currentId }: { ficId: number; chapters: Chapter[]; currentId: number | null }) {

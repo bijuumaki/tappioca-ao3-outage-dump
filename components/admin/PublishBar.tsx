@@ -1,11 +1,10 @@
 "use client";
 import { useState } from "react";
 import { publishChapter, scheduleChapter, unpublish, type PublishResult } from "@/lib/admin/actions";
+import { statusOf, type StoryStatus as Status } from "@/lib/admin/status";
 import { formatDate } from "@/lib/format/dates";
 import { saveDetailsNow } from "@/lib/client/details-saver";
 
-type Status = "published" | "scheduled" | "draft";
-const statusOf = (at: string | null): Status => (!at ? "draft" : Date.parse(at) > Date.now() ? "scheduled" : "published");
 
 export default function PublishBar({ ficId, chapterId, publishAt, save }: {
   ficId: number; chapterId: number; publishAt: string | null; save: () => Promise<boolean>;

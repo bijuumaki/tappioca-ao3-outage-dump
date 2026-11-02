@@ -2,14 +2,9 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 import type { Category, Chapter, Fic, Rating, Tag } from "@/lib/content/types";
+import { statusOf, type StoryStatus } from "./status";
 
 type Db = SupabaseClient<Database>;
-export type StoryStatus = "published" | "scheduled" | "draft";
-
-export function statusOf(publishAt: string | null, now = Date.now()): StoryStatus {
-  if (!publishAt) return "draft";
-  return Date.parse(publishAt) > now ? "scheduled" : "published";
-}
 
 export type AdminStoryRow = {
   id: number; slug: string; title: string; fandom: string | null; fandomSlug: string | null; rating: Rating;
