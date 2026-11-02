@@ -102,3 +102,32 @@ a { color: inherit; }
   :root:not([data-theme="light"]) .rt-c { color: var(--c-d); }
   :root:not([data-theme="light"]) .rt-hl { background-color: var(--hl-d); }
 }
+
+/* Fic and chapter pages */
+.fic-meta { margin: 0 0 1.5em; }
+.fic-details { display: flex; flex-wrap: wrap; gap: 4px 24px; margin: 0 0 0.8em; }
+.fic-details div { display: flex; gap: 6px; }
+.fic-details dt { font-weight: 700; }
+.fic-details dt::after { content: ":"; }
+.fic-details dd { margin: 0; }
+.tag-list { margin: 0; }
+.tag-group { display: flex; flex-wrap: wrap; gap: 0 8px; }
+.tag-group dt { font-weight: 700; }
+.tag-group dt::after { content: ":"; }
+.tag-group dd { margin: 0; }
+.tag-group ul { display: inline; list-style: none; margin: 0; padding: 0; }
+.tag-group li { display: inline; }
+.tag-group li:not(:last-child)::after { content: ", "; }
+.tag-group a { display: inline-block; min-height: 24px; }
+.notes { margin: 0 0 1.5em; }
+.notes .rich-text p:last-child { margin-bottom: 0; }
+.summary { margin: 0 0 1.5em; }
+.toc ol { padding-left: 1.4em; }
+.toc li { margin: 0 0 0.4em; }
+.toc-title { font-family: var(--font-display); font-weight: 400; }
+.toc-words { margin-left: 0.6em; opacity: 0.8; font-size: 0.9em; }
+.chapter-fic { margin: 0 0 0.2em; }
+.chapter-words { margin: 0 0 1em; opacity: 0.85; }
+.chapter-nav { display: flex; justify-content: space-between; gap: 12px; margin: 1.5em 0; }
+.chapter-nav a { display: inline-flex; align-items: center; min-height: 44px; }
+.progress-note { margin: 0 0 1em; }
