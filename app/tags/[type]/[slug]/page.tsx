@@ -24,9 +24,9 @@ export default async function TagPage({ params }: Props) {
   const res = await load(params);
   if (!res) notFound();
   return (
-    <main className="page page-wide" id="main">
-      <p className="card-meta">{TAG_TYPE_LABELS[res.tag.type]}</p>
-      <h1 className="heading">{res.tag.name}</h1>
+    <main className="page" id="main">
+      <p className="chapter-label">{TAG_TYPE_LABELS[res.tag.type]}</p>
+      <h1 className="page-title">{res.tag.name}</h1>
       {res.fics.length === 0 && res.posts.length === 0 && <p>Nothing published with this tag yet.</p>}
       {res.fics.length > 0 && <section aria-label="Fics" className="card-grid">{res.fics.map((f) => <FicCard key={f.slug} fic={f} />)}</section>}
       {res.posts.length > 0 && <section aria-label="Posts" className="card-grid">{res.posts.map((p) => <PostCard key={p.slug} post={p} />)}</section>}

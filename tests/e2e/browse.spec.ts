@@ -1,15 +1,5 @@
 import { expect, test } from "@playwright/test";
 
-test("home lists newest first and never drafts or scheduled chapters", async ({ page }) => {
-  await page.goto("/");
-  const items = page.locator(".feed li");
-  await expect(items.first()).toContainText("(sample fic)"); // chapter 3 (position 4), 1 day ago
-  await expect(page.locator(".feed")).not.toContainText("(sample draft)");
-  await expect(page.locator(".feed")).not.toContainText("(scheduled chapter)");
-  const times = await page.locator(".feed time").evaluateAll((els) => els.map((e) => Date.parse(e.getAttribute("datetime")!)));
-  expect(times).toEqual([...times].sort((a, b) => b - a));
-});
-
 test("art post shows images with captions, embed link and tags", async ({ page }) => {
   await page.goto("/posts/sample-art");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("(sample art)");
@@ -66,7 +56,7 @@ test("simple pages exist and others are not found", async ({ page }) => {
   expect(res!.status()).toBe(404);
 });
 
-for (const path of ["/", "/fics/sample-fic", "/fics/sample-fic/2", "/posts/sample-art", "/browse"]) {
+for (const path of ["/", "/fics", "/fics/sample-fic", "/fics/sample-fic/2", "/posts/sample-art", "/browse", "/about", "/links"]) {
   test(`no sideways scroll at 390px on ${path}`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(path);

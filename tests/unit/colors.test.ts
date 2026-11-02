@@ -57,3 +57,13 @@ test("a real grey or a dark color is still kept", () => {
   expect(renderRichText('<p style="color:#808080">a</p>')).toContain("rt-c");
   expect(renderRichText('<p style="color:#8b3253">a</p>')).toContain("rt-c");
 });
+
+test("rendered colors are readable on every theme background", () => {
+  for (const color of ["#8b3253", "#ffff00", "#3366cc", "#e0a36e"]) {
+    const out = renderRichText(`<p style="color:${color}">a</p>`);
+    const light = out.match(/--c-l:(#[0-9a-f]{6})/)![1];
+    const dark = out.match(/--c-d:(#[0-9a-f]{6})/)![1];
+    for (const bg of ["#EDF6F9", "#F6F1E7", "#FBF8F2"]) expect(contrastRatio(light, bg), `${color} on ${bg}`).toBeGreaterThanOrEqual(4.5);
+    for (const bg of ["#14262D", "#06141B", "#1B3540", "#11212D"]) expect(contrastRatio(dark, bg), `${color} on ${bg}`).toBeGreaterThanOrEqual(4.5);
+  }
+});

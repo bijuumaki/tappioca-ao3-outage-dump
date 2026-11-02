@@ -20,8 +20,8 @@ export default async function PostPage({ params }: Props) {
   if (!post) notFound();
   return (
     <main className="page" id="main">
-      <h1 className="heading">{post.title}</h1>
-      <p className="card-meta">{post.category.name}{post.publish_at ? ` · ${formatDate(post.publish_at)}` : ""}</p>
+      <h1 className="page-title">{post.title}</h1>
+      <p className="chapter-label">{post.category.name}{post.publish_at ? ` · ${formatDate(post.publish_at)}` : ""}</p>
       {post.images.map((img) => (
         <figure key={img.id} className="post-image">
           {/* eslint-disable-next-line @next/next/no-img-element */}

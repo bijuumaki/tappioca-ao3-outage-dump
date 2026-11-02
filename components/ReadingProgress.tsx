@@ -46,7 +46,7 @@ export default function ReadingProgress({ id, children }: { id: string; children
   return (
     <>
       {welcome !== null && (
-        <p className="progress-note box" role="status">Welcome back. You had read about {Math.round(welcome * 100)}% of this chapter.</p>
+        <p className="progress-note" role="status">Welcome back. You had read about {Math.round(welcome * 100)}% of this chapter.</p>
       )}
       <div ref={ref}>{children}</div>
     </>

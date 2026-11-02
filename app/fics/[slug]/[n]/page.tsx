@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import ChapterBody from "@/components/ChapterBody";
 import ChapterNav from "@/components/ChapterNav";
+import ReaderRegister from "@/components/ReaderRegister";
 import { getChapter } from "@/lib/content/queries";
 import { formatWords } from "@/lib/format/words";
 
@@ -28,15 +29,21 @@ export default async function ChapterPage({ params }: Props) {
   const { fic, chapter } = found;
   if (fic.chapters.length === 1) redirect(`/fics/${slug}`);
   const count = fic.chapters.length;
+  const options = fic.chapters.map((c) => ({ n: c.n, label: c.title ? `${c.n}. ${c.title}` : `Chapter ${c.n}` }));
 
   return (
     <main className="page" id="main">
-      <p className="chapter-fic"><Link href={`/fics/${slug}`}>{fic.title}</Link></p>
-      <h1 className="heading">{chapter.title ? `${chapter.n}. ${chapter.title}` : `Chapter ${chapter.n}`}</h1>
-      <p className="chapter-words">{formatWords(chapter.word_count)}</p>
-      <ChapterNav slug={slug} n={chapter.n} count={count} />
-      <ChapterBody id={`${slug}/${chapter.n}`} chapter={chapter} />
-      <ChapterNav slug={slug} n={chapter.n} count={count} />
+      <ReaderRegister info={{ slug, n: chapter.n, chapters: options }} />
+      <article className="page">
+        <header className="reader-header">
+          <h1 className="page-title"><Link href={`/fics/${slug}`}>{fic.title}</Link></h1>
+          <p className="chapter-label">Chapter {chapter.n} of {count} · {formatWords(chapter.word_count)}</p>
+          <div className="progress" aria-hidden="true"><div style={{ width: `${Math.round((chapter.n / count) * 100)}%` }} /></div>
+        </header>
+        <h2 className="section-bar chapter-title">{chapter.title ?? `Chapter ${chapter.n}`}</h2>
+        <ChapterBody id={`${slug}/${chapter.n}`} chapter={chapter} />
+        <ChapterNav slug={slug} n={chapter.n} count={count} />
+      </article>
     </main>
   );
 }

@@ -45,7 +45,7 @@ A public blog for Bijuu's ("tappioca") fanfics and art, like a small WordPress b
 ## Files
 
 ```
-app/                 pages (App Router); tokens.css and globals.css
+app/                 pages (App Router); tokens.css (themes) and globals.css
 components/          header, Aa panel, theme toggle, reader parts, cards
 lib/supabase/        Supabase clients and generated database types
 lib/content/         reader queries and chapter numbering
@@ -55,21 +55,24 @@ supabase/            migrations and development seed (placeholder content only)
 tests/unit/          Vitest
 tests/integration/   Vitest against the Supabase project (skipped without .env.local)
 tests/e2e/           Playwright
-public/paper.jpg     paper texture
 ```
 
 ## Design decisions to keep
 
-- Light background `#f5f5f5`, dark `#222831`. All boxes `#698c91` in both themes, with `#111` text in light and `#ecefee` in dark. Header `#78a39f` light / `#2f4947` dark. "Howdy" `#8b3253` light / `#e68aa8` dark.
-- Display face **IM Fell English SC**, body face **Inclusive Sans**. The site title and the nav menu list are locked to IM Fell English SC in every font mode.
-- Font menu: Default; Sans serif: Lucida Sans, Cantarell, Tahoma; Serif: Crimson Pro, IM Fell English, Cormorant Garamond. Lucida Sans and Tahoma are system fonts and only show on devices that have them. The three sans choices also apply all-small-caps to display text; serif choices do not. Only the two default faces load up front; each Font-menu web font is fetched when it is picked. Choices are saved in localStorage (`fic-site-theme`, `fic-site-font`, `fic-site-size`), always inside try/catch.
-- Text size: `--fs` is the base (default 14pt, 10 to 24 in steps of 2). `--u = --fs / 19` scales everything else. Fic titles are `--fs * 24/14`, fic details are `--fs`. Line heights scale with it.
-- Paper texture: a fixed `body::before` layer, `mix-blend-mode: multiply`, lighter in dark mode. Cards and boxes use `color-mix(... var(--solid), transparent)` with `--solid: 20%`, so the paper shows through. The Aa panel stays opaque.
+The look comes from Bijuu's Claude Design canvas "Tappioca Fic Archive" (https://claude.ai/artifact/27nUAdqjtSjppMvVp9t2bP; `project/Site.dc.html` for the public site, `Dashboard.dc.html` and `Admin.dc.html` for admin). Re-read it with the Artifact tool before design work; it changes.
+
+- Four themes, in this order: **Day** (default), **Lagoon**, **Night**, **Midnight**. Exact colors are in `app/tokens.css`. A device in dark mode with no saved choice starts in Night.
+- Headings in **IM Fell English**, body in **Inclusive Sans**, 16px. All site text is shown lowercase except story text, notes and readers' words (`.rich-text`, `.keep-case`).
+- One 708px column. Top menu: Home, Disclaimer, About, Fic List, Links (Comms is a page but not in the menu). Footer: "Made with ♥︎ by Tappioca".
+- The round **Aa** button (top right) opens display options: chapter picker (on chapter pages), text size 10 to 20pt, font, line spacing (tight 1.4 / normal 1.7 / loose 2.1), theme. Font, size and spacing change reading text only. On narrow screens the button slides away while scrolling down a chapter. Saved in localStorage `fic-site-theme`, `fic-site-font`, `fic-site-size`, `fic-site-spacing`, always inside try/catch.
+- Home: title, photo circle, "The Archive" box (story count and per-fandom counts), "Howdy" box, page buttons, Featured fic (`fics.featured`), Recent Fics, Recent Art. Howdy and Archive texts are rows `howdy` and `archive` in the pages table.
+- Chapter page: fic title, "Chapter n of N · words", progress bar, chapter title bar, notes, justified text (max 66ch), Previous / Contents / Next (Contents opens the Aa panel).
+- Ratings read General Audiences, Teen and Up, Mature, Explicit, Not Rated.
 - Reading progress: per chapter, in the reader's own browser (`fic-site-progress`), furthest point reached, only moves forward.
-- Removed on purpose: Quick fic links, Guest book, Powered by, and the card shape behind the nav links. Do not bring them back unless asked.
-- Header icons are 20px. Tap targets are at least 44px on touch.
-- Editor ("write mode", Plan 2) follows Bijuu's Figma reference: WYSIWYG Text Editor UI Kit, file `FLtVHf4UtMyIQcpscOPC4X`, frame "TextEditor".
+- The old paper texture and teal header band are gone (the canvas has neither).
+- Tap targets are at least 44px. Text contrast at least 4.5:1 in every theme.
+- Editor ("write mode", Plan 2) follows the canvas Admin board, with toolbar items from the Figma WYSIWYG kit (file `FLtVHf4UtMyIQcpscOPC4X`).
 
 ## Checking your work
 
-Look at the rendered page, not just the code. Run `npm test` and `npm run e2e`. Take Playwright screenshots at 1440, 1024 and 390 wide, light and dark, at 10pt and 24pt. Check: no sideways scroll, text contrast of at least 4.5:1, visible focus rings, Escape closes the Aa panel.
+Look at the rendered page, not just the code. Run `npm test` and `npm run e2e`. Take Playwright screenshots at 1440, 820 and 390 wide in all four themes, at 10pt and 20pt. Check: no sideways scroll, text contrast of at least 4.5:1, visible focus rings, Escape closes the Aa panel.

@@ -4,9 +4,8 @@ test("fic page shows details, tags and a contents list with word counts", async 
   await page.goto("/fics/sample-fic");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("(sample fic)");
   const details = page.locator(".fic-details");
-  await expect(details).toContainText("Teen");
+  await expect(details).toContainText("Teen and Up");
   await expect(details).toContainText("In progress");
-  await expect(details).toContainText("Fic");
   await expect(details).toContainText("675 words");
   await expect(page.locator(".tag-group")).toHaveCount(5);
   await expect(page.getByRole("link", { name: "(sample fandom)" })).toHaveAttribute("href", "/tags/fandom/sample-fandom");
@@ -17,16 +16,30 @@ test("fic page shows details, tags and a contents list with word counts", async 
   await expect(items.nth(2)).toContainText("5 words");
 });
 
-test("chapter page has notes, word count and previous / contents / next", async ({ page }) => {
+test("chapter page: label, progress, word count, notes, buttons", async ({ page }) => {
   await page.goto("/fics/sample-fic/2");
-  await expect(page.locator(".chapter-words")).toHaveText("660 words");
+  await expect(page.locator(".chapter-label")).toHaveText("Chapter 2 of 3 · 660 words");
+  expect(await page.locator(".progress > div").evaluate((el) => (el as HTMLElement).style.width)).toBe("67%");
   await expect(page.getByText("(notes before)")).toBeVisible();
-  const nav = page.locator('nav[aria-label="Chapters"]').first();
-  await expect(nav.getByRole("link", { name: /Previous/ })).toHaveAttribute("href", "/fics/sample-fic/1");
-  await expect(nav.getByRole("link", { name: /Contents/ })).toHaveAttribute("href", "/fics/sample-fic");
-  await expect(nav.getByRole("link", { name: /Next/ })).toHaveAttribute("href", "/fics/sample-fic/3");
-  await page.goto("/fics/sample-fic/3");
-  await expect(page.locator('nav[aria-label="Chapters"]').first().getByRole("link", { name: /Next/ })).toHaveCount(0);
+  const nav = page.locator(".chapter-buttons").first();
+  await expect(nav.getByRole("link", { name: "Previous" })).toHaveAttribute("href", "/fics/sample-fic/1");
+  await expect(nav.getByRole("link", { name: "Next" })).toHaveAttribute("href", "/fics/sample-fic/3");
+  await nav.getByRole("link", { name: "Contents" }).click();
+  await expect(page.locator("#display-options")).toBeVisible();
+  await page.getByLabel("Chapter", { exact: true }).selectOption("3");
+  await expect(page).toHaveURL(/\/fics\/sample-fic\/3$/);
+  await expect(page.locator(".chapter-buttons").first().getByRole("link", { name: "Next" })).toHaveCount(0);
+});
+
+test("reading text follows the size and spacing choices", async ({ page }) => {
+  await page.goto("/fics/sample-fic/1");
+  const text = page.locator(".chapter-text");
+  expect(await text.evaluate((el) => getComputedStyle(el).fontSize)).toBe("18.6667px"); // 14pt
+  await page.getByRole("button", { name: "Display options" }).click();
+  await page.getByRole("button", { name: "Larger text" }).click();
+  expect(await text.evaluate((el) => getComputedStyle(el).fontSize)).toBe("21.3333px"); // 16pt
+  await page.locator('[aria-label="Line spacing"] button', { hasText: "Loose" }).click();
+  expect(await text.evaluate((el) => parseFloat(getComputedStyle(el).lineHeight) / parseFloat(getComputedStyle(el).fontSize))).toBeCloseTo(2.1, 1);
 });
 
 test("oneshot shows the story on the fic page and /1 redirects there", async ({ page }) => {
@@ -75,10 +88,10 @@ async function contrastOfColoredText(page: Page): Promise<number> {
   });
 }
 
-test("colored text stays readable in light and dark", async ({ page }) => {
-  await page.goto("/fics/sample-fic/1");
-  await page.evaluate(() => document.documentElement.setAttribute("data-theme", "light"));
-  expect(await contrastOfColoredText(page)).toBeGreaterThanOrEqual(4.5);
-  await page.evaluate(() => document.documentElement.setAttribute("data-theme", "dark"));
-  expect(await contrastOfColoredText(page)).toBeGreaterThanOrEqual(4.5);
-});
+for (const theme of ["day", "lagoon", "night", "midnight"]) {
+  test(`colored text stays readable in ${theme}`, async ({ page }) => {
+    await page.goto("/fics/sample-fic/1");
+    await page.evaluate((t) => document.documentElement.setAttribute("data-theme", t), theme);
+    expect(await contrastOfColoredText(page)).toBeGreaterThanOrEqual(4.5);
+  });
+}

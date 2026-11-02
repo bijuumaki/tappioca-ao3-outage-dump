@@ -1,10 +1,23 @@
 import { sanitizeRichText } from "./allowlist";
-import { adaptColor, isPlainInk, parseColor } from "./colors";
+import { adaptColor, contrastRatio, isPlainInk, parseColor } from "./colors";
 
-/* Theme colors the reader adapts against. Kept in step with app/tokens.css. */
+/* Page and card backgrounds and text colors of the light themes (Day, Lagoon) and dark themes (Night, Midnight).
+   Kept in step with app/tokens.css. A color is adapted against the hardest one in its group. */
+const LIGHT_BACKGROUNDS = ["#EDF6F9", "#F6F1E7", "#FBF8F2"];
+const DARK_BACKGROUNDS = ["#14262D", "#1B3540", "#06141B", "#11212D"];
+const LIGHT_INKS = ["#204B57", "#0A1517"];
+const DARK_INKS = ["#EDF6F9", "#CCD0CF"];
+
+/* Brightness order via contrast against black: higher means lighter. */
+const lightness = (c: string) => contrastRatio(c, "#000000");
+const darkest = (list: string[]) => [...list].sort((a, b) => lightness(a) - lightness(b))[0];
+const lightest = (list: string[]) => [...list].sort((a, b) => lightness(b) - lightness(a))[0];
+
+/* Text colors are hardest to read on the darkest light background and the lightest dark one;
+   highlights are hardest under the lightest dark-ink (light themes) and darkest light-ink (dark themes). */
 export const THEME = {
-  light: { bg: "#f5f5f5", ink: "#111111" },
-  dark: { bg: "#222831", ink: "#ecefee" },
+  light: { bg: darkest(LIGHT_BACKGROUNDS), ink: lightest(LIGHT_INKS) },
+  dark: { bg: lightest(DARK_BACKGROUNDS), ink: darkest(DARK_INKS) },
 };
 
 function decode(s: string): string {

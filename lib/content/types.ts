@@ -14,7 +14,7 @@ export type PostImage = T["post_images"]["Row"];
 export type Page = T["pages"]["Row"];
 
 export const RATING_LABELS: Record<Rating, string> = {
-  general: "General", teen: "Teen", mature: "Mature", explicit: "Explicit", not_rated: "Not Rated",
+  general: "General Audiences", teen: "Teen and Up", mature: "Mature", explicit: "Explicit", not_rated: "Not Rated",
 };
 export const STATUS_LABELS: Record<FicStatus, string> = { in_progress: "In progress", complete: "Complete" };
 export const TAG_TYPE_LABELS: Record<TagType, string> = {

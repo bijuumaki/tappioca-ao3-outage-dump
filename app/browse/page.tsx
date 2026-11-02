@@ -37,8 +37,8 @@ export default async function BrowsePage({ searchParams }: { searchParams: Promi
   const [categories, { fics, posts }] = await Promise.all([getCategories(), browse(filters)]);
 
   return (
-    <main className="page page-wide" id="main">
-      <h1 className="heading">Browse</h1>
+    <main className="page" id="main">
+      <h1 className="page-title">Browse</h1>
       <form method="get" className="browse-form box">
         <label>Category
           <select name="category" defaultValue={filters.category ?? ""}>
