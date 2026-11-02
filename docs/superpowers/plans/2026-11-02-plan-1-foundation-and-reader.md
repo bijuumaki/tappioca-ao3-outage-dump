@@ -173,7 +173,7 @@ The old `index.html`, `app.js` and `styles.css` are removed in Task 2 once their
 - [ ] **Step 3: Implement** the three helpers. `countWords` strips tags, decodes entities, splits on whitespace. `slugify` uses NFKD normalization and drops accents.
 - [ ] **Step 4: Run** the same command (expected: PASS).
 - [ ] **Step 5: Implement `queries.ts`.** `totalWords` is the sum of visible chapters' `word_count`. `getChapter` returns null when `n` is not an integer of at least 1, or past the last visible chapter. `browse` sorts `longest`/`shortest` by `totalWords`.
-- [ ] **Step 6: Extend** `tests/integration/visibility.test.ts`: `getFic('sample-fic')` has chapters with `n` `[1, 2, 3]` and `totalWords` equal to the sum of those three; `getChapter('sample-fic', 4)` is null; `getFic('<draft slug>')` is null. Run `npm test` (expected: PASS).
+- [ ] **Step 6: Extend** `tests/integration/visibility.test.ts`: `getFic('sample-fic')` has chapters with `n` `[1, 2, 3]` and `totalWords` equal to the sum of those three; `getChapter('sample-fic', 4)` is null; `getFic('sample-draft')` is null. Run `npm test` (expected: PASS).
 - [ ] **Step 7: Commit** "Add word counts, slugs and the reader queries".
 
 ### Task 5: Safe rich text with readable colors
@@ -211,7 +211,7 @@ The old `index.html`, `app.js` and `styles.css` are removed in Task 2 once their
   - fic page shows title, rating label, status, category, tags grouped by type, total word count, and a table of contents of 3 chapters each with its word count
   - chapter 2 page shows its word count, notes, body, and Previous (to 1), Contents and Next (to 3) links; chapter 3's Next is absent
   - oneshot: `/fics/sample-oneshot` shows the story body and no table of contents; `/fics/sample-oneshot/1` redirects there
-  - `/fics/sample-fic/0`, `/fics/sample-fic/abc`, `/fics/sample-fic/9` and `/fics/<draft slug>` show the not-found page with status 404
+  - `/fics/sample-fic/0`, `/fics/sample-fic/abc`, `/fics/sample-fic/9` and `/fics/sample-draft` show the not-found page with status 404
   - the published fic with no published chapters shows "No chapters yet"
   - reading progress: scroll chapter 2 halfway, reload, a "Welcome back" note shows and the page is scrolled near where it was
   - the colored seed paragraph has contrast of at least 4.5 in both light and dark
