@@ -52,14 +52,6 @@ describe.skipIf(!configured)("reader queries", async () => {
     expect(await q.getFic("sample-draft")).toBeNull();
   });
 
-  test("home feed has no draft or scheduled items, newest first", async () => {
-    const feed = await q.getHomeFeed();
-    expect(feed.some((i) => i.href.includes("sample-draft"))).toBe(false);
-    expect(feed.some((i) => i.title.includes("scheduled"))).toBe(false);
-    const times = feed.map((i) => Date.parse(i.publishedAt));
-    expect(times).toEqual([...times].sort((a, b) => b - a));
-  });
-
   test("browse filters by category and sorts by length", async () => {
     const art = await q.browse({ category: "art" });
     expect(art.fics).toEqual([]);

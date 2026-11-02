@@ -12,7 +12,6 @@ export type FicCardData = Pick<Fic, "slug" | "title" | "summary" | "rating" | "s
 };
 export type PostWithImages = Post & { category: Category; tags: Tag[]; images: PostImage[] };
 export type PostCardData = Pick<Post, "slug" | "title" | "publish_at"> & { category: Category; tags: Tag[]; firstImage: PostImage | null };
-export type FeedItem = { kind: "fic" | "chapter" | "post"; title: string; href: string; publishedAt: string; ficTitle?: string };
 export type BrowseFilters = {
   category?: string; rating?: Rating; status?: FicStatus; tags?: { type: TagType; slug: string }[];
   sort?: "newest" | "updated" | "longest" | "shortest";
@@ -90,25 +89,6 @@ export async function getPost(slug: string): Promise<PostWithImages | null> {
   return data ? shapePost(data as unknown as PostRow) : null;
 }
 
-export async function getHomeFeed(limit = 20): Promise<FeedItem[]> {
-  const [fics, posts] = await Promise.all([allFics(), allPosts()]);
-  const items: FeedItem[] = [];
-  for (const fic of fics) {
-    for (const c of fic.chapters) {
-      if (!c.publish_at) continue;
-      if (c.n === 1) {
-        items.push({ kind: "fic", title: fic.title, href: `/fics/${fic.slug}`, publishedAt: c.publish_at });
-      } else {
-        items.push({ kind: "chapter", title: c.title ?? `Chapter ${c.n}`, href: `/fics/${fic.slug}/${c.n}`, publishedAt: c.publish_at, ficTitle: fic.title });
-      }
-    }
-  }
-  for (const post of posts) {
-    if (post.publish_at) items.push({ kind: "post", title: post.title, href: `/posts/${post.slug}`, publishedAt: post.publish_at });
-  }
-  return items.sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt)).slice(0, limit);
-}
-
 function hasTags(tags: Tag[], wanted: BrowseFilters["tags"]): boolean {
   return (wanted ?? []).every((w) => tags.some((t) => t.type === w.type && t.slug === w.slug));
 }
@@ -166,7 +146,6 @@ export async function getCategories(): Promise<Category[]> {
 
 export type HomeData = {
   featured: FicCardData | null;
-  recentFics: FicCardData[];
   recentPosts: PostCardData[];
   storyCount: number;
   fandoms: { name: string; slug: string; count: number }[];
@@ -193,7 +172,7 @@ export async function getHomeData(): Promise<HomeData> {
   const fandoms = groupByFandom(fics)
     .filter((g) => g.slug !== null)
     .map((g) => ({ name: g.name, slug: g.slug as string, count: g.fics.length }));
-  return { featured, recentFics: fics.slice(0, 6), recentPosts: posts.slice(0, 3), storyCount: fics.length, fandoms };
+  return { featured, recentPosts: posts.slice(0, 3), storyCount: fics.length, fandoms };
 }
 
 /* Short home-page texts ("howdy", "archive"), stored in the pages table but not public pages. */
