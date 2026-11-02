@@ -7,6 +7,8 @@ import { requireAdmin } from "@/lib/supabase/session";
 
 export const metadata: Metadata = { title: "Uploads" };
 export const dynamic = "force-dynamic";
+/* Converting and saving to Drive can take a while for a long book; give the actions on this screen a minute. */
+export const maxDuration = 60;
 
 export default async function UploadsPage() {
   const { db } = await requireAdmin();

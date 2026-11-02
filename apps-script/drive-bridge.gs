@@ -26,16 +26,29 @@ function doPost(e) {
     var req = parse_(e);
     if (!req) return out_({ ok: false, error: 'bad_request' });
     if (!tokenOk_(req.token)) return out_({ ok: false, error: 'unauthorized' });
-    var root = DriveApp.getFolderById(PropertiesService.getScriptProperties().getProperty('FOLDER_ID'));
+    var root = root_();
+    /* FOLDER_ID missing, wrong, or pointing at the whole My Drive: refuse rather than expose too much. */
+    if (!root) return out_({ ok: false, error: 'not_configured' });
     switch (req.action) {
       case 'ping': return out_({ ok: true, folder: root.getName() });
-      case 'list': return out_({ ok: true, files: list_(root) });
+      case 'list': return out_(list_(root, req));
       case 'get': return out_(get_(root, req));
       case 'put': return out_(put_(root, req));
       default: return out_({ ok: false, error: 'bad_request' });
     }
   } catch (err) {
     return out_({ ok: false, error: 'server_error' });
+  }
+}
+
+function root_() {
+  try {
+    var id = PropertiesService.getScriptProperties().getProperty('FOLDER_ID');
+    if (!id) return null;
+    var folder = DriveApp.getFolderById(id);
+    return folder.getId() === DriveApp.getRootFolder().getId() ? null : folder;
+  } catch (err) {
+    return null;
   }
 }
 
@@ -79,23 +92,47 @@ function inside_(item, rootId) {
   return false;
 }
 
-function list_(root) {
+/* Lists the readable files. With req.folder, only that top-level folder. Anything in the trash is ignored.
+   Stops at MAX_LIST and says so (truncated), so a long library isn't silently cut off. */
+function list_(root, req) {
   var files = [];
-  walk_(root, '', 0, files);
-  return files;
+  var start = root;
+  var prefix = '';
+  if (req.folder !== undefined && req.folder !== null && req.folder !== '') {
+    var wanted = cleanName_(req.folder, 80);
+    if (!wanted) return { ok: false, error: 'bad_request' };
+    start = findFolder_(root, wanted);
+    if (!start) return { ok: true, files: [], truncated: false };
+    prefix = wanted + '/';
+  }
+  walk_(start, prefix, 0, files);
+  var truncated = files.length > MAX_LIST;
+  return { ok: true, files: files.slice(0, MAX_LIST), truncated: truncated };
+}
+
+function findFolder_(parent, name) {
+  var it = parent.getFoldersByName(name);
+  while (it.hasNext()) {
+    var f = it.next();
+    if (!f.isTrashed()) return f;
+  }
+  return null;
 }
 
 function walk_(folder, path, depth, files) {
   var it = folder.getFiles();
-  while (it.hasNext() && files.length < MAX_LIST) {
+  while (it.hasNext() && files.length <= MAX_LIST) {
     var f = it.next();
-    if (!ALLOWED[ext_(f.getName())]) continue;
-    files.push({ id: f.getId(), name: f.getName(), path: path + f.getName(), size: f.getSize(), modified: f.getLastUpdated().toISOString() });
+    if (f.isTrashed()) continue;
+    var name = f.getName();
+    if (!ALLOWED[ext_(name)]) continue;
+    files.push({ id: f.getId(), name: name, path: path + name, size: f.getSize(), modified: f.getLastUpdated().toISOString() });
   }
   if (depth >= MAX_DEPTH) return;
   var sub = folder.getFolders();
-  while (sub.hasNext() && files.length < MAX_LIST) {
+  while (sub.hasNext() && files.length <= MAX_LIST) {
     var s = sub.next();
+    if (s.isTrashed()) continue;
     walk_(s, path + s.getName() + '/', depth + 1, files);
   }
 }
@@ -105,10 +142,17 @@ function get_(root, req) {
   if (typeof id !== 'string' || !/^[A-Za-z0-9_-]{10,}$/.test(id)) return { ok: false, error: 'bad_request' };
   var file;
   try { file = DriveApp.getFileById(id); } catch (err) { return { ok: false, error: 'not_found' }; }
+  if (file.isTrashed()) return { ok: false, error: 'not_found' };
   if (!inside_(file, root.getId())) return { ok: false, error: 'outside_folder' };
   if (!ALLOWED[ext_(file.getName())]) return { ok: false, error: 'type_not_allowed' };
   if (file.getSize() > MAX_BYTES) return { ok: false, error: 'too_large' };
   return { ok: true, name: file.getName(), size: file.getSize(), data: Utilities.base64Encode(file.getBlob().getBytes()) };
+}
+
+function liveFileExists_(folder, name) {
+  var it = folder.getFilesByName(name);
+  while (it.hasNext()) { if (!it.next().isTrashed()) return true; }
+  return false;
 }
 
 function cleanName_(s, max) {
@@ -129,10 +173,9 @@ function put_(root, req) {
   if (!bytes || !bytes.length) return { ok: false, error: 'bad_request' };
   if (bytes.length > MAX_BYTES) return { ok: false, error: 'too_large' };
 
-  var folders = root.getFoldersByName(folderName);
-  var folder = folders.hasNext() ? folders.next() : root.createFolder(folderName);
+  var folder = findFolder_(root, folderName) || root.createFolder(folderName);
   var finalName = name;
-  if (folder.getFilesByName(finalName).hasNext()) {
+  if (liveFileExists_(folder, finalName)) {
     /* Never overwrite: the newer file gets a time stamp in its name. */
     var stamp = new Date().toISOString().replace(/[:.]/g, '-');
     finalName = name.slice(0, name.length - ext.length - 1) + ' (' + stamp + ').' + ext;

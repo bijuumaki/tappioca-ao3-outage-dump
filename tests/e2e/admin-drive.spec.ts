@@ -98,3 +98,18 @@ test("when the Drive address is wrong the status line explains, and uploads stil
   await page.getByLabel("Choose files for a new fic").setInputFiles(md("(e2e drive broken) - 1.md", "works anyway"));
   await expect(page.locator(".a-results li")).toContainText(/converted/i, { timeout: 30_000 });
 });
+
+test("a long library says it was cut off, and one folder can be shown on its own", async ({ page, request }) => {
+  await control(request, { listLimit: 2, add: [
+    { path: "Resident Evil/(e2e drive big) - 1.md", content: "a" }, { path: "Resident Evil/(e2e drive big) - 2.md", content: "b" },
+    { path: "Naruto/(e2e drive big) - 3.md", content: "c" },
+  ] });
+  await page.getByRole("button", { name: "Show my Drive files" }).click();
+  await expect(page.locator(".a-drive-files li")).toHaveCount(2);
+  await expect(page.getByText(/showing the first 2 files/i)).toBeVisible();
+  await page.getByLabel("Only this folder").fill("Naruto");
+  await page.getByRole("button", { name: "Show my Drive files" }).click();
+  await expect(page.locator(".a-drive-files li")).toHaveCount(1);
+  await expect(page.locator(".a-drive-files li")).toContainText("Naruto/");
+  await expect(page.getByText(/showing the first/i)).toHaveCount(0);
+});

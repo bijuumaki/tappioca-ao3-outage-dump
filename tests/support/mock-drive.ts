@@ -7,13 +7,14 @@ export type MockMode = "ok" | "html" | "slow" | "fail";
 export type MockFile = { id: string; path: string; name: string; bytes: Buffer; modified: string };
 const ALLOWED = /\.(html|htm|md|markdown|txt|docx|epub)$/i;
 
-export type MockDrive = { url: string; port: number; token: string; folder: string; files: MockFile[]; setMode(m: MockMode): void; stop(): Promise<void>; calls: string[] };
+export type MockDrive = { url: string; port: number; token: string; folder: string; files: MockFile[]; setMode(m: MockMode): void; setListLimit(n: number): void; stop(): Promise<void>; calls: string[] };
 
 export async function startMockDrive(opts: { port?: number; token?: string; folder?: string } = {}): Promise<MockDrive> {
   const token = opts.token ?? "mock-token-1234567890";
   const folder = opts.folder ?? "(mock) Fic Library";
   let mode: MockMode = "ok";
   let failPut = false;
+  let listLimit = 500;
   let n = 0;
   const files: MockFile[] = [];
   const calls: string[] = [];
@@ -31,9 +32,10 @@ export async function startMockDrive(opts: { port?: number; token?: string; fold
       if (req.url === "/__state") return send({ mode, failPut, calls, files: files.map((f) => ({ path: f.path, name: f.name, size: f.bytes.length, content: f.bytes.toString("utf8") })) });
       if (req.url === "/__control") {
         const c = JSON.parse(body || "{}");
-        if (c.reset) { files.length = 0; calls.length = 0; mode = "ok"; failPut = false; }
+        if (c.reset) { files.length = 0; calls.length = 0; mode = "ok"; failPut = false; listLimit = 500; }
         if (c.mode) mode = c.mode;
         if (typeof c.failPut === "boolean") failPut = c.failPut;
+        if (typeof c.listLimit === "number") listLimit = c.listLimit;
         for (const f of c.add ?? []) add(f.path, f.content);
         return send({ ok: true });
       }
@@ -46,7 +48,11 @@ export async function startMockDrive(opts: { port?: number; token?: string; fold
       if (mode === "fail") return send({ ok: false, error: "server_error" });
       switch (r.action) {
         case "ping": return send({ ok: true, folder });
-        case "list": return send({ ok: true, files: files.filter((f) => ALLOWED.test(f.name)).map((f) => ({ id: f.id, name: f.name, path: f.path, size: f.bytes.length, modified: f.modified })) });
+        case "list": {
+          const r2 = r as { folder?: string };
+          const all = files.filter((f) => ALLOWED.test(f.name) && (!r2.folder || f.path.startsWith(`${r2.folder}/`)));
+          return send({ ok: true, truncated: all.length > listLimit, files: all.slice(0, listLimit).map((f) => ({ id: f.id, name: f.name, path: f.path, size: f.bytes.length, modified: f.modified })) });
+        }
         case "get": {
           const f = files.find((x) => x.id === r.id);
           if (!f) return send({ ok: false, error: "not_found" });
@@ -71,6 +77,7 @@ export async function startMockDrive(opts: { port?: number; token?: string; fold
   return {
     url: `http://127.0.0.1:${port}/exec`, port, token, folder, files, calls,
     setMode: (m) => { mode = m; },
+    setListLimit: (n) => { listLimit = n; },
     stop: () => new Promise<void>((resolve) => { server.closeAllConnections?.(); server.close(() => resolve()); }),
   };
 }

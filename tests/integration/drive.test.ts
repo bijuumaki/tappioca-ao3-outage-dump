@@ -59,6 +59,16 @@ describe.skipIf(!hasSecret())("google drive flows", () => {
     expect(data).toEqual({ drive_status: "saved", drive_file_id: mock.files[0].id });
   });
 
+  test("saving the same upload again doesn't send it twice", async () => {
+    const file = await uploaded("(e2e drive again).md", "once only");
+    const { results } = await processUploadBatch(db, [file], null);
+    const first = await saveOriginals(db, bridge, [file], results[0].ficId!);
+    const second = await saveOriginals(db, bridge, [file], results[0].ficId!);
+    expect(first[0].message).toMatch(/saved to Google Drive/i);
+    expect(second).toEqual([{ name: "(e2e drive again).md", saved: true, message: "already in Google Drive" }]);
+    expect(mock.files).toHaveLength(1);
+  });
+
   test("a fic with no fandom goes in Unsorted", async () => {
     const file = await uploaded("(e2e drive nofandom).md", "plain words");
     const { results } = await processUploadBatch(db, [file], null);

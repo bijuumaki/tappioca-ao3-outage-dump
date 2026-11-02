@@ -26,8 +26,11 @@ export async function saveOriginals(db: Db, bridge: Bridge, items: { name: strin
   const { data: tags } = await db.from("fic_tags").select("tag:tags(type, name)").eq("fic_id", ficId);
   const fandom = (tags ?? []).map((t) => t.tag as unknown as { type: string; name: string }).find((t) => t.type === "fandom")?.name ?? null;
   const folder = fandomFolderName(fandom);
+  const { data: rows } = await db.from("upload_files").select("storage_path").in("storage_path", items.map((i) => i.path)).eq("drive_status", "saved");
+  const already = new Set((rows ?? []).map((r) => r.storage_path));
   const results: DriveSaveResult[] = [];
   for (const item of items) {
+    if (already.has(item.path)) { results.push({ name: item.name, saved: true, message: "already in Google Drive" }); continue; }
     try {
       const { data: blob, error } = await db.storage.from("uploads").download(item.path);
       if (error || !blob) throw new Error("read-back");

@@ -1,3 +1,4 @@
+import "server-only";
 /* The website's connection to the Google Drive bridge (apps-script/drive-bridge.gs). Server-side only:
    the secret token must never reach the browser. */
 
@@ -8,6 +9,7 @@ export class DriveError extends Error {
 }
 
 const MESSAGES: Record<string, string> = {
+  not_configured: "The Drive bridge isn’t set up completely: FOLDER_ID in the script’s settings is missing, wrong, or points at the whole Drive instead of the Fic Library folder.",
   unauthorized: "Google Drive didn’t accept the secret word (token). Check that DRIVE_BRIDGE_TOKEN matches the TOKEN in the script.",
   bad_request: "Google Drive didn’t understand that request.",
   not_found: "That file is no longer in Google Drive.",
@@ -37,7 +39,7 @@ export function createBridge({ url, token, fetchImpl = fetch, timeoutMs = 50_000
     }
     let json: { ok?: boolean; error?: string };
     try { json = JSON.parse(text); }
-    catch { throw new DriveError("That address answered with a web page instead of the Drive bridge. In the script’s deployment “Who has access” must be “Anyone”, and the address must end in /exec.", "not_bridge"); }
+    catch { throw new DriveError("That address answered with a web page instead of the Drive bridge. Either “Who has access” in the script’s deployment isn’t “Anyone”, or the address doesn’t end in /exec, or the script hit one of Google’s limits (try a smaller file).", "not_bridge"); }
     if (!json.ok) throw new DriveError(MESSAGES[json.error ?? ""] ?? MESSAGES.server_error, String(json.error ?? "server_error"));
     return json as Record<string, unknown>;
   }
@@ -46,8 +48,10 @@ export function createBridge({ url, token, fetchImpl = fetch, timeoutMs = 50_000
     async ping(): Promise<{ folder: string }> {
       return { folder: String((await call({ action: "ping" })).folder) };
     },
-    async list(): Promise<DriveFile[]> {
-      return (await call({ action: "list" })).files as DriveFile[];
+    /* Every readable file, or only those in one top-level folder. `truncated` means the library is bigger than the list. */
+    async list(folder?: string): Promise<{ files: DriveFile[]; truncated: boolean }> {
+      const r = await call({ action: "list", ...(folder ? { folder } : {}) });
+      return { files: r.files as DriveFile[], truncated: r.truncated === true };
     },
     async get(id: string): Promise<{ name: string; bytes: Uint8Array }> {
       const r = await call({ action: "get", id });

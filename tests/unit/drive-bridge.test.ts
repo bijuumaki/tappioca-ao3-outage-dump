@@ -1,9 +1,12 @@
 import fs from "node:fs";
 import { beforeEach, describe, expect, test } from "vitest";
+import { fandomFolderName, safeDriveName } from "@/lib/drive/names";
 
 /* A tiny in-memory Google Drive, with only what the bridge uses. Anything that could delete, move or share throws. */
 class Item {
   parents: Folder[] = [];
+  trashed = false;
+  isTrashed() { return this.trashed; }
   constructor(public id: string, public name: string) {}
   getId() { return this.id; }
   getName() { return this.name; }
@@ -55,9 +58,11 @@ beforeEach(() => {
   byId = new Map();
   root = new Folder("ROOT_FOLDER_ID_0001", "Fic Library"); register(root);
   outside = new Folder("OUTSIDE_FOLDER_0001", "Other stuff"); register(outside);
+  byId.set("MY_DRIVE_ROOT_ID", new Folder("MY_DRIVE_ROOT_ID", "My Drive"));
   props = { FOLDER_ID: root.id, TOKEN };
   const created: Folder[] = [];
   const drive = {
+    getRootFolder: () => ({ getId: () => "MY_DRIVE_ROOT_ID" }),
     getFolderById: (id: string) => { const f = byId.get(id); if (!(f instanceof Folder)) throw new Error("not found"); return f; },
     getFileById: (id: string) => { const f = byId.get(id); if (!(f instanceof FileItem)) throw new Error("not found"); return f; },
   };
@@ -209,5 +214,60 @@ describe("what it can never do", () => {
     call({ token: TOKEN, action: "put", folder: "F", name: "a.md", data: Buffer.from("x").toString("base64") });
     expect(outside.files).toHaveLength(1);
     expect(outside.folders).toHaveLength(0);
+  });
+});
+
+describe("trash, big libraries and misconfiguration", () => {
+  test("trashed files and folders are invisible: not listed, not readable, never saved into", () => {
+    const re = addFolder(root, "Resident Evil");
+    const live = addFile(re, "live - 1.md", "x");
+    const gone = addFile(re, "old draft.md", "x"); gone.trashed = true;
+    const trashedFolder = addFolder(root, "Naruto"); trashedFolder.trashed = true;
+    addFile(trashedFolder, "inside trash.md", "x");
+    const paths = (call({ token: TOKEN, action: "list" }) as Resp & { files: { path: string }[] }).files.map((f) => f.path);
+    expect(paths).toEqual(["Resident Evil/live - 1.md"]);
+    expect(call({ token: TOKEN, action: "get", id: gone.id }).error).toBe("not_found");
+    expect(call({ token: TOKEN, action: "get", id: live.id }).ok).toBe(true);
+    const saved = call({ token: TOKEN, action: "put", folder: "Naruto", name: "new.md", data: Buffer.from("x").toString("base64") }) as Resp & { path: string };
+    expect(saved.ok).toBe(true);
+    expect(trashedFolder.files.map((f) => f.name)).toEqual(["inside trash.md"]);
+    expect(root.folders.filter((f) => f.name === "Naruto" && !f.trashed)).toHaveLength(1);
+  });
+
+  test("a library bigger than 500 files says it was cut off", () => {
+    for (let i = 0; i < 520; i++) addFile(root, `f${i}.md`, "x");
+    const res = call({ token: TOKEN, action: "list" }) as Resp & { files: unknown[]; truncated: boolean };
+    expect(res.files).toHaveLength(500);
+    expect(res.truncated).toBe(true);
+    const small = addFolder(root, "Small"); addFile(small, "only.md", "x");
+    const one = call({ token: TOKEN, action: "list", folder: "Small" }) as Resp & { files: { path: string }[]; truncated: boolean };
+    expect(one.files.map((f) => f.path)).toEqual(["Small/only.md"]);
+    expect(one.truncated).toBe(false);
+  });
+
+  test("listing one folder never lists another, and an unknown folder is just empty", () => {
+    addFile(addFolder(root, "A"), "a.md", "x"); addFile(addFolder(root, "B"), "b.md", "x");
+    expect((call({ token: TOKEN, action: "list", folder: "A" }) as Resp & { files: unknown[] }).files).toHaveLength(1);
+    expect((call({ token: TOKEN, action: "list", folder: "Nope" }) as Resp & { files: unknown[] }).files).toHaveLength(0);
+    expect(call({ token: TOKEN, action: "list", folder: "../.." }).error).toBe("bad_request");
+  });
+
+  test("a missing FOLDER_ID, or one that is the whole My Drive, is refused as not set up", () => {
+    delete props.FOLDER_ID;
+    expect(call({ token: TOKEN, action: "ping" }).error).toBe("not_configured");
+    props.FOLDER_ID = "MY_DRIVE_ROOT_ID";
+    expect(call({ token: TOKEN, action: "list" }).error).toBe("not_configured");
+    expect(call({ token: TOKEN, action: "put", folder: "F", name: "a.md", data: "aGk=" }).error).toBe("not_configured");
+  });
+
+  test("every name the app sends is a name the bridge accepts", () => {
+    const nasty = ["To be continued....md", "Title..md", "a/b.md", "  spaced  .md", ".hidden.md", "x".repeat(300) + ".epub", "😀".repeat(120) + ".md", "..md", "ok - 1.md", "Fic: “quotes” & more?.md"];
+    for (const n of nasty) {
+      const res = call({ token: TOKEN, action: "put", folder: fandomFolderName(n.slice(0, 40)), name: safeDriveName(n), data: Buffer.from("x").toString("base64") });
+      expect(res.ok, `${n} -> ${safeDriveName(n)}`).toBe(true);
+    }
+    for (const f of ["Resident Evil", "..", "a/b", "😀".repeat(100), "x".repeat(200), "   "]) {
+      expect(call({ token: TOKEN, action: "put", folder: fandomFolderName(f), name: "a.md", data: Buffer.from("x").toString("base64") }).ok, f).toBe(true);
+    }
   });
 });

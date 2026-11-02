@@ -13,13 +13,13 @@ export async function getDriveStatus(): Promise<DriveStatus> {
 }
 
 /* The files in the Fic Library folder that can be imported, listed by folder. Only asked for when the button is pressed. */
-export async function listDriveFiles(): Promise<{ ok: true; files: DriveFile[] } | { ok: false; error: string }> {
+export async function listDriveFiles(folder?: string): Promise<{ ok: true; files: DriveFile[]; truncated: boolean } | { ok: false; error: string }> {
   await requireAdmin();
   const bridge = bridgeFromEnv();
   if (!bridge) return { ok: false, error: NOT_CONNECTED };
   try {
-    const files = await bridge.list();
-    return { ok: true, files: files.sort((a, b) => a.path.localeCompare(b.path)) };
+    const { files, truncated } = await bridge.list(folder?.trim() || undefined);
+    return { ok: true, files: files.sort((a, b) => a.path.localeCompare(b.path)), truncated };
   } catch (e) {
     return { ok: false, error: e instanceof DriveError ? e.message : "Couldn’t read the Drive folder." };
   }

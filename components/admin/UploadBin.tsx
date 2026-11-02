@@ -49,6 +49,8 @@ export default function UploadBin({ fics }: { fics: BinFic[] }) {
   const [drive, setDrive] = useState<DriveStatus | null>(null);
   const [saveToDrive, setSaveToDrive] = useState(true);
   const [driveFiles, setDriveFiles] = useState<DriveFile[] | null>(null);
+  const [truncated, setTruncated] = useState(false);
+  const [folderFilter, setFolderFilter] = useState("");
   const [driveError, setDriveError] = useState<string | null>(null);
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const [target, setTarget] = useState("new");
@@ -111,9 +113,9 @@ export default function UploadBin({ fics }: { fics: BinFic[] }) {
 
   async function showDriveFiles() {
     setDriveError(null); setBusy(true);
-    const res = await listDriveFiles().catch(() => ({ ok: false as const, error: "Couldn’t read the Drive folder." }));
+    const res = await listDriveFiles(folderFilter).catch(() => ({ ok: false as const, error: "Couldn’t read the Drive folder." }));
     setBusy(false);
-    if (res.ok) { setDriveFiles(res.files); setPicked(new Set()); } else setDriveError(res.error);
+    if (res.ok) { setDriveFiles(res.files); setTruncated(res.truncated); setPicked(new Set()); } else setDriveError(res.error);
   }
 
   async function importPicked() {
@@ -140,16 +142,16 @@ export default function UploadBin({ fics }: { fics: BinFic[] }) {
   return (
     <div className="a-bin">
       <p className="a-drive-status" role="status">{driveLine(drive)}</p>
+      {connected && (
+        <label className="a-check">
+          <input type="checkbox" checked={saveToDrive} onChange={(e) => setSaveToDrive(e.target.checked)} />
+          Also save originals to Google Drive (for every upload on this screen)
+        </label>
+      )}
 
       <section className="a-section" aria-label="New fic from files">
         <h2 className="a-bar">New fic from files</h2>
         <p className="a-muted">Name chapters like <span className="keep-case">Title - 1.md</span>, <span className="keep-case">Title - 2.md</span> and they become one fic. An .epub becomes a whole fic. Everything arrives as a draft.</p>
-        {connected && (
-          <label className="a-check">
-            <input type="checkbox" checked={saveToDrive} onChange={(e) => setSaveToDrive(e.target.checked)} />
-            Also save originals to Google Drive
-          </label>
-        )}
         <DropZone label="Drop files here" inputLabel="Choose files for a new fic" busy={busy} onFiles={(f) => void send(f, null)} />
       </section>
 
@@ -164,10 +166,14 @@ export default function UploadBin({ fics }: { fics: BinFic[] }) {
                 {fics.map((f) => <option key={f.id} value={f.id} className="keep-case">{f.title}</option>)}
               </select>
             </label>
+            <label className="a-field">Only this folder (optional)
+              <input aria-label="Only this folder" value={folderFilter} onChange={(e) => setFolderFilter(e.target.value)} placeholder="e.g. Resident Evil" />
+            </label>
             <button type="button" className="a-button" disabled={busy} onClick={() => void showDriveFiles()}>Show my Drive files</button>
           </div>
           {driveError && <p className="a-alert" role="alert">{driveError}</p>}
-          {driveFiles && driveFiles.length === 0 && <p className="a-muted">No files I can read in that folder yet (.html, .md, .txt, .docx, .epub).</p>}
+          {driveFiles && driveFiles.length === 0 && <p className="a-muted">No files I can read there yet. I can read .html, .md, .txt, .docx and .epub; Google Docs aren’t listed, so export them to .docx or .md first.</p>}
+          {driveFiles && truncated && <p className="a-muted" role="note">Showing the first {driveFiles.length} files only. Type a folder name above and press “Show my Drive files” to see the rest.</p>}
           {driveFiles && driveFiles.length > 0 && (
             <>
               <ul className="a-drive-files">
@@ -176,7 +182,7 @@ export default function UploadBin({ fics }: { fics: BinFic[] }) {
                     <label className="a-check">
                       <input type="checkbox" aria-label={f.path} checked={picked.has(f.id)}
                         onChange={(e) => setPicked((p) => { const n = new Set(p); if (e.target.checked) n.add(f.id); else n.delete(f.id); return n; })} />
-                      <span className="keep-case">{f.path}</span> <span className="a-muted">{size(f.size)}</span>
+                      <span className="keep-case">{f.path}</span> <span className="a-muted">{size(f.size)} · {new Date(f.modified).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "Asia/Manila" })}</span>
                     </label>
                   </li>
                 ))}

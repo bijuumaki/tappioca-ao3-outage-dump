@@ -17,7 +17,8 @@ test("ping names the folder", async () => {
 test("list, get and put round-trip real bytes", async () => {
   const saved = await bridge().put({ folder: "Resident Evil", name: "Anam Cara - 1.md", bytes: new TextEncoder().encode("héllo ⁂") });
   expect(saved.path).toBe("Resident Evil/Anam Cara - 1.md");
-  const files = await bridge().list();
+  const { files, truncated } = await bridge().list();
+  expect(truncated).toBe(false);
   expect(files).toHaveLength(1);
   expect(files[0]).toMatchObject({ name: "Anam Cara - 1.md", path: "Resident Evil/Anam Cara - 1.md", size: 10 });
   const got = await bridge().get(files[0].id);
@@ -28,6 +29,17 @@ test("list, get and put round-trip real bytes", async () => {
 test("a wrong token says so in plain words", async () => {
   await expect(bridge({ token: "nope" }).ping()).rejects.toThrow(/secret word|token/i);
   await expect(bridge({ token: "nope" }).ping()).rejects.toBeInstanceOf(DriveError);
+});
+
+test("the list can be narrowed to one folder, and says when it was cut off", async () => {
+  for (const n of [1, 2, 3]) await bridge().put({ folder: "A", name: `a - ${n}.md`, bytes: new TextEncoder().encode("x") });
+  await bridge().put({ folder: "B", name: "b.md", bytes: new TextEncoder().encode("x") });
+  expect((await bridge().list("A")).files).toHaveLength(3);
+  mock.setListLimit(2);
+  const cut = await bridge().list();
+  expect(cut.files).toHaveLength(2);
+  expect(cut.truncated).toBe(true);
+  mock.setListLimit(500);
 });
 
 test("a web page instead of the bridge (not shared as Anyone, wrong address) is explained", async () => {
@@ -70,6 +82,7 @@ test("fandom folder names are safe and never empty", () => {
   expect(fandomFolderName("a/b\\c")).toBe("a-b-c");
   expect(fandomFolderName("..")).toBe("Unsorted");
   expect(fandomFolderName("x".repeat(200)).length).toBeLessThanOrEqual(80);
+  expect(/[\ud800-\udbff](?![\udc00-\udfff])/.test(fandomFolderName("😀".repeat(100)))).toBe(false);
 });
 
 test("file names keep their extension and pass the bridge's rules", () => {
@@ -79,4 +92,12 @@ test("file names keep their extension and pass the bridge's rules", () => {
   const long = safeDriveName("y".repeat(300) + ".docx");
   expect(long.length).toBeLessThanOrEqual(150);
   expect(long.endsWith(".docx")).toBe(true);
+});
+
+test("names ending in dots don't end up with a double dot", () => {
+  expect(safeDriveName("To be continued....md")).toBe("To be continued.md");
+  expect(safeDriveName("Title..md")).toBe("Title.md");
+  expect(safeDriveName("  spaced  .md")).toBe("spaced.md");
+  expect(/[\ud800-\udbff](?![\udc00-\udfff])/.test(safeDriveName("😀".repeat(200) + ".md"))).toBe(false);
+  expect(safeDriveName("😀".repeat(200) + ".md").length).toBeLessThanOrEqual(150);
 });
