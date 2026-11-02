@@ -99,6 +99,8 @@ How the upload bin works:
 
 **Versions**: every save or replace keeps the previous text of the chapter. Bijuu can view and restore the last 20 versions per chapter.
 
+**Editor look ("write mode")**: modeled on Bijuu's Figma reference, the WYSIWYG Text Editor UI Kit (`figma.com/design/FLtVHf4UtMyIQcpscOPC4X`, frame "TextEditor", Desktop / Tablet / Mobile): a menu bar with a Preview button on the right, a two-row toolbar, the page in the middle, and a word count bar at the bottom, in light and dark. The toolbar only shows buttons for the format set above (undo/redo, paragraph style, bold, italic, underline, strikethrough, text color, highlight, link, image, lists, alignment, scene break, clear formatting). The kit's font, font size, line spacing, indent, checklist, print and zoom buttons are left out unless Bijuu asks for them.
+
 **Editor** (Tiptap): a toolbar for the formats above and drag-and-drop images. Pasted Google Docs or Word text keeps its formatting within the set. It autosaves drafts every few seconds.
 
 **Paste HTML**: a box on the editor screen where Bijuu pastes what Ellipsus's "Copy as HTML" produced. It shows a preview, then fills the chapter. No file needed.
