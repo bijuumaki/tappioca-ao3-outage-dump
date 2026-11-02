@@ -8,6 +8,7 @@ async function cleanUp() {
   const db = secretClient();
   const { data } = await db.from("fics").select("id").like("title", "(e2e publish%");
   for (const f of data ?? []) await db.from("fics").delete().eq("id", f.id);
+  await db.from("tags").delete().like("name", "(e2e%");
 }
 test.beforeAll(cleanUp);
 test.afterAll(cleanUp);
