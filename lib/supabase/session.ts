@@ -22,11 +22,11 @@ export async function createSessionClient(): Promise<SupabaseClient<Database>> {
 export async function requireAdmin(): Promise<{ db: SupabaseClient<Database>; userId: string }> {
   const db = await createSessionClient();
   const { data: { user } } = await db.auth.getUser();
-  if (!user) redirect("/admin/login");
+  if (!user) redirect("/admin-login");
   const { data } = await db.from("admins").select("user_id").eq("user_id", user.id).maybeSingle();
   if (!data) {
     await db.auth.signOut();
-    redirect("/admin/login?error=not-admin");
+    redirect("/admin-login?error=not-admin");
   }
   return { db, userId: user.id };
 }

@@ -18,7 +18,7 @@ export async function signIn(_prev: SignInState, form: FormData): Promise<SignIn
 export async function signOut(): Promise<void> {
   const db = await createSessionClient();
   await db.auth.signOut({ scope: "local" });
-  redirect("/admin/login");
+  redirect("/admin-login");
 }
 
 export type SetPasswordState = { error: string | null };

@@ -72,5 +72,5 @@ test("a broken file is reported while a good one in the same batch still goes th
 
 test("a signed-out visitor can't open the Uploads screen", async ({ page }) => {
   await page.goto("/admin/uploads");
-  await expect(page).toHaveURL(/\/admin\/login/);
+  await expect(page).toHaveURL(/\/admin-login/);
 });

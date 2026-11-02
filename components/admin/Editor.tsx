@@ -172,7 +172,7 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
       <div className="a-statusbar">
         <span className="a-wordcount">{words === 1 ? "1 word" : `${words.toLocaleString("en-US")} words`}</span>
         <span className="a-save-state" role="status" data-state={state}>{SAVE_LABEL[state]}</span>
-        {state === "signed_out" && <a href="/admin/login" target="_blank" rel="noopener" className="a-link">Sign in (opens a new tab)</a>}
+        {state === "signed_out" && <a href="/admin-login" target="_blank" rel="noopener" className="a-link">Sign in (opens a new tab)</a>}
       </div>
     </div>
   );

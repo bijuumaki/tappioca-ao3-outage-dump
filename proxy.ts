@@ -15,12 +15,19 @@ export async function proxy(request: NextRequest) {
     },
   });
   const { data: { user } } = await db.auth.getUser();
-  const onLogin = request.nextUrl.pathname === "/admin/login" || request.nextUrl.pathname === "/admin/set-password";
+  const path = request.nextUrl.pathname;
+  /* The sign-in page lives at /admin-login; an old /admin/login bookmark is sent there. */
+  if (path === "/admin/login") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/admin-login";
+    return NextResponse.redirect(url);
+  }
+  const onLogin = path === "/admin/set-password";
   /* Server actions (autosave) answer "signed out" themselves, so the editor can keep the text on screen. */
   const isAction = request.headers.has("next-action");
   if (!user && !onLogin && !isAction) {
     const url = request.nextUrl.clone();
-    url.pathname = "/admin/login";
+    url.pathname = "/admin-login";
     url.search = "";
     return NextResponse.redirect(url);
   }

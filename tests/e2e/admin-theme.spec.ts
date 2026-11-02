@@ -37,7 +37,7 @@ test("admin text is lowercase and readable in every theme", async ({ page }) => 
 });
 
 test("the sign-in page uses the admin theme too", async ({ page }) => {
-  await page.goto("/admin/login");
+  await page.goto("/admin-login");
   await expect(page.locator(".admin")).toHaveAttribute("data-admin-theme", "day");
 });
 

@@ -76,7 +76,7 @@ The look comes from Bijuu's Claude Design canvas "Tappioca Fic Archive" (https:/
 
 ## Admin
 
-- `/admin` (Plan 2a): sign-in, Stories list, New Story / edit (details, cover, chapters, editor with autosave), Publish / Schedule / Unpublish / Preview. Only accounts in `public.admins` can write or see drafts (`private.is_admin()` in the policies).
+- `/admin` (Plan 2a): sign-in at **`/admin-login`** (old `/admin/login` redirects there), Stories list, New Story / edit (details, cover, chapters, editor with autosave), Publish / Schedule / Unpublish / Preview. Only accounts in `public.admins` can write or see drafts (`private.is_admin()` in the policies).
 - Add an admin: `npx tsx scripts/create-admin.ts <email>` (sends a Supabase invite to set a password at `/admin/set-password`). Never write the address into the repo.
 - Admin themes use `--a-*` tokens in `app/admin/admin.css`; choice saved in `fic-admin-theme`. Editor view font/size: `fic-admin-editor-font`, `fic-admin-editor-size` (never stored in stories).
 

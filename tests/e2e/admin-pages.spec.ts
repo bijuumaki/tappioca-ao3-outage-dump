@@ -50,5 +50,5 @@ test("a link in the Links text stays a link on the public page", async ({ page }
 
 test("a signed-out visitor can't open the Pages screen", async ({ page }) => {
   await page.goto("/admin/pages");
-  await expect(page).toHaveURL(/\/admin\/login/);
+  await expect(page).toHaveURL(/\/admin-login/);
 });
