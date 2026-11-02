@@ -15,7 +15,7 @@ export { ACCEPTED_EXTENSIONS, MAX_DOCUMENT_BYTES } from "./index-constants";
 
 export type Converted = { title: string; summary?: string; chapters: { title?: string; html: string }[]; meta?: MarkdownMeta };
 
-const decode = (b: ArrayBuffer) => new TextDecoder("utf-8").decode(b).replace(/^﻿/, "");
+const decode = decodeText;
 
 /* Any accepted file becomes chapter HTML in the site's allowed format. Throws ConvertError with a message to show. */
 export async function convertFile(name: string, buffer: ArrayBuffer, upload: Uploader): Promise<Converted> {
