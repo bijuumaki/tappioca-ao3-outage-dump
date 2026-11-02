@@ -46,3 +46,6 @@
 :root[data-font="crimson"] { --font-display: var(--stack-crimson); --font-body: var(--stack-crimson); }
 :root[data-font="imfell"] { --font-display: var(--stack-imfell); --font-body: var(--stack-imfell); }
 :root[data-font="cormorant"] { --font-display: var(--stack-cormorant); --font-body: var(--stack-cormorant); }
+
+/* Reader text */
+:root { --scene-break: "⁂"; --rule: color-mix(in srgb, var(--ink) 25%, transparent); }
