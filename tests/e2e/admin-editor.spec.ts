@@ -83,3 +83,9 @@ test("if the sign-in runs out, autosave says so and keeps the text", async ({ pa
   await expect(page.locator(".a-save-state")).toHaveText(/not saved: sign in again/i, { timeout: 10_000 });
   await expect(editor(page)).toContainText("first second");
 });
+
+test("color set on a whole paragraph survives opening in the editor", async ({ page }) => {
+  await signIn(page);
+  await page.locator(".a-story", { hasText: "(sample fic)" }).getByRole("link", { name: "edit" }).click();
+  await expect(page.locator('.a-editor .ProseMirror p[style*="color"]')).toHaveCount(1);
+});
