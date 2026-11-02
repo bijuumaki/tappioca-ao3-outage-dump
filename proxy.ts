@@ -16,7 +16,9 @@ export async function proxy(request: NextRequest) {
   });
   const { data: { user } } = await db.auth.getUser();
   const onLogin = request.nextUrl.pathname === "/admin/login" || request.nextUrl.pathname === "/admin/set-password";
-  if (!user && !onLogin) {
+  /* Server actions (autosave) answer "signed out" themselves, so the editor can keep the text on screen. */
+  const isAction = request.headers.has("next-action");
+  if (!user && !onLogin && !isAction) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/login";
     url.search = "";

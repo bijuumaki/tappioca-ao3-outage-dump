@@ -4,7 +4,9 @@ import { redirect } from "next/navigation";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 import type { TagType } from "@/lib/content/types";
-import { requireAdmin } from "@/lib/supabase/session";
+import { createSessionClient, requireAdmin } from "@/lib/supabase/session";
+import { sanitizeRichText } from "@/lib/richtext/allowlist";
+import { prepareChapter } from "./chapter";
 import { slugify } from "@/lib/text/slug";
 import { storyDetailsFromForm, uniqueSlug } from "./story-form";
 
@@ -109,4 +111,28 @@ export async function removeCover(ficId: number): Promise<void> {
   if (fic?.cover_path?.startsWith("fics/")) await db.storage.from("media").remove([fic.cover_path]);
   revalidatePath(`/admin/stories/${ficId}`);
   refreshPublic(fic?.slug);
+}
+
+export type ChapterInput = { title: string; notes_before: string; notes_after: string; body: string };
+export type ChapterSaveResult = { ok: true; savedAt: string; words: number } | { ok: false; reason: "signed_out" | "error" };
+
+/* Autosave. Never changes whether a chapter is published. Returns instead of redirecting when signed out,
+   so the editor can keep the text on screen and say so. */
+export async function saveChapter(chapterId: number, input: ChapterInput): Promise<ChapterSaveResult> {
+  const db = await createSessionClient();
+  const { data: { user } } = await db.auth.getUser();
+  if (!user) return { ok: false, reason: "signed_out" };
+  const { body, word_count } = prepareChapter(input.body);
+  const { data, error } = await db.from("chapters").update({
+    title: input.title.trim() || null,
+    notes_before: sanitizeRichText(input.notes_before),
+    notes_after: sanitizeRichText(input.notes_after),
+    body, word_count,
+  }).eq("id", chapterId).select("fic_id, publish_at").maybeSingle();
+  if (error || !data) return { ok: false, reason: error ? "error" : "signed_out" };
+  if (data.publish_at) {
+    const { data: fic } = await db.from("fics").select("slug").eq("id", data.fic_id).single();
+    refreshPublic(fic?.slug);
+  }
+  return { ok: true, savedAt: new Date().toISOString(), words: word_count };
 }

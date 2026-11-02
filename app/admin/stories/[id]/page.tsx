@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import AdminHeader from "@/components/admin/AdminHeader";
 import ChapterList from "@/components/admin/ChapterList";
 import CoverImage from "@/components/admin/CoverImage";
+import Editor from "@/components/admin/Editor";
 import StoryDetails from "@/components/admin/StoryDetails";
 import { getAdminStory } from "@/lib/admin/queries";
 import { mediaUrl } from "@/lib/content/media";
@@ -52,7 +53,11 @@ export default async function EditStoryPage({ params, searchParams }: Props) {
             <span className="sr-only">Story title</span>
             <input form="details-form" name="title" defaultValue={story.title === "Untitled" ? "" : story.title} placeholder="Story title" aria-label="Story title" />
           </label>
-          <p className="a-muted">Chapter editor comes next.</p>
+          {chapter ? (
+            <Editor key={chapter.id} chapterId={chapter.id} initial={{
+              title: chapter.title ?? "", notes_before: chapter.notes_before, notes_after: chapter.notes_after, body: chapter.body,
+            }} />
+          ) : <p className="a-muted">This story has no chapters yet. Add one from the list.</p>}
         </section>
       </div>
     </main>

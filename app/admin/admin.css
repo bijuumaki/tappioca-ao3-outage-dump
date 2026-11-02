@@ -141,3 +141,29 @@
 .a-title-field input { width: 100%; min-height: 52px; border: 0; border-bottom: 1px solid var(--a-border); background: transparent;
   color: var(--a-text); font-family: var(--font-heading); font-size: 28px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Editor */
+.a-editor { display: flex; flex-direction: column; gap: 12px; }
+.a-toolbar-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding-bottom: 10px; border-bottom: 1px solid var(--a-border); }
+.a-toolbar-row button, .a-size button {
+  appearance: none; display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px;
+  border: 0; border-radius: 6px; background: none; color: var(--a-text); cursor: pointer; font: inherit;
+}
+.a-toolbar-row button[aria-pressed="true"] { background: var(--a-tint); }
+.a-toolbar-row select { min-height: 44px; padding: 0 8px; border: 1px solid var(--a-field-border); border-radius: 6px; background: var(--a-card-bg); color: var(--a-text); font: inherit; font-size: 14px; }
+.a-size { display: inline-flex; align-items: center; gap: 2px; border: 1px solid var(--a-field-border); border-radius: 6px; }
+.a-size span { min-width: 26px; text-align: center; font-size: 14px; }
+.a-swatch { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; cursor: pointer; }
+.a-swatch input { width: 26px; height: 26px; padding: 0; border: 1px solid var(--a-border); border-radius: 4px; background: none; cursor: pointer; }
+.a-swatch-hl input { border-style: dashed; }
+.a-writing { min-height: 360px; text-transform: none; }
+.a-writing .ProseMirror { min-height: 360px; outline: none; line-height: 1.7; }
+.a-writing .ProseMirror:focus-visible { outline: 2px solid var(--a-border); outline-offset: 6px; border-radius: 4px; }
+.a-writing .ProseMirror p.is-editor-empty:first-child::before { content: "Start writing…"; opacity: 0.6; pointer-events: none; float: left; height: 0; }
+.a-writing hr { border: 0; text-align: center; margin: 1.6em 0; }
+.a-writing hr::after { content: var(--scene-break); }
+.a-writing blockquote { margin: 0 2em 1em; }
+.a-notes summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-size: 14px; color: var(--a-muted); }
+.a-notes textarea { width: 100%; padding: 10px; border: 1px solid var(--a-field-border); border-radius: 6px; background: var(--a-card-bg); color: var(--a-text); font: inherit; font-size: 15px; text-transform: none; }
+.a-statusbar { display: flex; justify-content: space-between; gap: 12px; padding-top: 10px; border-top: 1px solid var(--a-border); font-size: 13px; color: var(--a-muted); }
+.a-save-state[data-state="signed_out"], .a-save-state[data-state="error"] { color: var(--a-text); font-weight: 600; }
