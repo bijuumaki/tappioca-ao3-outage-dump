@@ -131,3 +131,25 @@ a { color: inherit; }
 .chapter-nav { display: flex; justify-content: space-between; gap: 12px; margin: 1.5em 0; }
 .chapter-nav a { display: inline-flex; align-items: center; min-height: 44px; }
 .progress-note { margin: 0 0 1em; }
+
+/* Home, cards, browse, posts */
+.page-wide { max-width: 1100px; }
+.feed { list-style: none; padding: 0; margin: 0 0 1.5em; display: flex; flex-direction: column; gap: 10px; }
+.feed li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.feed-kind { font-size: 0.85em; opacity: 0.85; }
+.feed time { margin-left: auto; font-size: 0.85em; opacity: 0.85; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 16px; margin: 0 0 1.5em; }
+.card { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.card-title { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: calc(var(--fs) * 18 / 14); }
+.card-meta { margin: 0; font-size: 0.9em; opacity: 0.85; }
+.card-summary { margin: 0; }
+.card-image { width: 100%; height: 160px; object-fit: cover; border-radius: calc(var(--radius-panel) - 6px); }
+.browse-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin: 0 0 1.5em; }
+.browse-form label { display: flex; flex-direction: column; gap: 4px; font-size: 0.9em; }
+.browse-form select, .browse-form button { min-height: 44px; font: inherit; }
+.browse-form button { padding: 0 18px; cursor: pointer; }
+.post-image { margin: 0 0 1.2em; }
+.post-image img { max-width: 100%; height: auto; display: block; border-radius: calc(var(--radius-panel) - 6px); }
+.post-image figcaption { margin-top: 6px; font-size: 0.9em; opacity: 0.85; }
+.post-embed a { display: inline-flex; align-items: center; min-height: 44px; }
+.empty-note { opacity: 0.85; }

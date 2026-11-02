@@ -157,3 +157,9 @@ export async function getPage(slug: string): Promise<Page | null> {
   if (error) throw error;
   return data;
 }
+
+export async function getCategories(): Promise<Category[]> {
+  const { data, error } = await createReaderClient().from("categories").select("*").order("id");
+  if (error) throw error;
+  return data;
+}
