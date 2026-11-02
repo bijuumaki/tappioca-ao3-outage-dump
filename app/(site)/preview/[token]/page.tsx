@@ -4,7 +4,7 @@ import ChapterBody from "@/components/ChapterBody";
 import { formatWords } from "@/lib/format/words";
 import { createReaderClient } from "@/lib/supabase/server";
 
-export const metadata: Metadata = { title: "Preview", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Preview", robots: { index: false, follow: false }, referrer: "no-referrer" };
 export const dynamic = "force-dynamic";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -18,7 +18,7 @@ export default async function SharedPreview({ params }: { params: Promise<{ toke
   if (error || !row) notFound();
   return (
     <main className="page" id="main">
-      <p className="progress-note" role="note">Preview: this chapter isn’t published yet. Please don’t share this link further.</p>
+      <p className="progress-note" role="note">Preview: this was shared with you privately. Please don’t pass the link on.</p>
       <header className="reader-header">
         <h1 className="page-title">{row.fic_title}</h1>
         <p className="chapter-label">{row.chapter_title ?? `Chapter ${row.chapter_position}`} · {formatWords(row.word_count)}</p>

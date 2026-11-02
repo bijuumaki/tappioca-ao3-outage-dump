@@ -72,6 +72,17 @@ describe.skipIf(!hasSecret())("upload bin", () => {
     expect(data!.map((c) => c.position)).toEqual([1, 2, 3, 5]);
   });
 
+  test("replacing a chapter that is already published says readers see it now", async () => {
+    const ficId = ficIds[0];
+    const { data: ch } = await db.from("chapters").select("id").eq("fic_id", ficId).eq("position", 1).single();
+    await db.from("chapters").update({ publish_at: new Date(Date.now() - 60_000).toISOString() }).eq("id", ch!.id);
+    const again = await put("(e2e up) - 1.md", "new first chapter");
+    const { results } = await processUploadBatch(db, [again], ficId);
+    expect(results[0].ok).toBe(true);
+    expect(results[0].message).toMatch(/published.*readers see/i);
+    await db.from("chapters").update({ publish_at: null }).eq("id", ch!.id);
+  });
+
   test("one bad file doesn't stop the others", async () => {
     const bad = await put("broken.epub", "this is not a zip file");
     const good = await put("(e2e up fine).md", "good words");
@@ -129,7 +140,7 @@ describe.skipIf(!hasSecret())("versions", async () => {
   test("only the newest 20 versions are kept", async () => {
     for (let i = 1; i <= KEEP_VERSIONS + 5; i++) {
       await db.from("chapters").update({ body: `<p>v${i}</p>` }).eq("id", chapterId);
-      expect(await saveVersion(db, chapterId, "publish", Date.now() + i * 1000)).toBe(true);
+      expect(await saveVersion(db, chapterId, "publish", Date.now() + i * 1000)).toBe("saved");
     }
     const { data } = await db.from("chapter_versions").select("body").eq("chapter_id", chapterId).order("created_at", { ascending: false });
     expect(data).toHaveLength(KEEP_VERSIONS);
@@ -139,8 +150,8 @@ describe.skipIf(!hasSecret())("versions", async () => {
 
   test("a second autosave within 10 minutes makes no new version", async () => {
     const now = Date.now() + 10_000_000;
-    expect(await saveVersion(db, chapterId, "autosave", now)).toBe(true);
-    expect(await saveVersion(db, chapterId, "autosave", now + 60_000)).toBe(false);
+    expect(await saveVersion(db, chapterId, "autosave", now)).toBe("saved");
+    expect(await saveVersion(db, chapterId, "autosave", now + 60_000)).toBe("skipped");
   });
 
   test("restoring brings back the old text and keeps the replaced text as a version", async () => {
@@ -152,5 +163,22 @@ describe.skipIf(!hasSecret())("versions", async () => {
     expect(ch!.body).toBe("<p>v10</p>");
     const { data: kept } = await db.from("chapter_versions").select("body, reason").eq("chapter_id", chapterId).eq("reason", "restore");
     expect(kept!.map((v) => v.body)).toContain("<p>current text</p>");
+  });
+});
+
+describe.skipIf(!hasSecret())("pictures", async () => {
+  const { storeImage } = await import("@/lib/admin/media");
+  test("storing the same picture twice reuses one file, so editing a paste leaves no orphans", async () => {
+    const db = await signedInClient(TEST_ADMIN.email, TEST_ADMIN.password);
+    const { data: fic } = await db.from("fics").insert({ slug: `e2e-pic-${Date.now()}`, title: "(e2e pic)", category_id: 1 }).select("id").single();
+    const png = new Uint8Array(Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgGAWjgAEAAAEAAbhoEZYAAAAASUVORK5CYII=", "base64"));
+    const a = await storeImage(db, fic!.id, png);
+    const b = await storeImage(db, fic!.id, png);
+    expect(a.ok && b.ok).toBe(true);
+    if (a.ok && b.ok) expect(a.url).toBe(b.url);
+    const { data: files } = await db.storage.from("media").list(`fics/${fic!.id}/images`);
+    expect(files).toHaveLength(1);
+    await secretClient().storage.from("media").remove((files ?? []).map((f) => `fics/${fic!.id}/images/${f.name}`));
+    await secretClient().from("fics").delete().eq("id", fic!.id);
   });
 });

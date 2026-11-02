@@ -1,18 +1,24 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { convertPastedHtml } from "@/lib/admin/actions";
 
 /* Paste what Ellipsus's "Copy as HTML" (or Google Docs, Word…) gave you; see it cleaned; put it in the chapter. */
-export default function PasteHtml({ ficId, onUse }: { ficId: number; onUse: (html: string, mode: "replace" | "append") => void }) {
+export default function PasteHtml({ ficId, onUse }: { ficId: number; onUse: (html: string, mode: "replace" | "append") => void | Promise<void> }) {
   const [raw, setRaw] = useState("");
   const [clean, setClean] = useState("");
   const [busy, setBusy] = useState(false);
+  const latest = useRef(0);
 
   useEffect(() => {
-    if (!raw.trim()) { setClean(""); return; }
+    if (!raw.trim()) { latest.current++; setClean(""); setBusy(false); return; }
     setBusy(true);
     const t = setTimeout(() => {
-      convertPastedHtml(ficId, raw).then(setClean).catch(() => setClean("")).finally(() => setBusy(false));
+      /* Only the newest request may show its result, so an older, slower reply can't overwrite a newer one. */
+      const mine = ++latest.current;
+      convertPastedHtml(ficId, raw)
+        .then((html) => { if (mine === latest.current) setClean(html); })
+        .catch(() => { if (mine === latest.current) setClean(""); })
+        .finally(() => { if (mine === latest.current) setBusy(false); });
     }, 400);
     return () => clearTimeout(t);
   }, [raw, ficId]);

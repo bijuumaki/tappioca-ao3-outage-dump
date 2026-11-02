@@ -16,18 +16,21 @@ export type UploadResult = { name: string; ok: boolean; message: string; ficId?:
 
 const plain = (html: string) => html.replace(/<[^>]*>/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/\s+/g, " ").trim();
 
-async function addChapters(db: Db, ficId: number, chapters: Converted["chapters"], n: number | null): Promise<number[]> {
+async function addChapters(db: Db, ficId: number, chapters: Converted["chapters"], n: number | null): Promise<{ ids: number[]; live: number[] }> {
   let position = n;
   if (position === null) {
     const { data: last } = await db.from("chapters").select("position").eq("fic_id", ficId).order("position", { ascending: false }).limit(1).maybeSingle();
     position = (last?.position ?? 0) + 1;
   }
   const ids: number[] = [];
+  const live: number[] = [];
   for (const ch of chapters) {
     const { body, word_count } = prepareChapter(ch.html);
-    const { data: existing } = await db.from("chapters").select("id, title").eq("fic_id", ficId).eq("position", position).maybeSingle();
+    const { data: existing } = await db.from("chapters").select("id, title, publish_at").eq("fic_id", ficId).eq("position", position).maybeSingle();
     if (existing) {
-      await saveVersion(db, existing.id, "upload");
+      /* If the old text can't be kept as a version, leave the chapter as it is rather than lose it. */
+      if ((await saveVersion(db, existing.id, "upload")) === "error") throw new ConvertError(`Couldn’t keep a copy of the old text of chapter ${position}, so I left it as it was. Try again.`);
+      if (existing.publish_at && Date.parse(existing.publish_at) <= Date.now()) live.push(position);
       const { error } = await db.from("chapters").update({ body, word_count, title: ch.title ?? existing.title }).eq("id", existing.id);
       if (error) throw error;
       ids.push(existing.id);
@@ -38,7 +41,7 @@ async function addChapters(db: Db, ficId: number, chapters: Converted["chapters"
     }
     position++;
   }
-  return ids;
+  return { ids, live };
 }
 
 async function applyDetails(db: Db, ficId: number, c: Converted) {
@@ -70,10 +73,14 @@ export async function processUploadBatch(db: Db, items: UploadItem[], ficId: num
     let target = ficId;
     let created = false;
     if (target === null) {
-      const { data: cat } = await db.from("categories").select("id").eq("slug", "fic").single();
-      const slug = uniqueSlug(slugify(group.title), await takenSlugs(db));
-      const { data, error } = await db.from("fics").insert({ slug, title: group.title, category_id: cat!.id }).select("id").single();
-      if (error) {
+      let data: { id: number } | null = null;
+      try {
+        const { data: cat } = await db.from("categories").select("id").eq("slug", "fic").single();
+        const slug = uniqueSlug(slugify(group.title), await takenSlugs(db));
+        const ins = await db.from("fics").insert({ slug, title: group.title, category_id: cat!.id }).select("id").single();
+        data = ins.error ? null : ins.data;
+      } catch { data = null; }
+      if (!data) {
         for (const f of group.files) results.push({ name: f.name, ok: false, message: "Couldn’t start a new fic for this file. Try again." });
         continue;
       }
@@ -95,11 +102,12 @@ export async function processUploadBatch(db: Db, items: UploadItem[], ficId: num
           if (!stored.ok) throw new Error(stored.error);
           return stored.url;
         });
-        const ids = await addChapters(db, ficTarget, converted.chapters, file.n);
+        const { ids, live } = await addChapters(db, ficTarget, converted.chapters, file.n);
         if (created && !detailsApplied) { await applyDetails(db, ficTarget, converted); detailsApplied = true; }
         await db.from("upload_files").insert({ fic_id: ficTarget, chapter_id: ids[0] ?? null, filename: item.name, storage_path: item.path, kind: item.name.split(".").pop()!.toLowerCase(), size: buffer.byteLength, status: "converted" });
         successes++;
-        results.push({ name: item.name, ok: true, message: ids.length === 1 ? "converted to 1 chapter" : `converted to ${ids.length} chapters`, ficId: ficTarget, chapterIds: ids });
+        results.push({ name: item.name, ok: true, message: (ids.length === 1 ? "converted to 1 chapter" : `converted to ${ids.length} chapters`)
+          + (live.length ? ` (chapter ${live.join(", ")} ${live.length === 1 ? "is" : "are"} published, so readers see the new text right away; the old text is kept as a version)` : ""), ficId: ficTarget, chapterIds: ids });
       } catch (e) {
         const message = e instanceof ConvertError ? e.message : "Something went wrong with this file. Try again.";
         await db.from("upload_files").insert({ fic_id: created ? null : ficTarget, filename: item.name, storage_path: item.path, kind: item.name.split(".").pop()?.toLowerCase() ?? "", size: 0, status: "failed", error: message });
@@ -109,7 +117,7 @@ export async function processUploadBatch(db: Db, items: UploadItem[], ficId: num
     }
 
     if (created && successes === 0) {
-      const { data: imgs } = await db.storage.from("media").list(`fics/${ficTarget}/images`);
+      const { data: imgs } = await db.storage.from("media").list(`fics/${ficTarget}/images`, { limit: 1000 });
       if (imgs?.length) await db.storage.from("media").remove(imgs.map((f) => `fics/${ficTarget}/images/${f.name}`));
       await db.from("fics").delete().eq("id", ficTarget);
     }

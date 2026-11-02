@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { createUploadUrls, processUploads } from "@/lib/admin/upload-actions";
 import { checkUploadRequest } from "@/lib/admin/upload-rules";
+import { groupFiles } from "@/lib/convert/names";
 import type { UploadResult } from "@/lib/admin/upload-process";
 import { browserClient } from "@/lib/supabase/browser";
 
@@ -52,12 +53,19 @@ export default function UploadBin({ fics }: { fics: BinFic[] }) {
         if (up.error) failed.push({ name: item.name, ok: false, message: "couldn’t convert: the file didn’t send. Try again." });
         else sent.push({ name: item.name, path: item.path });
       }
-      setStatus("Converting…");
-      const done = sent.length ? (await processUploads(sent, ficId)).results : [];
+      /* One fic's files per request, so a problem with one never loses or duplicates the others. */
+      const done: UploadResult[] = [];
+      const groups = groupFiles(sent.map((s) => s.name));
+      for (const [i, group] of groups.entries()) {
+        setStatus(groups.length > 1 ? `Converting ${i + 1} of ${groups.length}…` : "Converting…");
+        const items = group.files.map((f) => sent.find((s) => s.name === f.name)!);
+        try { done.push(...(await processUploads(items, ficId)).results); }
+        catch { done.push(...items.map((it) => ({ name: it.name, ok: false, message: "couldn’t tell if this converted. Check the folders below before uploading it again." }))); }
+      }
       setResults([...done, ...failed]);
       router.refresh();
     } catch {
-      setProblems(["Something went wrong. Nothing was lost; try again."]);
+      setProblems(["Something went wrong before the files were sent. Nothing was changed; try again."]);
     } finally {
       setBusy(false); setStatus("");
     }

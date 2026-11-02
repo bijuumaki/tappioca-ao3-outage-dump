@@ -61,3 +61,15 @@ test("bad files give a clear message instead of a crash", async () => {
   await expect(convertFile("x.md", new Uint8Array().buffer as ArrayBuffer, noUpload)).rejects.toThrow(/no text/i);
   await expect(convertFile("x.exe", new Uint8Array([1]).buffer as ArrayBuffer, noUpload)).rejects.toThrow(/isn’t a type/i);
 });
+
+test("a zip that would expand to a huge size is refused before it is opened", async () => {
+  const z = new JSZip();
+  z.file("mimetype", "application/epub+zip");
+  z.file("META-INF/container.xml", '<container><rootfiles><rootfile full-path="OEBPS/content.opf"/></rootfiles></container>');
+  z.file("OEBPS/content.opf", "<package/>");
+  z.file("OEBPS/ch1.xhtml", Buffer.alloc(35 * 1024 * 1024));
+  const bomb = await z.generateAsync({ type: "arraybuffer", compression: "DEFLATE" });
+  expect(bomb.byteLength).toBeLessThan(1024 * 1024);
+  await expect(epubToFic(bomb, noUpload)).rejects.toThrow(/too large|expands/i);
+  await expect(docxToChapter(bomb, noUpload)).rejects.toThrow(/too large|expands/i);
+});

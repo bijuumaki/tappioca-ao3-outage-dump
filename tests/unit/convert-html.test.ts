@@ -48,3 +48,19 @@ test("headings, quotes, lists, scene breaks and line breaks survive", () => {
 test("empty input gives empty output", () => {
   expect(htmlToChapter("")).toBe("");
 });
+
+test("the black text and transparent background Google Docs puts on everything are dropped", () => {
+  const out = htmlToChapter('<p><span style="color:#000000;background-color:transparent;font-weight:400">x</span></p>');
+  expect(out).toBe("<p>x</p>");
+});
+test("a real color survives; neutral defaults and white backgrounds don't", () => {
+  const out = htmlToChapter('<p><span style="color:#8b3253">a</span><span style="color:inherit;background-color:#ffffff">b</span><span style="background-color:rgba(0,0,0,0)">c</span></p>');
+  expect(out).toContain("color:#8b3253");
+  expect(out).toContain("<span") ;
+  expect(out).not.toContain("#ffffff");
+  expect(out).not.toContain("inherit");
+  expect(out).not.toContain("rgba");
+});
+test("absurdly deep nesting doesn't crash", () => {
+  expect(htmlToChapter("<div>".repeat(30000) + "deep text")).toContain("deep text");
+});

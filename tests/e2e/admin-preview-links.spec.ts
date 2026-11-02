@@ -35,7 +35,7 @@ test("a preview link shows an unpublished chapter to someone who isn't signed in
   const res = await tab.goto(url);
   expect(res!.status()).toBe(200);
   await expect(tab.locator(".chapter-text")).toContainText("(e2e secret words)");
-  await expect(tab.getByText(/isn’t published yet/i)).toBeVisible();
+  await expect(tab.getByText(/shared with you privately/i)).toBeVisible();
   await expect(tab.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
   // the public site still doesn't list it
   expect((await tab.goto("/fics/e2e-share-one"))!.status()).toBe(404);

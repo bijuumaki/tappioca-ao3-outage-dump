@@ -2,7 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/supabase/session";
 import { htmlToNotes } from "./notes";
-import { listVersionRows, restoreVersionTo, type VersionRow } from "./versions";
+import { listVersionRows, restoreVersionTo, saveVersion, type VersionReason, type VersionRow } from "./versions";
 
 export async function listVersions(chapterId: number): Promise<VersionRow[]> {
   const { db } = await requireAdmin();
@@ -25,4 +25,10 @@ export async function restoreVersion(versionId: number): Promise<Restored | null
     }
   }
   return { title: r.title ?? "", notes_before: htmlToNotes(r.notes_before), notes_after: htmlToNotes(r.notes_after), body: r.body };
+}
+
+/* Keeps a copy of the chapter as it is now (used before a paste replaces it). Returns false if the copy couldn't be kept. */
+export async function snapshotChapter(chapterId: number, reason: VersionReason): Promise<boolean> {
+  const { db } = await requireAdmin();
+  return (await saveVersion(db, chapterId, reason)) !== "error";
 }

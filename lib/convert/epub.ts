@@ -5,10 +5,13 @@ import { countWords } from "@/lib/text/words";
 import { ConvertError } from "./errors";
 import { htmlToChapter } from "./html";
 import { sniffImage, type Uploader } from "./images";
+import { assertZipSafe } from "./zip";
 
 export type EpubFic = { title?: string; summary?: string; chapters: { title?: string; html: string }[] };
 
 const dirname = (p: string) => (p.includes("/") ? p.slice(0, p.lastIndexOf("/") + 1) : "");
+const safeDecode = (s: string) => { try { return decodeURIComponent(s); } catch { return s; } };
+const unescapeText = (s: string) => s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&amp;/g, "&");
 function resolve(base: string, href: string): string {
   const parts = (base + href.split("#")[0].split("?")[0]).split("/");
   const out: string[] = [];
@@ -21,6 +24,7 @@ function resolve(base: string, href: string): string {
 export async function epubToFic(buffer: ArrayBuffer, upload: Uploader): Promise<EpubFic> {
   let zip: JSZip;
   try { zip = await JSZip.loadAsync(buffer); } catch { throw new ConvertError("That file isn’t a valid .epub book."); }
+  assertZipSafe(zip);
   const container = await zip.file("META-INF/container.xml")?.async("string");
   const opfPath = container?.match(/full-path="([^"]+)"/)?.[1];
   const opfFile = opfPath ? zip.file(opfPath) : null;
@@ -36,27 +40,27 @@ export async function epubToFic(buffer: ArrayBuffer, upload: Uploader): Promise<
   for (const id of spine) {
     const item = items.get(id);
     if (!item || /\bnav\b/.test(item.properties ?? "") || !/x?html/.test(item["media-type"] ?? "")) continue;
-    const path = resolve(base, decodeURIComponent(item.href ?? ""));
+    const path = resolve(base, safeDecode(item.href ?? ""));
     let xhtml = await zip.file(path)?.async("string");
     if (!xhtml) continue;
     const chapterDir = dirname(path);
-    for (const m of [...xhtml.matchAll(/<img\b[^>]*?\bsrc="([^"]+)"[^>]*>/gi)]) {
+    for (const m of [...xhtml.matchAll(/<img\b[^>]*?\bsrc=["']([^"']+)["'][^>]*>/gi)]) {
       const src = m[1];
       let replacement = "";
       if (!/^(https?:|data:)/i.test(src)) {
-        const bytes = await zip.file(resolve(chapterDir, decodeURIComponent(src)))?.async("uint8array");
+        const bytes = await zip.file(resolve(chapterDir, safeDecode(src)))?.async("uint8array");
         const kind = bytes ? sniffImage(bytes) : null;
         if (bytes && kind && bytes.length <= 8 * 1024 * 1024) {
-          try { replacement = m[0].replace(src, await upload(bytes, kind.ext)); } catch { replacement = ""; }
+          try { const stored = await upload(bytes, kind.ext); replacement = m[0].replace(src, () => stored); } catch { replacement = ""; }
         }
       }
-      xhtml = xhtml.replace(m[0], replacement);
+      xhtml = xhtml.replace(m[0], () => replacement);
     }
     let html = htmlToChapter(xhtml);
     let title: string | undefined;
     const heading = html.match(/^\s*<h[2-4][^>]*>([\s\S]*?)<\/h[2-4]>/);
     if (heading) {
-      title = heading[1].replace(/<[^>]*>/g, "").replace(/&amp;/g, "&").trim() || undefined;
+      title = unescapeText(heading[1].replace(/<[^>]*>/g, "")).trim() || undefined;
       html = html.slice(heading[0].length).trim();
     }
     candidates.push({ title, html, words: countWords(html) });

@@ -16,3 +16,8 @@ test("too many files at once are refused", () => {
   const many = Array.from({ length: 41 }, (_, i) => ({ name: `f - ${i + 1}.md`, size: 5 }));
   expect(checkUploadRequest(many).length).toBeGreaterThan(0);
 });
+
+test("two files with the same name in one batch are refused", () => {
+  const problems = checkUploadRequest([{ name: "a.md", size: 5 }, { name: "a.md", size: 6 }]);
+  expect(problems.some((p) => /same name/i.test(p.message))).toBe(true);
+});

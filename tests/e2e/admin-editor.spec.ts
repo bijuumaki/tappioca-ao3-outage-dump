@@ -115,3 +115,16 @@ test("notes keep symbols and line breaks", async ({ page }) => {
   await page.getByText("Notes before the chapter").click();
   await expect(page.getByLabel("Notes before the chapter")).toHaveValue("Tom & Jerry <3\nsecond line");
 });
+
+test("a highlight that came in with uploaded or pasted text survives editing", async ({ page }) => {
+  await newStory(page, "(e2e editor highlight)");
+  const id = Number(page.url().match(/stories\/(\d+)/)![1]);
+  await secretClient().from("chapters").update({ body: '<p><span style="background-color:#ffff00">marked</span> plain</p>' }).eq("fic_id", id);
+  await page.reload();
+  await editor(page).click();
+  await page.keyboard.press("ControlOrMeta+End");
+  await page.keyboard.type(" more");
+  await saved(page);
+  const { data } = await secretClient().from("chapters").select("body").eq("fic_id", id).single();
+  expect(data!.body).toMatch(/background-color:\s*(#ffff00|rgb\(255,\s*255,\s*0\))/);
+});

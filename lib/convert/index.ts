@@ -4,7 +4,8 @@ import { epubToFic } from "./epub";
 import { ConvertError } from "./errors";
 import { htmlToChapter } from "./html";
 import { extractDataUriImages, type Uploader } from "./images";
-import { markdownToChapter, type MarkdownMeta } from "./markdown";
+import { decodeText } from "./decode";
+import { markdownToRaw, type MarkdownMeta } from "./markdown";
 import { parseChapterFilename } from "./names";
 import { ACCEPTED_EXTENSIONS } from "./index-constants";
 import { textToChapter } from "./text";
@@ -29,8 +30,8 @@ export async function convertFile(name: string, buffer: ArrayBuffer, upload: Upl
   } else if (ext === "docx") {
     result = { title, chapters: [{ html: await docxToChapter(buffer, upload) }] };
   } else if (ext === "md" || ext === "markdown") {
-    const { html, meta } = markdownToChapter(decode(buffer));
-    result = { title: meta.title ?? title, summary: meta.summary, chapters: [{ html: await extractDataUriImages(html, upload) }], meta };
+    const { raw, meta } = markdownToRaw(decode(buffer));
+    result = { title: meta.title ?? title, summary: meta.summary, chapters: [{ html: htmlToChapter(await extractDataUriImages(raw, upload)) }], meta };
   } else if (ext === "txt") {
     result = { title, chapters: [{ html: textToChapter(decode(buffer)) }] };
   } else {

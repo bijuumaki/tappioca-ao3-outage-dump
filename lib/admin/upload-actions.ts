@@ -29,6 +29,10 @@ export async function processUploads(items: UploadItem[], ficId: number | null):
   const prefix = `fics/${ficId ?? "new"}/`;
   const safe = items.filter((i) => i.path.startsWith(prefix) && !i.path.includes(".."));
   const { results } = await processUploadBatch(db, safe, ficId);
+  for (const id of new Set(results.filter((r) => r.ok && r.ficId).map((r) => r.ficId!))) {
+    const { data: fic } = await db.from("fics").select("slug").eq("id", id).maybeSingle();
+    if (fic) revalidatePath(`/fics/${fic.slug}`, "layout");
+  }
   revalidatePath("/admin");
   revalidatePath("/admin/uploads");
   revalidatePath("/");

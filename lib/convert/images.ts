@@ -19,17 +19,18 @@ export type Uploader = (bytes: Uint8Array, ext: string) => Promise<string>;
 /* Pictures embedded in a document (data: addresses) are stored as image files and replaced by their address.
    An "image" whose bytes aren't really one of the allowed image types is removed. */
 export async function extractDataUriImages(html: string, upload: Uploader): Promise<string> {
-  const re = /<img\b[^>]*?\bsrc="(data:[^"]*)"[^>]*>/gi;
+  const re = /<img\b[^>]*?\bsrc=["'](data:[^"']*)["'][^>]*>/gi;
   const found = [...html.matchAll(re)];
   let out = html;
   for (const m of found) {
     const comma = m[1].indexOf(",");
     const bytes = comma > 0 && /;base64$/i.test(m[1].slice(0, comma)) ? new Uint8Array(Buffer.from(m[1].slice(comma + 1), "base64")) : new Uint8Array();
     const kind = sniffImage(bytes);
-    if (!kind || bytes.length > 8 * 1024 * 1024) { out = out.replace(m[0], ""); continue; }
+    if (!kind || bytes.length > 8 * 1024 * 1024) { out = out.replace(m[0], () => ""); continue; }
     let url: string;
-    try { url = await upload(bytes, kind.ext); } catch { out = out.replace(m[0], ""); continue; }
-    out = out.replace(m[0], m[0].replace(m[1], url));
+    try { url = await upload(bytes, kind.ext); } catch { out = out.replace(m[0], () => ""); continue; }
+    const replaced = m[0].replace(m[1], () => url);
+    out = out.replace(m[0], () => replaced);
   }
   return out;
 }

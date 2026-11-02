@@ -1,6 +1,7 @@
 import { isTag, isText, type ChildNode, type Element } from "domhandler";
 import { parseDocument } from "htmlparser2";
 import { sanitizeRichText } from "@/lib/richtext/allowlist";
+import { isPlainInk, parseColor } from "@/lib/richtext/colors";
 
 /* Cleans HTML from Ellipsus ("Copy as HTML"), Google Docs, Word and web pages into the site's allowed format.
    Bold, italic, underline and strikethrough written as inline styles become real tags; colors, highlights and
@@ -9,6 +10,14 @@ import { sanitizeRichText } from "@/lib/richtext/allowlist";
 const DROP = new Set(["script", "style", "head", "title", "meta", "link", "noscript", "iframe", "object", "embed", "form", "input", "button", "select", "textarea", "svg", "canvas", "template"]);
 const SAME = new Set(["p", "blockquote", "ul", "ol", "li", "figure", "figcaption"]);
 const HEADING: Record<string, string> = { h1: "h2", h2: "h2", h3: "h3", h4: "h4", h5: "h4", h6: "h4" };
+
+/* Colors that mean "nothing special" (Google Docs stamps black text and a transparent background on everything)
+   are dropped, so pasted text follows the theme. Only real colors are kept. */
+function usefulColor(value: string): string | undefined {
+  if (/^(transparent|inherit|initial|unset|currentcolor|none|auto)$/.test(value)) return undefined;
+  if (!parseColor(value) || isPlainInk(value)) return undefined;
+  return value;
+}
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const escAttr = (s: string) => esc(s).replace(/"/g, "&quot;");
@@ -25,8 +34,8 @@ function readStyle(el: Element): Style {
     if (prop === "font-weight") out.bold = value === "bold" || value === "bolder" || Number(value) >= 600;
     else if (prop === "font-style") out.italic = value === "italic" || value === "oblique";
     else if (prop === "text-decoration" || prop === "text-decoration-line") { out.underline = value.includes("underline"); out.strike = value.includes("line-through"); }
-    else if (prop === "color") out.color = value;
-    else if (prop === "background-color" || prop === "background") out.background = value;
+    else if (prop === "color") out.color = usefulColor(value);
+    else if (prop === "background-color" || prop === "background") out.background = usefulColor(value);
     else if (prop === "text-align" && /^(left|center|right|justify)$/.test(value)) out.align = value;
   }
   return out;
@@ -100,5 +109,11 @@ function render(node: ChildNode): string {
 export function htmlToChapter(html: string): string {
   if (!html.trim()) return "";
   const doc = parseDocument(html, { decodeEntities: true });
-  return sanitizeRichText(renderChildren(doc.children)).trim();
+  try {
+    return sanitizeRichText(renderChildren(doc.children)).trim();
+  } catch (e) {
+    /* Thousands of nested tags overflow the recursion: fall back to a flat clean of the same text. */
+    if (e instanceof RangeError) return sanitizeRichText(html.replace(/<\/?(div|span|font|section|article|center)\b[^>]*>/gi, "")).trim();
+    throw e;
+  }
 }

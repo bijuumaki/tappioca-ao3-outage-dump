@@ -8,6 +8,7 @@ import ImageButton from "./ImageButton";
 import PasteHtml from "./PasteHtml";
 import PreviewLinks from "./PreviewLinks";
 import PublishBar from "./PublishBar";
+import { snapshotChapter } from "@/lib/admin/version-actions";
 import VersionsPanel from "./VersionsPanel";
 import { loadWebFont, readPref, writePref } from "@/lib/client/prefs";
 import { countWords } from "@/lib/text/words";
@@ -144,9 +145,12 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
         try { localStorage.removeItem(backupKey); } catch { /* storage blocked */ }
       }} />
       <EditorToolbar editor={editor} font={font} size={size} onFont={pickFont} onSize={changeSize}><ImageButton editor={editor} ficId={ficId} /></EditorToolbar>
-      <PasteHtml ficId={ficId} onUse={(html, mode) => {
-        if (mode === "replace") editor.chain().focus().setContent(html, { emitUpdate: true }).run();
-        else editor.chain().focus("end").insertContent(html).run();
+      <PasteHtml ficId={ficId} onUse={async (html, mode) => {
+        if (mode === "replace") {
+          /* Replacing the whole chapter: first save what's there and keep a copy, so it can always be brought back. */
+          if (!(await save(true)) || !(await snapshotChapter(chapterId, "paste"))) { setState("error"); return; }
+          editor.chain().focus().setContent(html, { emitUpdate: true }).run();
+        } else editor.chain().focus("end").insertContent(html).run();
       }} />
 
       <label className="a-title-field">

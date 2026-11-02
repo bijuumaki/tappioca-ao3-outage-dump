@@ -58,6 +58,7 @@ test("a picture embedded in pasted HTML is stored as a file, not kept inside the
   await page.getByLabel("HTML to paste").fill(`<p>pic</p><img src="data:image/png;base64,${png}" alt="x">`);
   await expect(page.locator(".a-paste-preview img")).toHaveAttribute("src", /^https:\/\/.+\/storage\/v1\/object\/public\/media\/fics\/\d+\/images\//);
   await page.getByRole("button", { name: "Use this" }).click();
+  await expect(page.locator(".a-editor .ProseMirror img")).toBeVisible();
   await expect(page.locator(".a-save-state")).toHaveText(/saved/i, { timeout: 10_000 });
   const id = Number(page.url().match(/stories\/(\d+)/)![1]);
   const { data } = await secretClient().from("chapters").select("body").eq("fic_id", id).single();

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { listVersions, restoreVersion, type Restored } from "@/lib/admin/version-actions";
 import type { VersionRow } from "@/lib/admin/versions";
 
-const REASON: Record<string, string> = { autosave: "autosaved", publish: "published", upload: "replaced by an upload", restore: "restored over" };
+const REASON: Record<string, string> = { autosave: "autosaved", publish: "published", upload: "replaced by an upload", restore: "restored over", paste: "replaced by a paste" };
 
 /* Earlier versions of this chapter. Restoring keeps what it replaces, so it can be undone. */
 export default function VersionsPanel({ chapterId, flush, onRestored }: { chapterId: number; flush: () => Promise<boolean>; onRestored: (r: Restored) => void }) {
