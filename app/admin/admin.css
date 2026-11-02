@@ -167,3 +167,10 @@
 .a-notes textarea { width: 100%; padding: 10px; border: 1px solid var(--a-field-border); border-radius: 6px; background: var(--a-card-bg); color: var(--a-text); font: inherit; font-size: 15px; text-transform: none; }
 .a-statusbar { display: flex; justify-content: space-between; gap: 12px; padding-top: 10px; border-top: 1px solid var(--a-border); font-size: 13px; color: var(--a-muted); }
 .a-save-state[data-state="signed_out"], .a-save-state[data-state="error"] { color: var(--a-text); font-weight: 600; }
+
+/* Publish bar and preview */
+.a-publish { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; padding-bottom: 10px; border-bottom: 1px solid var(--a-border); }
+.a-pub-state { font-size: 14px; font-weight: 600; }
+.a-schedule { flex: 1 1 100%; align-items: flex-end; }
+.a-preview { margin: -32px -24px; padding: 24px 16px 64px; background: var(--bg); color: var(--ink); min-height: 100vh; }
+.a-preview-flag { max-width: var(--page-width); margin: 0 auto 24px; padding: 10px 14px; border: 1px dashed var(--border); border-radius: 10px; font-size: 14px; }

@@ -6,6 +6,8 @@ import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { saveChapter, type ChapterInput } from "@/lib/admin/actions";
+import { BlockColor } from "@/lib/admin/block-color";
+import PublishBar from "./PublishBar";
 import { FONTS, loadWebFont, readPref, writePref } from "@/lib/client/prefs";
 import { countWords } from "@/lib/text/words";
 
@@ -33,7 +35,7 @@ const I = {
   clear: "M6 4h12M12 4l-4 16M4 20l16-16",
 };
 
-export default function Editor({ chapterId, initial }: { chapterId: number; initial: ChapterInput }) {
+export default function Editor({ chapterId, ficId, initial, publishAt }: { chapterId: number; ficId: number; initial: ChapterInput; publishAt: string | null }) {
   const [title, setTitle] = useState(initial.title);
   const [notesBefore, setNotesBefore] = useState(initial.notes_before);
   const [notesAfter, setNotesAfter] = useState(initial.notes_after);
@@ -49,7 +51,7 @@ export default function Editor({ chapterId, initial }: { chapterId: number; init
     extensions: [
       StarterKit.configure({ heading: { levels: [2, 3] }, link: { openOnClick: false, autolink: true } }),
       TextAlign.configure({ types: ["heading", "paragraph"], alignments: ["left", "center", "right", "justify"] }),
-      TextStyle, Color, Highlight.configure({ multicolor: true }),
+      TextStyle, Color, Highlight.configure({ multicolor: true }), BlockColor,
     ],
     content: initial.body,
     editorProps: { attributes: { class: "a-prose rich-text", "aria-label": "Chapter text" } },
@@ -59,22 +61,24 @@ export default function Editor({ chapterId, initial }: { chapterId: number; init
   const fields = useRef({ title, notesBefore, notesAfter });
   fields.current = { title, notesBefore, notesAfter };
 
-  const save = useCallback(async () => {
-    if (!editor || !dirty.current) return;
+  const save = useCallback(async (force = false) => {
+    if (!editor || (!dirty.current && !force)) return true;
     dirty.current = false;
     setState("saving");
     const res = await saveChapter(chapterId, {
       title: fields.current.title, notes_before: fields.current.notesBefore, notes_after: fields.current.notesAfter, body: editor.getHTML(),
     }).catch(() => ({ ok: false as const, reason: "error" as const }));
-    if (res.ok) setState("saved");
-    else { dirty.current = true; setState(res.reason); }
+    if (res.ok) { setState("saved"); return true; }
+    dirty.current = true;
+    setState(res.reason);
+    return false;
   }, [chapterId, editor]);
 
   const schedule = useCallback(() => {
     dirty.current = true;
     setState("idle");
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(save, 3000);
+    timer.current = setTimeout(() => void save(), 3000);
   }, [save]);
 
   useEffect(() => {
@@ -123,6 +127,7 @@ export default function Editor({ chapterId, initial }: { chapterId: number; init
 
   return (
     <div className="a-editor">
+      <PublishBar ficId={ficId} chapterId={chapterId} publishAt={publishAt} save={() => save(true)} />
       <div role="toolbar" aria-label="Formatting" className="a-toolbar-row">
         {btn("Undo", I.undo, undefined, () => chain().undo().run())}
         {btn("Redo", I.redo, undefined, () => chain().redo().run())}

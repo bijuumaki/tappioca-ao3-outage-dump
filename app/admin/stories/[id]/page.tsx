@@ -54,7 +54,7 @@ export default async function EditStoryPage({ params, searchParams }: Props) {
             <input form="details-form" name="title" defaultValue={story.title === "Untitled" ? "" : story.title} placeholder="Story title" aria-label="Story title" />
           </label>
           {chapter ? (
-            <Editor key={chapter.id} chapterId={chapter.id} initial={{
+            <Editor key={chapter.id} chapterId={chapter.id} ficId={story.id} publishAt={chapter.publish_at} initial={{
               title: chapter.title ?? "", notes_before: chapter.notes_before, notes_after: chapter.notes_after, body: chapter.body,
             }} />
           ) : <p className="a-muted">This story has no chapters yet. Add one from the list.</p>}

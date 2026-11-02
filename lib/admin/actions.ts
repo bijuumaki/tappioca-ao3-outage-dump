@@ -7,6 +7,7 @@ import type { TagType } from "@/lib/content/types";
 import { createSessionClient, requireAdmin } from "@/lib/supabase/session";
 import { sanitizeRichText } from "@/lib/richtext/allowlist";
 import { prepareChapter } from "./chapter";
+import { publishChapterAt, unpublishChapter } from "./publish";
 import { slugify } from "@/lib/text/slug";
 import { storyDetailsFromForm, uniqueSlug } from "./story-form";
 
@@ -135,4 +136,44 @@ export async function saveChapter(chapterId: number, input: ChapterInput): Promi
     refreshPublic(fic?.slug);
   }
   return { ok: true, savedAt: new Date().toISOString(), words: word_count };
+}
+
+export type PublishResult = { ok: true; status: "published" | "scheduled" | "draft"; at: string | null } | { ok: false; error: string };
+
+async function afterPublish(ficId: number, slug: string) {
+  revalidatePath(`/admin/stories/${ficId}`);
+  revalidatePath("/admin");
+  refreshPublic(slug);
+}
+
+export async function publishChapter(chapterId: number): Promise<PublishResult> {
+  const { db } = await requireAdmin();
+  try {
+    const { ficId, slug } = await publishChapterAt(db, chapterId, new Date());
+    await afterPublish(ficId, slug);
+    return { ok: true, status: "published", at: new Date().toISOString() };
+  } catch {
+    return { ok: false, error: "Couldn’t publish. Try again." };
+  }
+}
+
+/* localDateTime is "YYYY-MM-DDTHH:mm" in Philippine time (UTC+8, no daylight saving). */
+export async function scheduleChapter(chapterId: number, localDateTime: string): Promise<PublishResult> {
+  const { db } = await requireAdmin();
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(localDateTime)) return { ok: false, error: "Pick a date and time." };
+  const when = new Date(`${localDateTime}:00+08:00`);
+  try {
+    const { ficId, slug } = await publishChapterAt(db, chapterId, when, { future: true });
+    await afterPublish(ficId, slug);
+    return { ok: true, status: "scheduled", at: when.toISOString() };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error && /future/.test(e.message) ? e.message : "Couldn’t schedule. Try again." };
+  }
+}
+
+export async function unpublish(chapterId: number): Promise<PublishResult> {
+  const { db } = await requireAdmin();
+  const { ficId, slug } = await unpublishChapter(db, chapterId);
+  await afterPublish(ficId, slug);
+  return { ok: true, status: "draft", at: null };
 }

@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test } from "vitest";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { createReaderClient } from "@/lib/supabase/server";
 import { ensureAdmin, ensureUser, hasSecret, signedInClient, TEST_ADMIN, TEST_READER } from "../support/supabase-admin";
 
@@ -36,5 +36,52 @@ describe.skipIf(!hasSecret())("admin rules", () => {
     expect(admins ?? []).toEqual([]);
     const { data } = await reader.from("fics").select("slug").eq("slug", "sample-draft");
     expect(data).toEqual([]);
+  });
+});
+
+describe.skipIf(!hasSecret())("publishing", async () => {
+  const { publishChapterAt, unpublishChapter } = await import("@/lib/admin/publish");
+  let db: Awaited<ReturnType<typeof signedInClient>>;
+  const made: number[] = [];
+
+  async function draftStory(slug: string) {
+    const { data: fic } = await db.from("fics").insert({ slug, title: `(e2e ${slug})`, category_id: 1 }).select("id").single();
+    made.push(fic!.id);
+    const { data: ch } = await db.from("chapters").insert({ fic_id: fic!.id, position: 1, body: "<p>a</p>", word_count: 1 }).select("id").single();
+    return { ficId: fic!.id, chapterId: ch!.id };
+  }
+
+  beforeAll(async () => { db = await signedInClient(TEST_ADMIN.email, TEST_ADMIN.password); });
+  afterAll(async () => { for (const id of made) await db.from("fics").delete().eq("id", id); });
+
+  test("publishing a chapter of a draft story makes both visible to readers", async () => {
+    const { chapterId } = await draftStory("e2e-pub-a");
+    await publishChapterAt(db, chapterId, new Date());
+    const reader = createReaderClient();
+    expect((await reader.from("fics").select("slug").eq("slug", "e2e-pub-a")).data).toEqual([{ slug: "e2e-pub-a" }]);
+    expect((await reader.from("chapters").select("id").eq("id", chapterId)).data).toHaveLength(1);
+  });
+
+  test("publishing a later chapter doesn't move the story's own date", async () => {
+    const { ficId, chapterId } = await draftStory("e2e-pub-b");
+    await publishChapterAt(db, chapterId, new Date(Date.now() - 86_400_000));
+    const before = (await db.from("fics").select("publish_at").eq("id", ficId).single()).data!.publish_at;
+    const { data: ch2 } = await db.from("chapters").insert({ fic_id: ficId, position: 2 }).select("id").single();
+    await publishChapterAt(db, ch2!.id, new Date());
+    expect((await db.from("fics").select("publish_at").eq("id", ficId).single()).data!.publish_at).toBe(before);
+  });
+
+  test("scheduling an hour ahead keeps it hidden; a past schedule time is refused", async () => {
+    const { chapterId } = await draftStory("e2e-pub-c");
+    await publishChapterAt(db, chapterId, new Date(Date.now() + 3_600_000), { future: true });
+    expect((await createReaderClient().from("fics").select("slug").eq("slug", "e2e-pub-c")).data).toEqual([]);
+    await expect(publishChapterAt(db, chapterId, new Date(Date.now() - 60_000), { future: true })).rejects.toThrow(/future/);
+  });
+
+  test("unpublishing puts the chapter back to draft", async () => {
+    const { chapterId } = await draftStory("e2e-pub-d");
+    await publishChapterAt(db, chapterId, new Date());
+    await unpublishChapter(db, chapterId);
+    expect((await createReaderClient().from("chapters").select("id").eq("id", chapterId)).data).toEqual([]);
   });
 });
