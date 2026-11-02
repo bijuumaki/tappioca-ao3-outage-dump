@@ -46,7 +46,7 @@ insert into public.posts (slug, title, body, embed_url, category_id, publish_at)
 
 insert into public.post_images (post_id, position, path, caption)
 select p.id, i.position, i.path, i.caption
-from public.posts p, (values (1, '/paper.jpg', '(caption one)'), (2, '/paper.jpg', '(caption two)')) as i(position, path, caption)
+from public.posts p, (values (1, '/sample-art.svg', '(caption one)'), (2, '/sample-art.svg', '(caption two)')) as i(position, path, caption)
 where p.slug = 'sample-art';
 
 insert into public.post_tags (post_id, tag_id)
@@ -56,3 +56,6 @@ select p.id, t.id from public.posts p join public.tags t on t.slug in ('sample-f
 insert into public.tags (type, name, slug) values ('relationship', '(draft-only tag)', 'draft-only-tag');
 insert into public.fic_tags (fic_id, tag_id)
 select f.id, t.id from public.fics f, public.tags t where f.slug = 'sample-draft' and t.slug = 'draft-only-tag';
+
+-- The featured fic on the home page.
+update public.fics set featured = true where slug = 'sample-fic';

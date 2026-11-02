@@ -7,7 +7,7 @@ import type { Category, Chapter, Fic, FicStatus, Page, Post, PostImage, Rating, 
 
 export type ChapterSummary = Pick<Chapter, "id" | "position" | "title" | "word_count" | "publish_at"> & { n: number };
 export type FicWithChapters = Fic & { category: Category; tags: Tag[]; chapters: ChapterSummary[]; totalWords: number };
-export type FicCardData = Pick<Fic, "slug" | "title" | "summary" | "rating" | "status" | "publish_at"> & {
+export type FicCardData = Pick<Fic, "slug" | "title" | "summary" | "rating" | "status" | "publish_at" | "cover_path" | "featured"> & {
   category: Category; tags: Tag[]; totalWords: number; chapterCount: number; updatedAt: string;
 };
 export type PostWithImages = Post & { category: Category; tags: Tag[]; images: PostImage[] };
@@ -43,7 +43,7 @@ function toFicCard(fic: FicWithChapters): FicCardData {
   const latest = fic.chapters.reduce((max, c) => (c.publish_at && c.publish_at > max ? c.publish_at : max), fic.publish_at ?? "");
   return {
     slug: fic.slug, title: fic.title, summary: fic.summary, rating: fic.rating, status: fic.status, publish_at: fic.publish_at,
-    category: fic.category, tags: fic.tags, totalWords: fic.totalWords, chapterCount: fic.chapters.length, updatedAt: latest,
+    cover_path: fic.cover_path, featured: fic.featured, category: fic.category, tags: fic.tags, totalWords: fic.totalWords, chapterCount: fic.chapters.length, updatedAt: latest,
   };
 }
 
@@ -162,4 +162,43 @@ export async function getCategories(): Promise<Category[]> {
   const { data, error } = await createReaderClient().from("categories").select("*").order("id");
   if (error) throw error;
   return data;
+}
+
+export type HomeData = {
+  featured: FicCardData | null;
+  recentFics: FicCardData[];
+  recentPosts: PostCardData[];
+  storyCount: number;
+  fandoms: { name: string; slug: string; count: number }[];
+};
+
+/* Fics grouped under each fandom they're tagged with; untagged fics go under "Other". */
+export function groupByFandom(fics: FicCardData[]): { name: string; slug: string | null; fics: FicCardData[] }[] {
+  const groups = new Map<string, { name: string; slug: string | null; fics: FicCardData[] }>();
+  for (const fic of fics) {
+    const fandoms = fic.tags.filter((t) => t.type === "fandom");
+    const keys = fandoms.length ? fandoms.map((t) => ({ name: t.name, slug: t.slug as string | null })) : [{ name: "Other", slug: null }];
+    for (const k of keys) {
+      const id = k.slug ?? "";
+      if (!groups.has(id)) groups.set(id, { ...k, fics: [] });
+      groups.get(id)!.fics.push(fic);
+    }
+  }
+  return [...groups.values()].sort((a, b) => (a.slug === null ? 1 : b.slug === null ? -1 : a.name.localeCompare(b.name)));
+}
+
+export async function getHomeData(): Promise<HomeData> {
+  const { fics, posts } = await browse({ sort: "updated" });
+  const featured = fics.filter((f) => f.featured).sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))[0] ?? null;
+  const fandoms = groupByFandom(fics)
+    .filter((g) => g.slug !== null)
+    .map((g) => ({ name: g.name, slug: g.slug as string, count: g.fics.length }));
+  return { featured, recentFics: fics.slice(0, 6), recentPosts: posts.slice(0, 3), storyCount: fics.length, fandoms };
+}
+
+/* Short home-page texts ("howdy", "archive"), stored in the pages table but not public pages. */
+export async function getSnippet(slug: "howdy" | "archive"): Promise<string> {
+  const { data, error } = await createReaderClient().from("pages").select("body").eq("slug", slug).maybeSingle();
+  if (error) throw error;
+  return data?.body ?? "";
 }

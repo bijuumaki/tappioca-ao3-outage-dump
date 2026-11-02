@@ -37,7 +37,7 @@
 ## File map
 
 ```
-supabase/migrations/0003_admin.sql       admins table; admin read/write policies; media bucket + policies
+supabase/migrations/0005_admin.sql       admins table; admin read/write policies; media bucket + policies
 proxy.ts                                 refreshes the session; sends signed-out visitors from /admin to /admin/login
 lib/supabase/session.ts                  createSessionClient() (cookies) and requireAdmin()
 lib/admin/story-form.ts                  parseTagInput, uniqueSlug, RATING_OPTIONS, storyDetailsFromForm
@@ -68,14 +68,14 @@ tests/e2e/admin-*.spec.ts                use a test admin made in tests/e2e/glob
 ### Task 1: Admin access and its database rules
 
 **Files:**
-- Create: `supabase/migrations/0003_admin.sql`, `lib/supabase/session.ts`, `proxy.ts`, `lib/admin/actions.ts` (signIn, signOut only), `app/admin/layout.tsx` (minimal), `app/admin/login/page.tsx`, `app/admin/page.tsx` (placeholder heading "Stories"), `scripts/create-admin.ts`, `tests/integration/admin.test.ts`, `tests/e2e/global-setup.ts`, `tests/e2e/admin-login.spec.ts`
+- Create: `supabase/migrations/0005_admin.sql`, `lib/supabase/session.ts`, `proxy.ts`, `lib/admin/actions.ts` (signIn, signOut only), `app/admin/layout.tsx` (minimal), `app/admin/login/page.tsx`, `app/admin/page.tsx` (placeholder heading "Stories"), `scripts/create-admin.ts`, `tests/integration/admin.test.ts`, `tests/e2e/global-setup.ts`, `tests/e2e/admin-login.spec.ts`
 - Modify: `playwright.config.ts` (globalSetup), `.env.example` (no new keys; note that `SUPABASE_SECRET_KEY` is now required for tests)
 
 **Interfaces:**
 - Produces: `createSessionClient(): Promise<SupabaseClient<Database>>` (server, cookie session); `requireAdmin(): Promise<{ db, userId }>` (redirects to `/admin/login` when signed out or not an admin); test helpers `TEST_ADMIN = { email: "e2e-admin@tappioca.test", password: process.env.E2E_ADMIN_PASSWORD }`.
 
 - [ ] **Step 1: Ask Bijuu** for (a) the email she wants to sign in with and (b) to paste `SUPABASE_SECRET_KEY` into `.env.local` (Supabase dashboard, Project Settings, API keys, secret key). Confirm public sign-up is off in Authentication settings (or turn it off with her OK).
-- [ ] **Step 2: Write the migration** `0003_admin.sql`: `admins(user_id uuid primary key references auth.users on delete cascade)`, RLS on with no public policies; a `security definer` function `public.is_admin()` returning `exists(select 1 from public.admins where user_id = auth.uid())` (search_path ''); for every content table (`fics, chapters, posts, post_images, tags, fic_tags, post_tags, categories, pages`) one policy `for all to authenticated using (public.is_admin()) with check (public.is_admin())`. Storage: a public-read bucket `media`, with insert/update/delete allowed only when `public.is_admin()`.
+- [ ] **Step 2: Write the migration** `0005_admin.sql`: `admins(user_id uuid primary key references auth.users on delete cascade)`, RLS on with no public policies; a `security definer` function `public.is_admin()` returning `exists(select 1 from public.admins where user_id = auth.uid())` (search_path ''); for every content table (`fics, chapters, posts, post_images, tags, fic_tags, post_tags, categories, pages`) one policy `for all to authenticated using (public.is_admin()) with check (public.is_admin())`. Storage: a public-read bucket `media`, with insert/update/delete allowed only when `public.is_admin()`.
 - [ ] **Step 3: Write the failing integration test** `tests/integration/admin.test.ts` (skips without `SUPABASE_SECRET_KEY`); before all: create the test admin user with the secret key (auth admin API, `email_confirm: true`) and add it to `admins`; a signed-in client for it:
   - the admin can read `sample-draft`
   - the admin can insert and delete a fic
