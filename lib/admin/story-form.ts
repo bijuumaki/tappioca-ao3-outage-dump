@@ -44,3 +44,13 @@ export function storyDetailsFromForm(form: FormData): StoryDetails {
     tags: parseTagInput(text("tags")),
   };
 }
+
+/* "teen", "Teen and Up", "General Audiences", "not rated"… to a rating; anything else is undefined. */
+export function ratingFromText(text: string | undefined): Rating | undefined {
+  const t = (text ?? "").trim().toLowerCase().replace(/_/g, " ");
+  if (!t) return undefined;
+  for (const [value, label] of Object.entries(RATING_LABELS)) {
+    if (t === label.toLowerCase() || t === value.replace(/_/g, " ")) return value as Rating;
+  }
+  return undefined;
+}

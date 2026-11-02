@@ -6,11 +6,11 @@ import { htmlToChapter } from "./html";
 import { extractDataUriImages, type Uploader } from "./images";
 import { markdownToChapter, type MarkdownMeta } from "./markdown";
 import { parseChapterFilename } from "./names";
+import { ACCEPTED_EXTENSIONS } from "./index-constants";
 import { textToChapter } from "./text";
 
 export { ConvertError } from "./errors";
-export const ACCEPTED_EXTENSIONS = ["html", "htm", "md", "markdown", "txt", "docx", "epub"] as const;
-export const MAX_DOCUMENT_BYTES = 25 * 1024 * 1024;
+export { ACCEPTED_EXTENSIONS, MAX_DOCUMENT_BYTES } from "./index-constants";
 
 export type Converted = { title: string; summary?: string; chapters: { title?: string; html: string }[]; meta?: MarkdownMeta };
 

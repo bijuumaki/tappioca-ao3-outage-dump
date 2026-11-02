@@ -46,7 +46,9 @@ export async function epubToFic(buffer: ArrayBuffer, upload: Uploader): Promise<
       if (!/^(https?:|data:)/i.test(src)) {
         const bytes = await zip.file(resolve(chapterDir, decodeURIComponent(src)))?.async("uint8array");
         const kind = bytes ? sniffImage(bytes) : null;
-        if (bytes && kind && bytes.length <= 8 * 1024 * 1024) replacement = m[0].replace(src, await upload(bytes, kind.ext));
+        if (bytes && kind && bytes.length <= 8 * 1024 * 1024) {
+          try { replacement = m[0].replace(src, await upload(bytes, kind.ext)); } catch { replacement = ""; }
+        }
       }
       xhtml = xhtml.replace(m[0], replacement);
     }

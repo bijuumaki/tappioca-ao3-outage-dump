@@ -27,7 +27,8 @@ export async function extractDataUriImages(html: string, upload: Uploader): Prom
     const bytes = comma > 0 && /;base64$/i.test(m[1].slice(0, comma)) ? new Uint8Array(Buffer.from(m[1].slice(comma + 1), "base64")) : new Uint8Array();
     const kind = sniffImage(bytes);
     if (!kind || bytes.length > 8 * 1024 * 1024) { out = out.replace(m[0], ""); continue; }
-    const url = await upload(bytes, kind.ext);
+    let url: string;
+    try { url = await upload(bytes, kind.ext); } catch { out = out.replace(m[0], ""); continue; }
     out = out.replace(m[0], m[0].replace(m[1], url));
   }
   return out;

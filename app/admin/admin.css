@@ -198,3 +198,13 @@
 .a-writing img, .a-paste-preview img { max-width: 100%; height: auto; display: block; border-radius: 6px; }
 .a-writing img.ProseMirror-selectednode { outline: 2px solid var(--a-text); outline-offset: 2px; }
 .a-paste-preview { padding: 12px; border: 1px dashed var(--a-border); border-radius: 6px; max-height: 260px; overflow: auto; text-transform: none; }
+
+/* Upload bin */
+.a-bin { display: flex; flex-direction: column; gap: 16px; }
+.a-drop { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 18px; border: 2px dashed var(--a-field-border); border-radius: 10px; }
+.a-drop[data-over] { background: var(--a-tint); }
+.a-drop p { margin: 0; }
+.a-drop label { position: relative; overflow: hidden; }
+.a-drop input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.a-results, .a-files, .a-upload-problems { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
+.a-results li[data-ok="false"] { font-weight: 600; }

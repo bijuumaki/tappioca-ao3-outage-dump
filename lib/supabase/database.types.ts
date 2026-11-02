@@ -104,6 +104,24 @@ export type Database = {
           { foreignKeyName: "posts_category_id_fkey"; columns: ["category_id"]; isOneToOne: false; referencedRelation: "categories"; referencedColumns: ["id"] },
         ];
       };
+      upload_files: {
+        Row: { chapter_id: number | null; created_at: string; error: string | null; fic_id: number | null; filename: string; id: number; kind: string; size: number; status: string; storage_path: string };
+        Insert: { chapter_id?: number | null; created_at?: string; error?: string | null; fic_id?: number | null; filename: string; id?: never; kind: string; size?: number; status: string; storage_path: string };
+        Update: { chapter_id?: number | null; created_at?: string; error?: string | null; fic_id?: number | null; filename?: string; id?: never; kind?: string; size?: number; status?: string; storage_path?: string };
+        Relationships: [];
+      };
+      chapter_versions: {
+        Row: { body: string; chapter_id: number; created_at: string; id: number; notes_after: string; notes_before: string; reason: string; title: string | null; word_count: number };
+        Insert: { body?: string; chapter_id: number; created_at?: string; id?: never; notes_after?: string; notes_before?: string; reason: string; title?: string | null; word_count?: number };
+        Update: { body?: string; chapter_id?: number; created_at?: string; id?: never; notes_after?: string; notes_before?: string; reason?: string; title?: string | null; word_count?: number };
+        Relationships: [];
+      };
+      preview_links: {
+        Row: { chapter_id: number; created_at: string; revoked_at: string | null; token: string };
+        Insert: { chapter_id: number; created_at?: string; revoked_at?: string | null; token?: string };
+        Update: { chapter_id?: number; created_at?: string; revoked_at?: string | null; token?: string };
+        Relationships: [];
+      };
       tags: {
         Row: { id: number; name: string; slug: string; type: Database["public"]["Enums"]["tag_type"] };
         Insert: { id?: never; name: string; slug: string; type: Database["public"]["Enums"]["tag_type"] };
@@ -112,7 +130,12 @@ export type Database = {
       };
     };
     Views: { [_ in never]: never };
-    Functions: { [_ in never]: never };
+    Functions: {
+      preview_chapter: {
+        Args: { p_token: string };
+        Returns: { fic_title: string; chapter_title: string | null; chapter_position: number; notes_before: string; body: string; notes_after: string; word_count: number }[];
+      };
+    };
     Enums: {
       fic_status: "in_progress" | "complete";
       rating: "general" | "teen" | "mature" | "explicit" | "not_rated";
