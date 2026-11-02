@@ -14,9 +14,10 @@ export async function signIn(_prev: SignInState, form: FormData): Promise<SignIn
   redirect("/admin");
 }
 
+/* Signs out this device only; other devices stay signed in. */
 export async function signOut(): Promise<void> {
   const db = await createSessionClient();
-  await db.auth.signOut();
+  await db.auth.signOut({ scope: "local" });
   redirect("/admin/login");
 }
 
