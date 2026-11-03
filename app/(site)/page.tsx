@@ -44,7 +44,6 @@ export default async function Home() {
           </section>
         </>
       )}
-      <Link href="/fics" className="story-secondary home-all">See the whole fic list</Link>
 
       <section className="home-intro">
         <div className="home-side">

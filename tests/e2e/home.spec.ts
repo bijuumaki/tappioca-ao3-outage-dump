@@ -56,7 +56,7 @@ test("more stories lists the other published stories, not the featured one", asy
   await expect(cards.filter({ hasText: "(sample mature)" })).toHaveCount(1);
   await expect(cards.filter({ hasText: "(sample fic)" })).toHaveCount(0);
   await expect(cards.filter({ hasText: "(sample draft)" })).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "See the whole fic list" })).toHaveAttribute("href", "/fics");
+  await expect(page.getByRole("link", { name: "See the whole fic list" })).toHaveCount(0);
 });
 
 test("the featured story comes before the intro, as in the design", async ({ page }) => {

@@ -319,7 +319,6 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .resume-title { font-weight: 500; overflow-wrap: anywhere; }
 .resume-where { font-size: var(--t14); }
 .resume-button { flex: 0 1 auto; }
-.home-all { align-self: flex-start; flex: none; margin-bottom: 20px; }
 
 /* Comments */
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
