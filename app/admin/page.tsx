@@ -32,6 +32,7 @@ export default async function StoriesPage({ searchParams }: { searchParams: Prom
         <Link href="/admin/stories/new" className="a-add a-add-desktop"><span aria-hidden="true">+</span>Add new story</Link>
         <Link href="/admin/uploads" className="a-button">Uploads</Link>
         <Link href="/admin/pages" className="a-button">Pages</Link>
+        <Link href="/admin/comments" className="a-button">Comments</Link>
         <form action={signOut}><button type="submit" className="a-button">Sign out</button></form>
       </AdminHeader>
 

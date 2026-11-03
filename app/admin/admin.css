@@ -39,7 +39,7 @@
 .a-narrow { max-width: 420px; }
 .a-header { position: relative; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .a-header-text { min-width: 0; flex: 1 1 200px; }
-.a-header-actions { display: flex; align-items: center; gap: 12px; }
+.a-header-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; min-width: 0; }
 .a-title { margin: 0; font-family: var(--font-heading); font-size: 32px; line-height: 1.2; font-weight: 400; }
 .a-muted { margin: 0; color: var(--a-muted); font-size: 14px; }
 .a-card { border: 1px solid var(--a-border); border-radius: 10px; background: var(--a-card-bg); padding: 20px; }
@@ -238,3 +238,17 @@
 .a-check-adult { padding: 10px 14px; border: 1px solid var(--a-border); border-radius: 10px; }
 .a-modal-actions { justify-content: flex-end; margin-top: 4px; }
 .a-modal-actions > * { flex: 1 1 130px; min-height: 48px; }
+
+/* Comments screen (not in the canvas: built from the same pieces as the Stories list) */
+.a-comments { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.a-comment { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; border: 1px solid var(--a-border); border-radius: 10px; background: var(--a-card-bg); }
+.a-comment[data-hidden="true"] { opacity: 0.7; }
+.a-comment-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; font-size: 14px; }
+.a-comment p { margin: 0; }
+.a-comment-name { font-weight: 600; text-transform: none; overflow-wrap: anywhere; }
+.a-comment-body, .a-comment-reply { text-transform: none; white-space: pre-wrap; overflow-wrap: anywhere; }
+.a-comment-reply { padding-left: 12px; border-left: 2px solid var(--a-border); }
+.a-tag { margin-left: 8px; padding: 0 8px; border: 1px solid var(--a-field-border); border-radius: 6px; font-size: 13px; font-weight: 500; }
+.a-reply summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
+.a-reply-form { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.a-reply-form .a-field, .a-reply-form textarea { width: 100%; box-sizing: border-box; }

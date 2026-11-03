@@ -142,3 +142,65 @@ describe.skipIf(!hasSecret())("comments: posting", async () => {
     expect(res.posted).toBe(true);
   });
 });
+
+describe.skipIf(!hasSecret())("comments: the author's side", async () => {
+  const { replyToCommentCore, setCommentHiddenCore, listAdminComments } = await import("@/lib/admin/comments");
+  const { getComments } = await import("@/lib/comments/queries");
+  const db = secretClient();
+  let admin: Awaited<ReturnType<typeof signedInClient>>;
+  let chapter: number;
+  const clean = async () => { await db.from("comments").delete().like("name", "(e2e%"); };
+
+  beforeAll(async () => {
+    await clean();
+    await ensureAdmin(TEST_ADMIN.email, TEST_ADMIN.password);
+    admin = await signedInClient(TEST_ADMIN.email, TEST_ADMIN.password);
+    const { data: fic } = await db.from("fics").select("id").eq("slug", "sample-fic").single();
+    chapter = (await db.from("chapters").select("id").eq("fic_id", fic!.id).eq("position", 1).single()).data!.id;
+  });
+  afterAll(clean);
+
+  async function top(name: string) {
+    const { data } = await db.from("comments").insert({ chapter_id: chapter, name, body: "(e2e question)" }).select("id").single();
+    return data!.id;
+  }
+
+  test("a reply is stored as the author's, on the same chapter, under its comment", async () => {
+    const parent = await top("(e2e asker)");
+    expect(await replyToCommentCore(admin, parent, "  Thank you!  ")).toEqual({ ok: true });
+    const mine = (await getComments("sample-fic", 1)).filter((c) => c.parentId === parent);
+    expect(mine).toMatchObject([{ name: "Author", body: "Thank you!", byAuthor: true }]);
+  });
+
+  test("a reply to a reply, an empty reply and a missing comment are refused", async () => {
+    const parent = await top("(e2e asker two)");
+    await replyToCommentCore(admin, parent, "First reply");
+    const reply = (await getComments("sample-fic", 1)).find((c) => c.parentId === parent)!;
+    expect(await replyToCommentCore(admin, reply.id, "Nested")).toEqual({ ok: false, error: "You can only reply to a comment." });
+    expect(await replyToCommentCore(admin, parent, "   ")).toEqual({ ok: false, error: "Write a reply first." });
+    expect(await replyToCommentCore(admin, 999999999, "Hello")).toEqual({ ok: false, error: "You can only reply to a comment." });
+  });
+
+  test("hiding takes a comment off the public page and showing brings it back", async () => {
+    const id = await top("(e2e hide me)");
+    expect(await setCommentHiddenCore(admin, id, true)).toEqual({ ok: true });
+    expect((await getComments("sample-fic", 1)).some((c) => c.id === id)).toBe(false);
+    expect(await setCommentHiddenCore(admin, id, false)).toEqual({ ok: true });
+    expect((await getComments("sample-fic", 1)).some((c) => c.id === id)).toBe(true);
+  });
+
+  test("the admin list shows newest first, with replies under their comment and hidden ones marked", async () => {
+    const older = await top("(e2e list older)");
+    const newer = await top("(e2e list newer)");
+    await replyToCommentCore(admin, older, "Reply in list");
+    await setCommentHiddenCore(admin, newer, true);
+    const list = await listAdminComments(admin);
+    const ids = list.map((c) => c.id);
+    expect(ids.indexOf(newer)).toBeLessThan(ids.indexOf(older));
+    const o = list.find((c) => c.id === older)!;
+    expect(o.storyTitle).toBe("(sample fic)");
+    expect(o.replies.map((r) => r.body)).toEqual(["Reply in list"]);
+    expect(list.find((c) => c.id === newer)!.hidden).toBe(true);
+    expect(list.every((c) => c.parentId === null)).toBe(true);
+  });
+});
