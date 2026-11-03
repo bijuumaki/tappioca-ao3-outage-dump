@@ -1,7 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/supabase/session";
-import { replyToCommentCore, setCommentHiddenCore, type CommentResult } from "./comments";
+import { deleteCommentCore, replyToCommentCore, setCommentHiddenCore, type CommentResult } from "./comments";
 
 function refresh() {
   revalidatePath("/admin/comments");
@@ -18,6 +18,13 @@ export async function replyToComment(parentId: number, body: string): Promise<Co
 export async function setCommentHidden(id: number, hidden: boolean): Promise<CommentResult> {
   const { db } = await requireAdmin();
   const res = await setCommentHiddenCore(db, id, hidden);
+  if (res.ok) refresh();
+  return res;
+}
+
+export async function deleteComment(id: number): Promise<CommentResult> {
+  const { db } = await requireAdmin();
+  const res = await deleteCommentCore(db, id);
   if (res.ok) refresh();
   return res;
 }

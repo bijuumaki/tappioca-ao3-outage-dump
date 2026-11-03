@@ -29,6 +29,7 @@ export default function CommentForm({ slug, n }: { slug: string; n: number }) {
         <textarea name="body" rows={4} value={body} onChange={(e) => setBody(e.target.value)} />
       </label>
       {state.error && <p role="alert" className="comment-error">{state.error}</p>}
+      {state.posted && !state.error && <p role="status" className="comment-sent">Thank you. Your comment will show once the author has approved it.</p>}
       <button type="submit" className="story-primary comment-post" disabled={pending}>Post comment</button>
     </form>
   );

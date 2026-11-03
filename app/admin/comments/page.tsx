@@ -2,26 +2,54 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AdminHeader from "@/components/admin/AdminHeader";
 import CommentRow from "@/components/admin/CommentRow";
-import { listAdminComments } from "@/lib/admin/comments";
+import { commentCounts, listAdminComments, storiesWithComments, type CommentStatus } from "@/lib/admin/comments";
 import { requireAdmin } from "@/lib/supabase/session";
 
 export const metadata: Metadata = { title: "Comments" };
 export const dynamic = "force-dynamic";
 
-export default async function CommentsScreen({ searchParams }: { searchParams: Promise<{ before?: string }> }) {
+const TABS: [CommentStatus, string][] = [["waiting", "Waiting"], ["approved", "Approved"], ["all", "All"]];
+const EMPTY: Record<CommentStatus, string> = {
+  waiting: "Nothing is waiting for approval.", approved: "No approved comments here yet.", all: "No comments here yet.",
+};
+
+export default async function CommentsScreen({ searchParams }: { searchParams: Promise<{ before?: string; status?: string; story?: string }> }) {
   const { db } = await requireAdmin();
-  const before = Number((await searchParams).before);
-  const { comments, next } = await listAdminComments(db, { before: Number.isInteger(before) && before > 0 ? before : undefined });
+  const sp = await searchParams;
+  const status: CommentStatus = sp.status === "approved" || sp.status === "all" ? sp.status : "waiting";
+  const ficId = Number.isInteger(Number(sp.story)) && Number(sp.story) > 0 ? Number(sp.story) : undefined;
+  const before = Number(sp.before);
+  const [{ comments, next }, counts, stories] = await Promise.all([
+    listAdminComments(db, { before: Number.isInteger(before) && before > 0 ? before : undefined, status, ficId }),
+    commentCounts(db, ficId),
+    storiesWithComments(db),
+  ]);
+  const href = (s: CommentStatus, story = ficId) => `/admin/comments?status=${s}${story ? `&story=${story}` : ""}`;
   return (
     <main className="a-page">
-      <AdminHeader title="Comments">
-        <Link href="/admin" className="a-link">Back to all stories</Link>
-      </AdminHeader>
-      <p className="a-muted">What readers wrote, newest first. A reply shows on the chapter as yours. Hiding a comment takes it off the site until you show it again.</p>
+      <AdminHeader title="Comments" />
+      <p className="a-muted">New comments wait here until you approve them. Only approved comments show under a chapter.</p>
+      <div className="a-filter-row">
+        <nav aria-label="Filter by status" className="a-tabs">
+          {TABS.map(([id, label]) => (
+            <Link key={id} href={href(id)} aria-current={status === id ? "true" : undefined}>{label} <span>{counts[id]}</span></Link>
+          ))}
+        </nav>
+        <form action="/admin/comments" className="a-field-inline">
+          <input type="hidden" name="status" value={status} />
+          <label>Story{" "}
+            <select name="story" defaultValue={ficId ?? ""} >
+              <option value="">All stories</option>
+              {stories.map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}
+            </select>
+          </label>{" "}
+          <button type="submit" className="a-button">Filter</button>
+        </form>
+      </div>
       {comments.length === 0
-        ? <p className="a-muted">No comments yet.</p>
+        ? <p className="a-muted">{EMPTY[status]}</p>
         : <ul className="a-comments">{comments.map((c) => <CommentRow key={c.id} c={c} />)}</ul>}
-      {next && <Link href={`/admin/comments?before=${next}`} className="a-button">Older comments</Link>}
+      {next && <Link href={`${href(status)}&before=${next}`} className="a-button">Older comments</Link>}
     </main>
   );
 }

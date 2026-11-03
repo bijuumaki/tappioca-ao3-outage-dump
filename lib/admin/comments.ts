@@ -13,12 +13,17 @@ export type AdminComment = {
 type Joined = { position: number; fic: { id: number; title: string } };
 
 /* Newest comments first (50 at a time; `next` is the cursor for older ones), each with its replies. Hidden ones are included (marked), because the admin client sees everything. */
-export async function listAdminComments(db: Db, opts: { limit?: number; before?: number } = {}): Promise<{ comments: AdminComment[]; next: number | null }> {
+export type CommentStatus = "waiting" | "approved" | "all";
+
+export async function listAdminComments(db: Db, opts: { limit?: number; before?: number; status?: CommentStatus; ficId?: number } = {}): Promise<{ comments: AdminComment[]; next: number | null }> {
   const limit = opts.limit ?? 50;
   let q = db.from("comments")
-    .select("id, name, body, hidden, by_author, created_at, parent_id, chapter:chapters(position, fic:fics(id, title))")
+    .select(opts.ficId ? "id, name, body, hidden, by_author, created_at, parent_id, chapter:chapters!inner(position, fic_id, fic:fics(id, title))" : "id, name, body, hidden, by_author, created_at, parent_id, chapter:chapters(position, fic:fics(id, title))")
     .is("parent_id", null).order("id", { ascending: false }).limit(limit + 1);
   if (opts.before) q = q.lt("id", opts.before);
+  if (opts.ficId) q = q.eq("chapter.fic_id", opts.ficId);
+  if (opts.status === "waiting") q = q.eq("hidden", true);
+  if (opts.status === "approved") q = q.eq("hidden", false);
   const { data: fetched, error } = await q;
   if (error) throw error;
   const more = fetched.length > limit;
@@ -53,4 +58,30 @@ export async function replyToCommentCore(db: Db, parentId: number, body: string)
 export async function setCommentHiddenCore(db: Db, id: number, hidden: boolean): Promise<CommentResult> {
   const { data, error } = await db.from("comments").update({ hidden }).eq("id", id).select("id");
   return error || !data?.length ? { ok: false, error: "Couldn’t change that comment. Try again." } : { ok: true };
+}
+
+/* How many top-level comments are waiting / approved, for the tab counts (optionally for one story). */
+export async function commentCounts(db: Db, ficId?: number): Promise<{ waiting: number; approved: number; all: number }> {
+  const count = async (hidden: boolean | null) => {
+    let q = db.from("comments").select(ficId ? "id, chapter:chapters!inner(fic_id)" : "id", { count: "exact", head: true }).is("parent_id", null);
+    if (hidden !== null) q = q.eq("hidden", hidden);
+    if (ficId) q = q.eq("chapter.fic_id", ficId);
+    const { count: n, error } = await q;
+    if (error) throw error;
+    return n ?? 0;
+  };
+  const [waiting, approved] = await Promise.all([count(true), count(false)]);
+  return { waiting, approved, all: waiting + approved };
+}
+
+/* The stories that have comments, for the story filter. */
+export async function storiesWithComments(db: Db): Promise<{ id: number; title: string }[]> {
+  const { data, error } = await db.from("fics").select("id, title").order("title");
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteCommentCore(db: Db, id: number): Promise<CommentResult> {
+  const { data, error } = await db.from("comments").delete().eq("id", id).select("id");
+  return error || !data?.length ? { ok: false, error: "Couldn’t delete that comment. Try again." } : { ok: true };
 }
