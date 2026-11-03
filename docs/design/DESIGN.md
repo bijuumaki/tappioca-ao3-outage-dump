@@ -37,7 +37,7 @@ The canvas is a prototype: demo switches (`signedIn`, `showEnd`, `panelStartsOpe
 
 ## 3. Type
 
-Site title and headings: **IM Fell English** (the site title, the "Chapter N: title" bar and the "Comments on chapter N" bar always keep it; other headings follow the chosen font unless Default). Body and UI: **Inclusive Sans**. Reader fonts (Aa panel): Inclusive Sans (default), Lucida Sans, Cantarell, Crimson Pro, EB Garamond, Charter (system font). Sizes: page title `clamp(30px, 7vw, 40px)`, section bar 24px, intro boxes 24px heading and 16px body, card title 15px, meta 13px, body 16px (all times the size setting). Line spacing: Tight 1.4, Normal 1.7, Loose 2.1.
+Site title and headings: **IM Fell English** (the site title, the "Chapter N: title" bar and the "Comments on chapter N" bar always keep it; other headings follow the chosen font unless Default). Body and UI: **Inclusive Sans**. Reader fonts (Aa panel): Inclusive Sans (default), Lucida Sans, Cantarell, Crimson Pro, EB Garamond, Charter (the device's own Charter on Apple, Charis SIL elsewhere). Sizes: page title `clamp(30px, 7vw, 40px)`, section bar 24px, intro boxes 24px heading and 16px body, card title 15px, meta 13px, body 16px (all times the size setting). Line spacing: Tight 1.4, Normal 1.7, Loose 2.1.
 
 ## 4. Reader screens
 

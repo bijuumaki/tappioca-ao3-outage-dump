@@ -45,7 +45,7 @@
   --stack-cantarell: "Cantarell", sans-serif;
   --stack-crimson: "Crimson Pro", Georgia, serif;
   --stack-ebgaramond: "EB Garamond", Georgia, serif;
-  --stack-charter: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;   /* system font: real Charter on Apple devices */
+  --stack-charter: Charter, "Charis SIL", Georgia, serif;   /* real Charter on Apple devices, Charis SIL (downloaded) elsewhere */
   --page-width: 708px;
   --radius: 10px;
   --radius-small: 6px;
