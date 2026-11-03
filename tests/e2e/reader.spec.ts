@@ -24,8 +24,8 @@ test("chapter page: label, progress, word count, notes, buttons", async ({ page 
   await expect(nav.getByRole("link", { name: "Previous" })).toHaveAttribute("href", "/fics/sample-fic/1");
   await expect(nav.getByRole("link", { name: "Next" })).toHaveAttribute("href", "/fics/sample-fic/3");
   await nav.getByRole("link", { name: "Contents" }).click();
-  await expect(page.locator("#display-options")).toBeVisible();
-  await page.getByLabel("Chapter", { exact: true }).selectOption("3");
+  await expect(page.getByLabel("Jump to chapter")).toBeFocused();
+  await page.getByLabel("Jump to chapter").selectOption("3");
   await expect(page).toHaveURL(/\/fics\/sample-fic\/3$/);
   await expect(page.locator(".chapter-buttons").first().getByRole("link", { name: "Next" })).toHaveCount(0);
 });

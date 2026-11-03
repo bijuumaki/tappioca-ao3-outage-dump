@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import BackToTop from "@/components/BackToTop";
 import ChapterBody from "@/components/ChapterBody";
 import ChapterGate from "@/components/ChapterGate";
+import ChapterJump from "@/components/ChapterJump";
 import ChapterNav, { TouchChapterNav } from "@/components/ChapterNav";
 import Comments from "@/components/Comments";
 import EndOfStory from "@/components/EndOfStory";
@@ -49,6 +50,7 @@ export default async function ChapterPage({ params }: Props) {
           <div><Link href={`/fics/${slug}`} className="story-back">Story details</Link></div>
           <h1 className="page-title"><Link href={`/fics/${slug}`}>{fic.title}</Link></h1>
           <p className="chapter-label">{several ? `Chapter ${chapter.n} of ${count}` : "Chapter 1"} · {formatWords(chapter.word_count)}</p>
+          {several && <ChapterJump slug={slug} n={chapter.n} chapters={options} />}
           {several && <div className="progress" aria-hidden="true"><div style={{ width: `${Math.round((chapter.n / count) * 100)}%` }} /></div>}
           {several && <TouchChapterNav slug={slug} n={chapter.n} count={count} />}
         </header>

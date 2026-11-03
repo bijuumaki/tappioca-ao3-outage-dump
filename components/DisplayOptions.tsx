@@ -1,11 +1,9 @@
 "use client";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { clampSize, FONTS, loadWebFont, readPref, SIZE_MAX, SIZE_MIN, SPACINGS, THEMES, writePref } from "@/lib/client/prefs";
 import { useReaderInfo } from "@/lib/client/reader-store";
 
 export default function DisplayOptions() {
-  const router = useRouter();
   const reader = useReaderInfo();
   const [open, setOpen] = useState(false);
   const [theme, setTheme] = useState("day");
@@ -97,14 +95,6 @@ export default function DisplayOptions() {
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" /></svg>
           </button>
         </div>
-        {reader && reader.chapters.length > 1 && (
-          <div className="options-field">
-            <label htmlFor="options-chapter">Chapter</label>
-            <select id="options-chapter" value={reader.n} onChange={(e) => { setOpen(false); router.push(`/fics/${reader.slug}/${e.target.value}`); window.scrollTo(0, 0); }}>
-              {reader.chapters.map((c) => <option key={c.n} value={c.n}>{c.label}</option>)}
-            </select>
-          </div>
-        )}
         <div className="options-row">
           <span>Text size</span>
           <span className="options-stepper">
