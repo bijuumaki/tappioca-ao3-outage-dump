@@ -11,11 +11,10 @@ export default function ContinueReading() {
   return (
     <section aria-labelledby="resume-heading" className="resume-card">
       <div className="resume-text">
-        <h2 id="resume-heading">Continue reading</h2>
+        <h2 id="resume-heading"><Link href={`/fics/${place.slug}/${place.n}`} className="card-link">Continue reading</Link></h2>
         <p className="resume-title">{place.title}</p>
         <p className="muted resume-where">Chapter {place.n} of {place.count}</p>
       </div>
-      <Link href={`/fics/${place.slug}/${place.n}`} className="story-primary resume-button">Resume</Link>
     </section>
   );
 }

@@ -54,10 +54,9 @@ export default async function Home() {
         <ContinueReading />
         <section aria-labelledby="highlights-heading" className="resume-card">
           <div className="resume-text">
-            <h2 id="highlights-heading">My highlights</h2>
+            <h2 id="highlights-heading"><Link href="/highlights" className="card-link">My highlights</Link></h2>
             <p className="muted resume-where">Your highlights and notes</p>
           </div>
-          <Link href="/highlights" className="story-primary resume-button">Open</Link>
         </section>
       </div>
 
