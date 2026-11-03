@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { editorExtensions } from "@/lib/admin/editor-extensions";
 import { amSignedInAsAdmin, savePageText } from "@/lib/admin/page-actions";
 import type { PageSlug } from "@/lib/admin/page-texts";
+import { ICONS } from "./admin/EditorToolbar";
 
 /* Edit in place (canvas v131 to v134). Readers only ever get `children`. When Bijuu is signed in, the text becomes the editor. */
 export default function InlinePageEditor({ slug, label, initial, children }: { slug: PageSlug; label: string; initial: string; children: ReactNode }) {
@@ -75,8 +76,10 @@ function PageToolbar({ editor }: { editor: Editor }) {
   const [msg, setMsg] = useState("");
   const run = () => editor.chain().focus();
   const keep = (e: React.MouseEvent) => e.preventDefault();
-  const btn = (label: string, text: ReactNode, pressed: boolean, go: () => void, cls = "") => (
-    <button type="button" className={cls} aria-label={label} aria-pressed={pressed} onMouseDown={keep} onClick={go}>{text}</button>
+  const btn = (label: string, path: string, pressed: boolean, go: () => void) => (
+    <button type="button" aria-label={label} title={label} aria-pressed={pressed} onMouseDown={keep} onClick={go}>
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={path} /></svg>
+    </button>
   );
 
   function openLink() {
@@ -94,13 +97,13 @@ function PageToolbar({ editor }: { editor: Editor }) {
   return (
     <>
       <div role="toolbar" aria-label="Text formatting" className="inline-edit-toolbar">
-        {btn("Bold", "B", on.bold, () => run().toggleBold().run(), "ie-bold")}
-        {btn("Italic", "I", on.italic, () => run().toggleItalic().run(), "ie-italic")}
-        {btn("Underline", "U", on.underline, () => run().toggleUnderline().run(), "ie-underline")}
-        {btn("Heading", "Heading", on.heading, () => run().toggleHeading({ level: 3 }).run())}
-        {btn("Bulleted list", "List", on.list, () => run().toggleBulletList().run())}
-        {btn("Quote", "Quote", on.quote, () => run().toggleBlockquote().run())}
-        {btn("Add or edit a link", "Link", on.link, openLink, "ie-underline")}
+        {btn("Bold", ICONS.bold, on.bold, () => run().toggleBold().run())}
+        {btn("Italic", ICONS.italic, on.italic, () => run().toggleItalic().run())}
+        {btn("Underline", ICONS.underline, on.underline, () => run().toggleUnderline().run())}
+        {btn("Heading", "M6 4v16M18 4v16M6 12h12", on.heading, () => run().toggleHeading({ level: 3 }).run())}
+        {btn("Bulleted list", ICONS.bullets, on.list, () => run().toggleBulletList().run())}
+        {btn("Quote", ICONS.quote, on.quote, () => run().toggleBlockquote().run())}
+        {btn("Add or edit a link", ICONS.link, on.link, openLink)}
       </div>
       {linkOpen && (
         <div className="inline-edit-link">

@@ -402,13 +402,10 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .inline-edit { display: flex; flex-direction: column; gap: 10px; }
 .inline-edit-toolbar { display: flex; flex-wrap: wrap; gap: 6px; }
 .inline-edit-toolbar button {
-  appearance: none; min-width: 44px; min-height: 44px; padding: 0 12px; border: 1px solid var(--field-border); border-radius: var(--radius-small);
-  background: var(--card-bg); color: var(--ink); font: inherit; cursor: pointer;
+  appearance: none; display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0;
+  border: 0; border-radius: var(--radius-small); background: transparent; color: var(--ink); cursor: pointer;
 }
-.inline-edit-toolbar button[aria-pressed="true"] { background: var(--accent-fill); color: var(--on-accent); border-color: var(--accent-fill); }
-.ie-bold { font-weight: 700; }
-.ie-italic { font-style: italic; }
-.ie-underline { text-decoration: underline; text-underline-offset: 3px; }
+.inline-edit-toolbar button[aria-pressed="true"] { background: var(--accent-fill); color: var(--on-accent); }
 .inline-edit-link { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; }
 .inline-edit-link label { display: flex; flex-direction: column; gap: 4px; flex: 1 1 240px; font-size: var(--t14); }
 .inline-edit-link input {
