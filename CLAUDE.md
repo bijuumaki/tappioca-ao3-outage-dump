@@ -84,7 +84,7 @@ tests/unit/ tests/integration/ tests/e2e/
 - Tap targets at least 44px (tag chips keep a small look with a larger tap area). Text contrast at least 4.5:1 in every theme. Site icon: `app/icon.svg` (my own simple teal circle with a plum "t"; she can replace it).
 - Clickable cards and buttons use the stronger `--field-border`.
 
-- **Bots and AI**: `proxy.ts` answers 403 to named AI and scraping crawlers on every page (`lib/security/bots.ts`, the one list; tested in `tests/unit/bots.test.ts`); `app/robots.ts` tells them to stay out and keeps `/admin` out of search; every response carries `X-Robots-Tag: noai, noimageai` (`next.config.ts`). Search engines and feed readers are allowed on purpose. Spoofed browser names get through; Vercel's Bot Protection (dashboard) is the next layer.
+- **Bots and AI**: `proxy.ts` answers 403 to named AI and scraping crawlers on every page (`lib/security/bots.ts`, the one list; tested in `tests/unit/bots.test.ts`); `app/robots.ts` tells them to stay out and keeps `/admin` out of search; every response carries `X-Robots-Tag: noai, noimageai` (`next.config.ts`). Search engines and feed readers are allowed on purpose: on `/feed.xml` and `/feed/<slug>.xml` only the named AI crawlers are refused, so RSS subscribers are never blocked (her rule). Vercel's firewall has AI Bots set to Deny; if a feed reader is ever blocked there, add a custom rule that bypasses `/feed`. Spoofed browser names get through; Vercel's Bot Protection (dashboard) is the next layer.
 
 ## Admin
 

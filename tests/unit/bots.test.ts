@@ -16,4 +16,9 @@ describe("isBlockedBot", () => {
     expect(isBlockedBot("curl/8.4.0")).toBe(false);
     expect(isBlockedBot(null)).toBe(false);
   });
+  it("keeps the RSS feeds open to feed readers that use a generic tool, but not to AI crawlers", () => {
+    expect(isBlockedBot("python-requests/2.31.0", "/feed.xml")).toBe(false);
+    expect(isBlockedBot("Go-http-client/2.0", "/feed/some-story.xml")).toBe(false);
+    expect(isBlockedBot("Mozilla/5.0 (compatible; GPTBot/1.2)", "/feed.xml")).toBe(true);
+  });
 });

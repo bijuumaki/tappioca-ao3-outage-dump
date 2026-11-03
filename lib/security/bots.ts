@@ -14,7 +14,9 @@ const TOOL_PATTERN = /scrapy|python-requests|python-urllib|aiohttp|httpx|go-http
 
 const NAMED_PATTERN = new RegExp(AI_CRAWLERS.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), "i");
 
-export function isBlockedBot(userAgent: string | null | undefined): boolean {
+/* On the RSS feeds only the named AI crawlers are turned away: some feed readers fetch with a generic tool, and subscribers must never be blocked. */
+export function isBlockedBot(userAgent: string | null | undefined, path = "/"): boolean {
   if (!userAgent) return false;
-  return NAMED_PATTERN.test(userAgent) || TOOL_PATTERN.test(userAgent);
+  const onFeed = path === "/feed.xml" || path.startsWith("/feed/");
+  return NAMED_PATTERN.test(userAgent) || (!onFeed && TOOL_PATTERN.test(userAgent));
 }
