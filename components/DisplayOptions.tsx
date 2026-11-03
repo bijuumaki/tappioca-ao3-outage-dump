@@ -4,7 +4,7 @@ import { clampSize, FONTS, loadWebFont, readPref, SIZE_MAX, SIZE_MIN, SPACINGS, 
 
 /* The font cards, grouped the way the canvas shows them. Each card is the font's name set in that font. */
 const FONT_GROUPS = [
-  { label: "Serif", fonts: ["crimson", "ebgaramond"] },
+  { label: "Serif", fonts: ["crimson", "ebgaramond", "charter"] },
   { label: "Sans serif", fonts: ["default", "lucida", "cantarell"] },
 ] as const;
 const fontLabel = (v: string) => (v === "default" ? "Inclusive Sans (default)" : FONTS.find(([k]) => k === v)?.[1] ?? v);

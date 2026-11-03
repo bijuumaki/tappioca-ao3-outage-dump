@@ -45,6 +45,7 @@
   --stack-cantarell: "Cantarell", sans-serif;
   --stack-crimson: "Crimson Pro", Georgia, serif;
   --stack-ebgaramond: "EB Garamond", Georgia, serif;
+  --stack-charter: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;   /* system font: real Charter on Apple devices */
   --page-width: 708px;
   --radius: 10px;
   --radius-small: 6px;
@@ -69,6 +70,7 @@
 :root[data-font="cantarell"] { --font-body: var(--stack-cantarell); --font-heading: var(--stack-cantarell); --font-reader: var(--stack-cantarell); }
 :root[data-font="crimson"] { --font-body: var(--stack-crimson); --font-heading: var(--stack-crimson); --font-reader: var(--stack-crimson); }
 :root[data-font="ebgaramond"] { --font-body: var(--stack-ebgaramond); --font-heading: var(--stack-ebgaramond); --font-reader: var(--stack-ebgaramond); }
+:root[data-font="charter"] { --font-body: var(--stack-charter); --font-heading: var(--stack-charter); --font-reader: var(--stack-charter); }
 
 /* Old paper (the lagoon theme): a paper texture multiplied into the page color, lightened a little so text keeps 4.5:1 contrast. */
 :root[data-theme="lagoon"] body {
