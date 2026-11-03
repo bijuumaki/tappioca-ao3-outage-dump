@@ -13,8 +13,9 @@ export const FONTS = [
   ["crimson", "Crimson Pro"], ["cormorant", "Cormorant Garamond"],
 ] as const;
 const FONT_NAMES = FONTS.map(([v]) => v).filter((v) => v !== "default");
+/* Each web font is asked for its real regular, bold, italic and bold italic, so nothing on screen is a browser-faked bold or slant. */
 const WEB_FONTS: Record<string, string> = {
-  cantarell: "Cantarell", crimson: "Crimson+Pro", cormorant: "Cormorant+Garamond",
+  cantarell: "Cantarell:ital,wght@0,400;0,700;1,400;1,700", crimson: "Crimson+Pro:ital,wght@0,400;0,700;1,400;1,700", cormorant: "Cormorant+Garamond:ital,wght@0,400;0,700;1,400;1,700",
 };
 export const SIZE_MIN = 10;
 export const SIZE_MAX = 20;

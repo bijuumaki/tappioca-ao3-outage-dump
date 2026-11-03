@@ -5,7 +5,7 @@ import "./tokens.css";
 import "./globals.css";
 
 const heading = IM_Fell_English({ weight: "400", style: ["normal", "italic"], subsets: ["latin"], variable: "--nf-heading", display: "swap" });
-const body = Inclusive_Sans({ weight: "400", style: ["normal", "italic"], subsets: ["latin"], variable: "--nf-body", display: "swap" });
+const body = Inclusive_Sans({ weight: ["400", "500", "600", "700"], style: ["normal", "italic"], subsets: ["latin"], variable: "--nf-body", display: "swap" });
 
 export const metadata: Metadata = { title: { default: "Tappioca’s Fic Archive", template: "%s · Tappioca’s Fic Archive" } };
 
