@@ -212,3 +212,4 @@ Rows, top to bottom: Home and Reader in four themes (Reader: Day opens with the 
 - 2026-11-03 (v149): Tahoma and IM Fell English removed from the font menu.
 - 2026-11-03 (v154): editor gets an AO3-style Rich text / HTML switch.
 - 2026-11-03 (v156): Aa panel redone like Plotypus: theme swatches, text size slider, font cards in Serif and Sans serif groups, then line spacing.
+- 2026-11-03 (v157): font cards show only the font name in its own font (normal capitals); sample sentence removed.

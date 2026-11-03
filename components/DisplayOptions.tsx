@@ -2,12 +2,11 @@
 import { useEffect, useRef, useState } from "react";
 import { clampSize, FONTS, loadWebFont, readPref, SIZE_MAX, SIZE_MIN, SPACINGS, THEMES, writePref } from "@/lib/client/prefs";
 
-/* The font cards, grouped the way the canvas shows them. Each card previews its own font. */
+/* The font cards, grouped the way the canvas shows them. Each card is the font's name set in that font. */
 const FONT_GROUPS = [
   { label: "Serif", fonts: ["crimson", "cormorant"] },
   { label: "Sans serif", fonts: ["default", "lucida", "cantarell"] },
 ] as const;
-const SAMPLE = "The quick brown fox jumps over the lazy dog.";
 const fontLabel = (v: string) => (v === "default" ? "Inclusive Sans (default)" : FONTS.find(([k]) => k === v)?.[1] ?? v);
 import { useReaderInfo } from "@/lib/client/reader-store";
 
@@ -132,7 +131,6 @@ export default function DisplayOptions() {
               {g.fonts.map((v) => (
                 <button key={v} type="button" className="font-card" data-font={v} aria-pressed={font === v} aria-label={fontLabel(v)} onClick={() => pickFont(v)}>
                   <span className="font-name">{fontLabel(v)}</span>
-                  <span className="font-sample">{SAMPLE}</span>
                 </button>
               ))}
             </div>

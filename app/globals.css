@@ -113,16 +113,16 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 /* Font cards: each shows its own font */
 .font-list { display: flex; flex-direction: column; gap: 8px; }
 .options-panel .font-card {
-  display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 14px; text-align: left; border-radius: var(--radius);
+  display: flex; align-items: center; min-height: 52px; padding: 8px 14px; text-align: left; border-radius: var(--radius);
 }
 .options-panel .font-card[aria-pressed="true"] { background: var(--bg); color: var(--ink); outline: 2px solid var(--accent-text); outline-offset: 2px; }
-.font-name { font-size: var(--t13); color: var(--muted); }
-.font-sample { font-size: 17px; line-height: 1.35; text-transform: none; }
-.font-card[data-font="default"] .font-sample { font-family: var(--nf-body, "Inclusive Sans"), ui-sans-serif, sans-serif; }
-.font-card[data-font="lucida"] .font-sample { font-family: var(--stack-lucida); }
-.font-card[data-font="cantarell"] .font-sample { font-family: var(--stack-cantarell); }
-.font-card[data-font="crimson"] .font-sample { font-family: var(--stack-crimson); }
-.font-card[data-font="cormorant"] .font-sample { font-family: var(--stack-cormorant); }
+/* The name is the preview: set in its own font, in normal capitals. */
+.font-name { font-size: 18px; line-height: 1.3; text-transform: none; }
+.font-card[data-font="default"] .font-name { font-family: var(--nf-body, "Inclusive Sans"), ui-sans-serif, sans-serif; }
+.font-card[data-font="lucida"] .font-name { font-family: var(--stack-lucida); }
+.font-card[data-font="cantarell"] .font-name { font-family: var(--stack-cantarell); }
+.font-card[data-font="crimson"] .font-name { font-family: var(--stack-crimson); }
+.font-card[data-font="cormorant"] .font-name { font-family: var(--stack-cormorant); }
 
 /* Page column */
 .page { max-width: var(--page-width); margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
