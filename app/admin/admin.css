@@ -1,7 +1,7 @@
 /* Admin look, from Bijuu's Claude Design canvas (boards "Admin: Stories" and "Admin: New Story").
    Four themes; colors only live here. Falls back per the canvas: fieldBorder→border, bar→tint, accentFill→accentText, onAccent→pageBg. */
 .admin, .admin[data-admin-theme="day"] {
-  --a-page-bg: #EDF6F9; --a-text: #204B57; --a-muted: #125E8A; --a-accent-text: #51344D; --a-tint: #83C5BE;
+  --a-page-bg: #EDF6F9; --a-text: #204B57; --a-muted: #4F6F78; --a-accent-text: #51344D; --a-tint: #83C5BE;
   --a-card-bg: #EDF6F9; --a-border: #83C5BE; --a-field-border: #3F8590; --a-bar: #83C5BE;
   --a-accent-fill: #51344D; --a-on-accent: #EDF6F9; color-scheme: light;
 }
@@ -313,3 +313,5 @@
 @media (prefers-reduced-motion: reduce) {
   .a-options:not([hidden]), .a-menu-items, .a-confirm, .a-dialog { animation-name: a-fade-in; }
 }
+
+@media (hover: hover) { .a-aa:hover { text-decoration: underline; text-underline-offset: 4px; } }

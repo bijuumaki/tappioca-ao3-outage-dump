@@ -2,7 +2,7 @@
    Nothing else in the CSS hard-codes them. Themes: day (default), lagoon, night, midnight. */
 :root, :root[data-theme="day"] {
   color-scheme: light;
-  --bg: #EDF6F9; --ink: #204B57; --muted: #125E8A; --accent-text: #51344D; --tint: #83C5BE;
+  --bg: #EDF6F9; --ink: #204B57; --muted: #4F6F78; --accent-text: #51344D; --tint: #83C5BE;
   --card-bg: #EDF6F9; --border: #B7D3D8; --field-border: #3F8590; --bar: #83C5BE;
   --accent-fill: #51344D; --on-accent: #EDF6F9; --link: #125E8A;
 }
