@@ -327,3 +327,6 @@
   background: var(--a-card-bg); color: var(--a-text); font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 14px; line-height: 1.6;
   text-transform: none; resize: vertical;
 }
+
+.a-loading { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+.admin .skeleton { background: var(--a-border); }

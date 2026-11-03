@@ -37,7 +37,7 @@ export default function DriveLibrary() {
           <strong>{fics ? `${fics.length} ${fics.length === 1 ? "fic" : "fics"} found · ${need} ${need === 1 ? "needs" : "need"} attention` : "Checking…"}</strong>
           <div className="a-muted">{checked ? `Last checked ${checked.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}` : ""}</div>
         </div>
-        <button type="button" className="a-button-primary" disabled={busy} onClick={() => void check()}>Check Drive again</button>
+        <button type="button" className="a-button-primary" disabled={busy} aria-busy={busy} onClick={() => void check()}>Check Drive again</button>
       </div>
       {message && <p role="status" className="a-muted">{message}</p>}
       {fics && (

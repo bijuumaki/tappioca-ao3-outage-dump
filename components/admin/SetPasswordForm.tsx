@@ -32,7 +32,7 @@ export default function SetPasswordForm() {
         <input name="confirm" type="password" autoComplete="new-password" minLength={10} required />
       </label>
       {state.error && <p role="alert" className="a-alert">{state.error}</p>}
-      <button type="submit" className="a-button-primary" disabled={pending}>{pending ? "Saving…" : "Save password"}</button>
+      <button type="submit" className="a-button-primary" disabled={pending} aria-busy={pending}>{pending ? "Saving…" : "Save password"}</button>
     </form>
   );
 }

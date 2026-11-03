@@ -14,7 +14,7 @@ export default function SignInForm({ notice }: { notice?: string }) {
         <input name="password" type="password" autoComplete="current-password" required />
       </label>
       {message && <p role="alert" className="a-alert">{message}</p>}
-      <button type="submit" className="a-button-primary" disabled={pending}>{pending ? "Signing in…" : "Sign in"}</button>
+      <button type="submit" className="a-button-primary" disabled={pending} aria-busy={pending}>{pending ? "Signing in…" : "Sign in"}</button>
     </form>
   );
 }

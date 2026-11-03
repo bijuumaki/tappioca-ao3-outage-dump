@@ -29,7 +29,7 @@ export default function PreviewLinks({ chapterId }: { chapterId: number }) {
     <details className="a-notes a-share">
       <summary>Share a preview link</summary>
       <p className="a-muted">Anyone with the link can read this chapter, even though it isn’t published. Revoke it when you’re done.</p>
-      <div className="a-row"><button type="button" className="a-button" disabled={busy} onClick={() => void create()}>Create link</button></div>
+      <div className="a-row"><button type="button" className="a-button" disabled={busy} aria-busy={busy} onClick={() => void create()}>Create link</button></div>
       {error && <p className="a-alert" role="alert">{error}</p>}
       <ul className="a-links">
         {links.map((l) => (

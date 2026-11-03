@@ -55,9 +55,9 @@ export default function CommentRow({ c }: { c: AdminComment }) {
       ))}
       <div className="a-row">
         {c.hidden
-          ? <button type="button" className="a-button-primary" disabled={busy} onClick={() => void toggleHidden()}>Approve</button>
-          : <button type="button" className="a-button" disabled={busy} onClick={() => void toggleHidden()}>Hide from site</button>}
-        <button type="button" className="a-button" disabled={busy} onClick={() => setConfirming(true)}>Delete</button>
+          ? <button type="button" className="a-button-primary" disabled={busy} aria-busy={busy} onClick={() => void toggleHidden()}>Approve</button>
+          : <button type="button" className="a-button" disabled={busy} aria-busy={busy} onClick={() => void toggleHidden()}>Hide from site</button>}
+        <button type="button" className="a-button" disabled={busy} aria-busy={busy} onClick={() => setConfirming(true)}>Delete</button>
       </div>
       {confirming && (
         <div role="alertdialog" aria-labelledby={`del-${c.id}`} className="a-confirm">
@@ -65,7 +65,7 @@ export default function CommentRow({ c }: { c: AdminComment }) {
           <span>This permanently removes the comment from {c.name}. It can’t be undone.</span>
           <div className="a-row">
             <button type="button" className="a-button" onClick={() => setConfirming(false)}>Keep comment</button>
-            <button type="button" className="a-button-primary" disabled={busy} onClick={() => void remove()}>Delete comment</button>
+            <button type="button" className="a-button-primary" disabled={busy} aria-busy={busy} onClick={() => void remove()}>Delete comment</button>
           </div>
         </div>
       )}
@@ -76,7 +76,7 @@ export default function CommentRow({ c }: { c: AdminComment }) {
           <label className="a-field">Your reply
             <textarea rows={3} value={reply} onChange={(e) => setReply(e.target.value)} />
           </label>
-          <button type="submit" className="a-button-primary" disabled={busy}>Send reply</button>
+          <button type="submit" className="a-button-primary" disabled={busy} aria-busy={busy}>Send reply</button>
         </form>
       </details>
       {error && <p className="a-alert" role="alert">{error}</p>}

@@ -84,7 +84,7 @@ export default function SitePhoto({ photo }: { photo: SitePhotoProps }) {
         {url ? <img src={url} alt="" style={imgStyle} draggable={false} /> : null}
         {admin && !adjusting && (
           <span className="photo-tools">
-            <button type="button" className="photo-upload" disabled={busy} aria-label={url ? "Change your photo" : "Add your photo"} title={url ? "Change photo" : "Add photo"}
+            <button type="button" className="photo-upload" disabled={busy} aria-busy={busy} aria-label={url ? "Change your photo" : "Add your photo"} title={url ? "Change photo" : "Add photo"}
               onClick={() => input.current?.click()}>
               <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4" /></svg>
             </button>
@@ -103,7 +103,7 @@ export default function SitePhoto({ photo }: { photo: SitePhotoProps }) {
             <input type="range" min={ZOOM_MIN} max={ZOOM_MAX} step={0.05} value={frame.zoom} onChange={(e) => setFrame((f) => ({ ...f, zoom: Number(e.target.value) }))} />
           </label>
           <p className="muted">Drag the photo to move it, or click it and use the arrow keys.</p>
-          <button type="button" className="story-primary" disabled={busy} onClick={() => void done()}>Done</button>
+          <button type="button" className="story-primary" disabled={busy} aria-busy={busy} onClick={() => void done()}>Done</button>
         </div>
       )}
       {admin && error && <p className="photo-error" role="alert">{error}</p>}

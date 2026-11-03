@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IM_Fell_English, Inclusive_Sans } from "next/font/google";
 import { PREFS_BOOT_SCRIPT } from "@/lib/client/prefs";
+import NavProgress from "@/components/NavProgress";
 import "./tokens.css";
 import "./globals.css";
 
@@ -15,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: PREFS_BOOT_SCRIPT }} />
       </head>
-      <body>{children}</body>
+      <body><NavProgress />{children}</body>
     </html>
   );
 }

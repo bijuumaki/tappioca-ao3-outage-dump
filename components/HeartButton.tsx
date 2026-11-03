@@ -22,7 +22,7 @@ export default function HeartButton({ slug, iconOnly = false }: { slug: string; 
 
   const label = on ? "Liked" : "Like";
   return (
-    <button type="button" className={iconOnly ? "heart-button heart-icon-only" : "heart-button"} aria-pressed={on} disabled={busy}
+    <button type="button" className={iconOnly ? "heart-button heart-icon-only" : "heart-button"} aria-pressed={on} disabled={busy} aria-busy={busy}
       aria-label={iconOnly ? label : undefined} onClick={() => void toggle()}>
       <HeartIcon filled={on} />{!iconOnly && label}
     </button>

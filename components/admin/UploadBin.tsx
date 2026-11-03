@@ -26,7 +26,7 @@ function DropZone({ label, inputLabel, busy, onFiles }: { label: string; inputLa
       onDrop={(e) => { e.preventDefault(); setOver(false); if (!busy) onFiles([...e.dataTransfer.files]); }}>
       <p>{label}</p>
       <label className="a-button">{busy ? "Working…" : "Choose files"}
-        <input ref={input} type="file" multiple accept={ACCEPT} aria-label={inputLabel} disabled={busy}
+        <input ref={input} type="file" multiple accept={ACCEPT} aria-label={inputLabel} disabled={busy} aria-busy={busy}
           onChange={(e) => { const f = [...(e.target.files ?? [])]; if (input.current) input.current.value = ""; if (f.length) onFiles(f); }} />
       </label>
     </div>
@@ -169,7 +169,7 @@ export default function UploadBin({ fics }: { fics: BinFic[] }) {
             <label className="a-field">Only this folder (optional)
               <input aria-label="Only this folder" value={folderFilter} onChange={(e) => setFolderFilter(e.target.value)} placeholder="e.g. Resident Evil" />
             </label>
-            <button type="button" className="a-button" disabled={busy} onClick={() => void showDriveFiles()}>Show my Drive files</button>
+            <button type="button" className="a-button" disabled={busy} aria-busy={busy} onClick={() => void showDriveFiles()}>Show my Drive files</button>
           </div>
           {driveError && <p className="a-alert" role="alert">{driveError}</p>}
           {driveFiles && driveFiles.length === 0 && <p className="a-muted">No files I can read there yet. I can read .html, .md, .txt, .docx and .epub; Google Docs aren’t listed, so export them to .docx or .md first.</p>}

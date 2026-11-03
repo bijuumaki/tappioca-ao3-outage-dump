@@ -70,12 +70,12 @@ export default function PublishBar({ ficId, chapterId, publishAt, save }: {
     <div className="a-publish">
       <span className="a-pub-state" data-status={status}>{label}</span>
       <div className="a-row">
-        <button type="button" className="a-button" disabled={busy} onClick={() => void save()}>Save draft</button>
-        <button type="button" className="a-button" disabled={busy} onClick={() => void preview()}>Preview</button>
-        {status === "draft" && <button type="button" className="a-button" disabled={busy} onClick={() => setScheduling(!scheduling)} aria-expanded={scheduling}>Schedule</button>}
+        <button type="button" className="a-button" disabled={busy} aria-busy={busy} onClick={() => void save()}>Save draft</button>
+        <button type="button" className="a-button" disabled={busy} aria-busy={busy} onClick={() => void preview()}>Preview</button>
+        {status === "draft" && <button type="button" className="a-button" disabled={busy} aria-busy={busy} onClick={() => setScheduling(!scheduling)} aria-expanded={scheduling}>Schedule</button>}
         {status === "draft"
-          ? <button ref={publishButton} type="button" className="a-button-primary" disabled={busy} onClick={() => void askPublish()}>Publish</button>
-          : <button type="button" className="a-button" disabled={busy} onClick={() => void run(() => unpublish(chapterId))}>Unpublish</button>}
+          ? <button ref={publishButton} type="button" className="a-button-primary" disabled={busy} aria-busy={busy} onClick={() => void askPublish()}>Publish</button>
+          : <button type="button" className="a-button" disabled={busy} aria-busy={busy} onClick={() => void run(() => unpublish(chapterId))}>Unpublish</button>}
       </div>
       {scheduling && (
         <div className="a-row a-schedule">

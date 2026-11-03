@@ -104,7 +104,7 @@ export default function StoryList({ rows }: { rows: AdminStoryRow[] }) {
             {error && <p role="alert" className="a-alert">{error}</p>}
             <div className="a-dialog-actions">
               <button ref={keep} type="button" className="a-button" onClick={() => setDoomed(null)}>Keep {victims.length === 1 ? "story" : "stories"}</button>
-              <button type="button" className="a-button-danger" disabled={busy} onClick={() => void confirmDelete()}>Delete {victims.length === 1 ? "story" : `${victims.length} stories`}</button>
+              <button type="button" className="a-button-danger" disabled={busy} aria-busy={busy} onClick={() => void confirmDelete()}>Delete {victims.length === 1 ? "story" : `${victims.length} stories`}</button>
             </div>
           </div>
         </div>

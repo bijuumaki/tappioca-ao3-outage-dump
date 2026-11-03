@@ -35,7 +35,7 @@ export default function VersionsPanel({ chapterId, flush, onRestored }: { chapte
         {rows.map((v) => (
           <li key={v.id} className="a-row">
             <span>{new Date(v.createdAt).toLocaleString("en-US", { timeZone: "Asia/Manila", dateStyle: "medium", timeStyle: "short" })} · {REASON[v.reason] ?? v.reason} · {v.words.toLocaleString("en-US")} words</span>
-            <button type="button" className="a-button" disabled={busy} onClick={() => void restore(v.id)}>Restore</button>
+            <button type="button" className="a-button" disabled={busy} aria-busy={busy} onClick={() => void restore(v.id)}>Restore</button>
           </li>
         ))}
       </ul>
