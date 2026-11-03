@@ -55,7 +55,7 @@ function toPostCard(post: PostWithImages): PostCardData {
   return { slug: post.slug, title: post.title, publish_at: post.publish_at, category: post.category, tags: post.tags, firstImage: post.images[0] ?? null };
 }
 
-async function allFics(): Promise<FicWithChapters[]> {
+export async function allFics(): Promise<FicWithChapters[]> {
   const { data, error } = await createReaderClient().from("fics").select(FIC_SELECT);
   if (error) throw error;
   return (data as unknown as FicRow[]).map(shapeFic);
