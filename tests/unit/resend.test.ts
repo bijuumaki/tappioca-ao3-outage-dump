@@ -38,6 +38,13 @@ describe("sendCommentAlert", () => {
     }
   });
 
+  it("gives up on a request that hangs", async () => {
+    const hang = ((_url: string, init: RequestInit) => new Promise((_, reject) => {
+      init.signal?.addEventListener("abort", () => reject(new Error("aborted")));
+    })) as unknown as typeof fetch;
+    await expect(sendCommentAlert(comment, { fetchImpl: hang, env, timeoutMs: 30 })).resolves.toBeUndefined();
+  });
+
   it("never throws, even when the network or Resend fails", async () => {
     await expect(sendCommentAlert(comment, { fetchImpl: (async () => { throw new Error("offline"); }) as unknown as typeof fetch, env })).resolves.toBeUndefined();
     await expect(sendCommentAlert(comment, { fetchImpl: (async () => new Response("no", { status: 500 })) as unknown as typeof fetch, env })).resolves.toBeUndefined();

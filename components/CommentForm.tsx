@@ -9,7 +9,7 @@ export default function CommentForm({ slug, n }: { slug: string; n: number }) {
   const [ready, setReady] = useState(false);
   useEffect(() => setReady(true), []);
   const [state, action, pending] = useActionState(async (prev: CommentFormState, form: FormData) => {
-    const res = await postComment(prev, form);
+    const res = await postComment(prev, form).catch(() => ({ error: "Couldn’t post your comment. Try again.", posted: false }));
     if (res.posted) setBody("");
     return res;
   }, { error: "", posted: false });

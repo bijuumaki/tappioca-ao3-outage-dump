@@ -148,6 +148,10 @@ export type Database = {
     };
     Views: { [_ in never]: never };
     Functions: {
+      post_comment: {
+        Args: { p_chapter_id: number; p_name: string; p_body: string; p_ip_hash: string; p_max: number; p_window_seconds: number };
+        Returns: number | null;
+      };
       preview_chapter: {
         Args: { p_token: string };
         Returns: { fic_title: string; chapter_title: string | null; chapter_position: number; notes_before: string; body: string; notes_after: string; word_count: number }[];

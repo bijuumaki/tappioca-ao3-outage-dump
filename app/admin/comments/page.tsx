@@ -8,9 +8,10 @@ import { requireAdmin } from "@/lib/supabase/session";
 export const metadata: Metadata = { title: "Comments" };
 export const dynamic = "force-dynamic";
 
-export default async function CommentsScreen() {
+export default async function CommentsScreen({ searchParams }: { searchParams: Promise<{ before?: string }> }) {
   const { db } = await requireAdmin();
-  const comments = await listAdminComments(db);
+  const before = Number((await searchParams).before);
+  const { comments, next } = await listAdminComments(db, { before: Number.isInteger(before) && before > 0 ? before : undefined });
   return (
     <main className="a-page">
       <AdminHeader title="Comments">
@@ -20,6 +21,7 @@ export default async function CommentsScreen() {
       {comments.length === 0
         ? <p className="a-muted">No comments yet.</p>
         : <ul className="a-comments">{comments.map((c) => <CommentRow key={c.id} c={c} />)}</ul>}
+      {next && <Link href={`/admin/comments?before=${next}`} className="a-button">Older comments</Link>}
     </main>
   );
 }

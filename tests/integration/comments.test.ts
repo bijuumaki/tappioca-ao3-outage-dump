@@ -128,6 +128,24 @@ describe.skipIf(!hasSecret())("comments: posting", async () => {
     expect((await postCommentCore(db, { ...throttled, ipHash: "(e2e hash other)" }, { alert: async () => {} })).posted).toBe(true);
   });
 
+  test("parallel posts from one sender cannot slip past the limit", async () => {
+    const results = await Promise.all(Array.from({ length: 12 }, (_, i) =>
+      postCommentCore(db, { ...base, name: "(e2e par)", body: `(e2e par ${i})`, ipHash: "(e2e hash parallel)" }, { alert: async () => {} })));
+    expect(results.filter((r) => r.posted)).toHaveLength(5);
+    const { count } = await db.from("comments").select("id", { count: "exact", head: true }).eq("name", "(e2e par)");
+    expect(count).toBe(5);
+  });
+
+  test("an email that never finishes does not hold up the comment", async () => {
+    const res = await postCommentCore(db, { ...base, name: "(e2e slow mail)", ipHash: "(e2e hash slow)" }, { alert: () => new Promise<void>(() => {}) });
+    expect(res).toEqual({ error: "", posted: true });
+  });
+
+  test("a database failure gives a plain message instead of throwing", async () => {
+    const broken = { from: () => { throw new Error("db down"); }, rpc: () => { throw new Error("db down"); } } as unknown as typeof db;
+    expect(await postCommentCore(broken, { ...base, ipHash: "(e2e hash broken)" }, { alert: async () => {} })).toEqual({ error: "Couldn’t post your comment. Try again.", posted: false });
+  });
+
   test("HTML in a comment is kept as plain text", async () => {
     await postCommentCore(db, { ...base, name: "(e2e html)", body: "<script>alert(1)</script> <b>x</b>", ipHash: "(e2e hash html)" }, { alert: async () => {} });
     const c = (await getComments("sample-fic", 1)).find((x) => x.name === "(e2e html)");
@@ -194,7 +212,7 @@ describe.skipIf(!hasSecret())("comments: the author's side", async () => {
     const newer = await top("(e2e list newer)");
     await replyToCommentCore(admin, older, "Reply in list");
     await setCommentHiddenCore(admin, newer, true);
-    const list = await listAdminComments(admin);
+    const { comments: list } = await listAdminComments(admin);
     const ids = list.map((c) => c.id);
     expect(ids.indexOf(newer)).toBeLessThan(ids.indexOf(older));
     const o = list.find((c) => c.id === older)!;
@@ -202,5 +220,15 @@ describe.skipIf(!hasSecret())("comments: the author's side", async () => {
     expect(o.replies.map((r) => r.body)).toEqual(["Reply in list"]);
     expect(list.find((c) => c.id === newer)!.hidden).toBe(true);
     expect(list.every((c) => c.parentId === null)).toBe(true);
+  });
+
+  test("the admin list pages back through older comments", async () => {
+    const a = await top("(e2e page a)"), b = await top("(e2e page b)"), c = await top("(e2e page c)");
+    const first = await listAdminComments(admin, { limit: 2 });
+    expect(first.comments.map((x) => x.id)).toEqual([c, b]);
+    expect(first.next).toBe(b);
+    const second = await listAdminComments(admin, { limit: 2, before: first.next! });
+    expect(second.comments[0].id).toBe(a);
+    expect(second.comments.every((x) => x.id < b)).toBe(true);
   });
 });

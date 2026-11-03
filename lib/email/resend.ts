@@ -6,7 +6,7 @@ const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
    It never throws: a failing email must never stop a comment from posting. */
 export async function sendCommentAlert(
   c: { ficTitle: string; chapterN: number; name: string; body: string; url: string },
-  deps: { fetchImpl?: typeof fetch; env?: Record<string, string | undefined> } = {},
+  deps: { fetchImpl?: typeof fetch; env?: Record<string, string | undefined>; timeoutMs?: number } = {},
 ): Promise<void> {
   const env = deps.env ?? process.env;
   const key = env.RESEND_API_KEY, from = env.RESEND_FROM, to = env.ALERT_EMAIL;
@@ -15,6 +15,7 @@ export async function sendCommentAlert(
     const res = await (deps.fetchImpl ?? fetch)("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      signal: AbortSignal.timeout(deps.timeoutMs ?? 5000),
       body: JSON.stringify({
         from, to: [to],
         subject: `New comment on ${c.ficTitle}, chapter ${c.chapterN}`,

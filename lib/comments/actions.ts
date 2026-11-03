@@ -2,6 +2,7 @@
 import { createHash } from "node:crypto";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { createSecretClient } from "@/lib/supabase/secret";
 import { postCommentCore, type CommentFormState } from "./post";
 
@@ -17,7 +18,11 @@ export async function postComment(_prev: CommentFormState, form: FormData): Prom
   const salt = process.env.COMMENT_HASH_SALT ?? process.env.SUPABASE_SECRET_KEY ?? "";
   const ipHash = createHash("sha256").update(`${salt}:${ip}`).digest("hex");
 
-  const res = await postCommentCore(createSecretClient(), { slug, n, name: text("name"), body: text("body"), website: text("website"), ipHash });
-  if (res.posted) revalidatePath(`/fics/${slug}/${n}`);
-  return res;
+  try {
+    const res = await postCommentCore(createSecretClient(), { slug, n, name: text("name"), body: text("body"), website: text("website"), ipHash }, { schedule: (fn) => after(fn) });
+    if (res.posted) revalidatePath(`/fics/${slug}/${n}`);
+    return res;
+  } catch {
+    return { error: "Couldn’t post your comment. Try again.", posted: false };
+  }
 }

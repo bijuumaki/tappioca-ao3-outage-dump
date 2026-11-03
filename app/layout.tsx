@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: { default: "Tappioca’s Fic Archive"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${heading.variable} ${body.variable}`} suppressHydrationWarning>
+    <html data-scroll-behavior="smooth" lang="en" className={`${heading.variable} ${body.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: PREFS_BOOT_SCRIPT }} />
       </head>

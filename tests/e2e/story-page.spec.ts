@@ -162,3 +162,8 @@ test("a one-chapter story's display options still push the page over on wide scr
   await page.getByRole("button", { name: "Display options" }).click();
   await expect(page.locator("html[data-dock]")).toHaveCount(1);
 });
+
+test("smooth scrolling is declared so chapter changes still jump to the top", async ({ page }) => {
+  await page.goto("/fics/sample-fic/1");
+  await expect(page.locator("html")).toHaveAttribute("data-scroll-behavior", "smooth");
+});
