@@ -6,6 +6,7 @@ import { extractDataUriImages, sniffImage } from "@/lib/convert/images";
 import { createSessionClient, requireAdmin } from "@/lib/supabase/session";
 import { slugify } from "@/lib/text/slug";
 import { prepareChapter } from "./chapter";
+import { deleteStoriesCore, type DeleteResult } from "./delete-stories";
 import { NOT_AN_IMAGE, storeImage } from "./media";
 import { notesToHtml } from "./notes";
 import { loadStoryChecks, NotReadyError, publishChapterAt, unpublishChapter } from "./publish";
@@ -190,4 +191,12 @@ export async function convertPastedHtml(ficId: number, html: string): Promise<st
     return stored.url;
   }).catch(() => html.replace(/<img\b[^>]*\bsrc="data:[^"]*"[^>]*>/gi, ""));
   return htmlToChapter(withFiles);
+}
+
+/* The Stories list's delete (one story or several). Permanent. */
+export async function deleteStories(ids: number[]): Promise<DeleteResult> {
+  const { db } = await requireAdmin();
+  const res = await deleteStoriesCore(db, ids);
+  if (res.ok) { refreshPublic(); revalidatePath("/admin"); revalidatePath("/admin/comments"); }
+  return res;
 }

@@ -1,16 +1,14 @@
 import Link from "next/link";
 import AdminHeader from "@/components/admin/AdminHeader";
+import StoryList from "@/components/admin/StoryList";
 import { signOut } from "@/lib/admin/auth-actions";
 import { listAdminStories } from "@/lib/admin/queries";
 import type { StoryStatus } from "@/lib/admin/status";
-import { RATING_LABELS } from "@/lib/content/types";
-import { formatDate } from "@/lib/format/dates";
 import { requireAdmin } from "@/lib/supabase/session";
 
 export const dynamic = "force-dynamic";
 
 const TABS = [["all", "All"], ["published", "Published"], ["drafts", "Drafts"]] as const;
-const STATUS_LABEL: Record<StoryStatus, string> = { published: "Published", scheduled: "Scheduled", draft: "Draft" };
 const inTab = (tab: string, s: StoryStatus) => tab === "all" || (tab === "drafts" ? s === "draft" : s !== "draft");
 
 type Search = { status?: string; fandom?: string };
@@ -30,9 +28,6 @@ export default async function StoriesPage({ searchParams }: { searchParams: Prom
     <main className="a-page">
       <AdminHeader title="Stories">
         <Link href="/admin/stories/new" className="a-add a-add-desktop"><span aria-hidden="true">+</span>Add new story</Link>
-        <Link href="/admin/uploads" className="a-button">Uploads</Link>
-        <Link href="/admin/pages" className="a-button">Pages</Link>
-        <Link href="/admin/comments" className="a-button">Comments</Link>
         <form action={signOut}><button type="submit" className="a-button">Sign out</button></form>
       </AdminHeader>
 
@@ -61,30 +56,7 @@ export default async function StoriesPage({ searchParams }: { searchParams: Prom
           <Link href="/admin/stories/new" className="a-button">Start a new story</Link>
         </section>
       ) : (
-        <section aria-label="Your stories" className="a-table">
-          <div className="a-story-head" aria-hidden="true">
-            <span>Story</span><span>Rating</span><span className="a-num">Chapters</span><span className="a-num">Words</span><span>Status</span><span>Updated</span><span />
-          </div>
-          <ul>
-            {rows.map((s) => (
-              <li key={s.id} className="a-story">
-                <div className="a-story-title">
-                  <Link href={`/admin/stories/${s.id}`} className="keep-case">{s.title}</Link>
-                  {s.fandom && <div className="a-muted">{s.fandom}</div>}
-                </div>
-                <span className="a-cell">{RATING_LABELS[s.rating]}</span>
-                <span className="a-cell a-num"><span className="a-phone-label">chapters: </span>{s.chapters}</span>
-                <span className="a-cell a-num"><span className="a-phone-label">words: </span>{s.words.toLocaleString("en-US")}</span>
-                <span className="a-cell a-status" data-status={s.status}><span className="a-dot" aria-hidden="true" />{STATUS_LABEL[s.status]}</span>
-                <span className="a-cell a-muted">{formatDate(s.updatedAt)}</span>
-                <span className="a-actions">
-                  <Link href={`/admin/stories/${s.id}`} className="a-button">Edit</Link>
-                  {s.status === "published" && <Link href={`/fics/${s.slug}`} className="a-link">View</Link>}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <StoryList rows={rows} />
       )}
       <div role="group" aria-label="Add story" className="a-add-bar">
         <Link href="/admin/stories/new" className="a-add"><span aria-hidden="true">+</span>Add new story</Link>
