@@ -7,6 +7,7 @@ Project rules for Claude Code. Read this first, every session.
 A public blog for Bijuu's ("tappioca") fanfics and art, like a small WordPress built around fics. Bijuu is the only author. Anyone can read without an account; readers can comment, give hearts and subscribe.
 
 - Design (the authority): the live canvas, then `docs/design/DESIGN.md` and `docs/design/HANDOFF.md` (written by the design chat, canvas v122; the canvas wins over them). Older spec: `docs/superpowers/specs/2026-11-02-fic-blog-design.md`. Those two docs describe an older static-HTML + Drive-only plan in places; this repo is Next.js + Supabase with Drive as an optional copy.
+- Shared mailbox with the design chat: `docs/design/QUESTIONS.md`. Read it every session. When the canvas doesn't say something, write the gap there as a new open question instead of guessing; when an entry has an answer, build from it and move it to Answered. Tell Bijuu when new questions are waiting for the design chat.
 - Build plans: `docs/superpowers/plans/` (Plan 1 foundation and reader; Plans 2 to 4 dashboard and uploads, comments and hearts, emails and RSS)
 
 ## Working with Bijuu
