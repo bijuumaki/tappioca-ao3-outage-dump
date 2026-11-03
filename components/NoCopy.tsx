@@ -7,6 +7,12 @@ import { useEffect } from "react";
    because they don't go through the copy event. A speed bump only: view-source, reader mode and screenshots get around it. */
 const EDITABLE = "input, textarea, select, [contenteditable=''], [contenteditable='true']";
 
+/* Selecting is allowed inside a chapter's text, only so readers can highlight it; copying and dragging stay blocked there. */
+function inChapterText(node: EventTarget | null): boolean {
+  const el = node instanceof Element ? node : node instanceof Node ? node.parentElement : null;
+  return !!el?.closest(".chapter-text");
+}
+
 function inEditable(node: EventTarget | null): boolean {
   const el = node instanceof Element ? node : node instanceof Node ? node.parentElement : null;
   return !!el?.closest(EDITABLE);
@@ -16,6 +22,7 @@ export default function NoCopy() {
   useEffect(() => {
     const block = (e: Event) => {
       if (inEditable(e.target) || inEditable(document.activeElement)) return;
+      if (e.type === "selectstart" && inChapterText(e.target)) return;
       e.preventDefault();
     };
     const events = ["copy", "cut", "selectstart", "dragstart"] as const;

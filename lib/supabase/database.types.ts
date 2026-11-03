@@ -52,6 +52,12 @@ export type Database = {
           { foreignKeyName: "comment_meta_comment_id_fkey"; columns: ["comment_id"]; isOneToOne: true; referencedRelation: "comments"; referencedColumns: ["id"] },
         ];
       };
+      reader_sync: {
+        Row: { code_hash: string; data: Json; updated_at: string };
+        Insert: { code_hash: string; data?: Json; updated_at?: string };
+        Update: { code_hash?: string; data?: Json; updated_at?: string };
+        Relationships: [];
+      };
       fic_tags: {
         Row: { fic_id: number; tag_id: number };
         Insert: { fic_id: number; tag_id: number };

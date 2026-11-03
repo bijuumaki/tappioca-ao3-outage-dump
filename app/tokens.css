@@ -6,6 +6,12 @@
   --card-bg: #EDF6F9; --border: #B7D3D8; --field-border: #3F8590; --bar: #83C5BE;
   --accent-fill: #51344D; --on-accent: #EDF6F9; --link: #125E8A;
 }
+:root {
+  --hl-yellow: rgb(255 204 0 / 0.45); --hl-pink: rgb(255 120 170 / 0.38); --hl-green: rgb(90 200 120 / 0.40); --hl-blue: rgb(90 170 255 / 0.38);
+}
+:root[data-theme="night"], :root[data-theme="midnight"] {
+  --hl-yellow: rgb(255 204 0 / 0.32); --hl-pink: rgb(255 120 170 / 0.32); --hl-green: rgb(90 200 120 / 0.30); --hl-blue: rgb(90 170 255 / 0.34);
+}
 :root[data-theme="lagoon"] {
   color-scheme: light;
   --bg: #F6F1E7; --ink: #0A1517; --muted: #3C5558; --accent-text: #A84B4E; --tint: #34B5A1;

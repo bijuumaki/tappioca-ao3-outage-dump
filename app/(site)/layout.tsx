@@ -1,6 +1,7 @@
 import DisplayOptions from "@/components/DisplayOptions";
 import GoatCounter from "@/components/GoatCounter";
 import NoCopy from "@/components/NoCopy";
+import NotesSyncRunner from "@/components/NotesSyncRunner";
 import SiteFooter from "@/components/SiteFooter";
 import SiteTitle from "@/components/SiteTitle";
 
@@ -13,6 +14,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       <SiteFooter />
       <GoatCounter />
       <NoCopy />
+      <NotesSyncRunner />
     </div>
   );
 }

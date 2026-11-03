@@ -57,7 +57,7 @@ export default async function ChapterPage({ params }: Props) {
         <>
           <div className="chapter-column">
             <h2 className="section-bar chapter-title">{chapterHeading(chapter.n, chapter.title)}</h2>
-            <ChapterBody id={`${slug}/${chapter.n}`} chapter={chapter} />
+            <ChapterBody id={`${slug}/${chapter.n}`} chapter={chapter} highlight={{ slug, n: chapter.n, fic: fic.title, ch: chapterHeading(chapter.n, chapter.title) }} />
           </div>
           {several && <ChapterNav slug={slug} n={chapter.n} count={count} />}
           {chapter.n === count && <EndOfStory slug={slug} />}

@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { clampSize, FONTS, loadWebFont, readPref, SIZE_MAX, SIZE_MIN, SPACINGS, THEMES, writePref } from "@/lib/client/prefs";
 
@@ -9,6 +10,7 @@ const FONT_GROUPS = [
 ] as const;
 const fontLabel = (v: string) => (v === "default" ? "Inclusive Sans (default)" : FONTS.find(([k]) => k === v)?.[1] ?? v);
 import { useReaderInfo } from "@/lib/client/reader-store";
+import SyncDialog from "@/components/SyncDialog";
 
 export default function DisplayOptions() {
   const reader = useReaderInfo();
@@ -18,6 +20,7 @@ export default function DisplayOptions() {
   const [font, setFont] = useState("default");
   const [spacing, setSpacing] = useState("normal");
   const [hidden, setHidden] = useState(false);
+  const [syncOpen, setSyncOpen] = useState(false);
   const button = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLElement>(null);
 
@@ -48,15 +51,15 @@ export default function DisplayOptions() {
     if (!open) return;
     function onClick(e: MouseEvent) {
       const t = e.target as Node;
-      if (!panel.current?.contains(t) && !button.current?.contains(t)) setOpen(false);
+      if (!panel.current?.contains(t) && !button.current?.contains(t) && !(t as Element).closest?.(".sync-dialog")) setOpen(false);
     }
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") { setOpen(false); button.current?.focus(); }
+      if (e.key === "Escape" && !syncOpen) { setOpen(false); button.current?.focus(); }
     }
     document.addEventListener("click", onClick);
     document.addEventListener("keydown", onKey);
     return () => { document.removeEventListener("click", onClick); document.removeEventListener("keydown", onKey); };
-  }, [open]);
+  }, [open, syncOpen]);
 
   /* The font cards show each font, so their web fonts are fetched the first time the panel opens. */
   useEffect(() => { if (open) FONTS.forEach(([v]) => loadWebFont(v)); }, [open]);
@@ -142,6 +145,14 @@ export default function DisplayOptions() {
             {SPACINGS.map(([v, l]) => <button key={v} type="button" aria-pressed={spacing === v} onClick={() => pickSpacing(v)}>{l}</button>)}
           </div>
         </div>
+        <div className="options-group" role="group" aria-label="Highlights and notes">
+          <h3 className="options-heading">Highlights and notes</h3>
+          <div className="options-choices">
+            <button type="button" onClick={() => setSyncOpen(true)}>Sync across devices</button>
+            <Link className="options-link" href="/highlights" onClick={() => setOpen(false)}>My highlights</Link>
+          </div>
+        </div>
+        <SyncDialog open={syncOpen} onClose={() => setSyncOpen(false)} />
       </section>
     </>
   );

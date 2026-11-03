@@ -12,7 +12,7 @@ import { formatDate } from "@/lib/format/dates";
 
 export const revalidate = 60;
 
-const ROWS = [["/disclaimer", "Disclaimer"], ["/about", "About"], ["/fics", "Fic List"], ["/links", "Links"]] as const;
+const ROWS = [["/disclaimer", "Disclaimer"], ["/about", "About"], ["/fics", "Fic List"], ["/links", "Links"], ["/highlights", "My highlights"]] as const;
 
 export default async function Home() {
   const [home, howdy, archive, photo] = await Promise.all([getHomeData(), getSnippet("howdy"), getSnippet("archive"), getSnippet("photo")]);
