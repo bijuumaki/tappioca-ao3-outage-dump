@@ -18,6 +18,12 @@ export const revalidate = 60;
 
 type Props = { params: Promise<{ slug: string; n: string }> };
 
+/* "Chapter N: title", but a title that only repeats the number ("1", "Chapter 1") would read "Chapter 1: 1". */
+function chapterHeading(n: number, title: string | null): string {
+  const t = title?.trim();
+  return !t || /^(chapter\s*)?\d+$/i.test(t) ? `Chapter ${n}` : `Chapter ${n}: ${t}`;
+}
+
 function parseN(n: string): number {
   return /^[1-9]\d{0,3}$/.test(n) ? Number(n) : 0;
 }
@@ -53,7 +59,7 @@ export default async function ChapterPage({ params }: Props) {
           {several && <div className="progress" aria-hidden="true"><div style={{ width: `${Math.round((chapter.n / count) * 100)}%` }} /></div>}
         </header>
         <ChapterGate slug={slug} adult={adult} ratingLabel={RATING_LABELS[fic.rating]} warnings={warnings}>
-          <h2 className="section-bar chapter-title">{chapter.title ? `Chapter ${chapter.n}: ${chapter.title}` : `Chapter ${chapter.n}`}</h2>
+          <h2 className="section-bar chapter-title">{chapterHeading(chapter.n, chapter.title)}</h2>
           <ChapterBody id={`${slug}/${chapter.n}`} chapter={chapter} />
           {several && <ChapterNav slug={slug} n={chapter.n} count={count} />}
           {chapter.n === count && <EndOfStory slug={slug} />}
