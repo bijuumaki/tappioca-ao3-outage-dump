@@ -16,7 +16,7 @@ test("other pages have the site title as a link home", async ({ page }) => {
     await expect(link, path).toHaveAttribute("href", "/");
   }
   await page.goto("/");
-  await expect(page.locator(".site-title")).toHaveCount(0);
+  await expect(page.locator(".site-title")).toBeHidden();
 });
 
 test("home has no Recent Fics section", async ({ page }) => {
