@@ -115,7 +115,7 @@ Fic cards grouped by fandom (bar heading per fandom). Cards as above. Opens the 
 - Where the heart and comment controls are **not**: no heart in the chapter pages, no comment button on Home, fic cards or the story page.
 
 ### Footer (all pages except the reader)
-"online web app made by tappioca. all intellectual properties belong to their rightful owners." plus an underlined link **"rss feed for all stories"** that copies the site-wide feed link and shows the same quiet status line.
+"online web app made by tappioca. all intellectual properties belong to their rightful owners." plus an underlined link **"rss feed for all stories"** that copies the site-wide feed link and shows the same quiet status line. **Next to it, a muted "[N] visitors" count** (v148; GoatCounter).
 
 ### Disclaimer, About, Links
 Placeholders with `[Your ... text]`. Photo circle placeholder on About. Links body is not lowercased and has four inline links.
@@ -207,3 +207,4 @@ Rows, top to bottom: Home and Reader in four themes (Reader: Day opens with the 
 - 2026-11-03 (v142): Lagoon renamed Old paper; paper texture as its page background (multiply, lightened 45%).
 - 2026-11-03 (v144): content notice removed everywhere.
 - 2026-11-03 (v146): Home Featured became "latest activity": three rows of the newest chapters (New story / New chapter, title, date).
+- 2026-11-03 (v148): visitor count next to the rss link in the footer.

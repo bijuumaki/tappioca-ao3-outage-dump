@@ -370,6 +370,8 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .follow-link { color: var(--link); text-decoration: underline; text-underline-offset: 4px; display: inline-flex; align-items: center; min-height: 44px; }
 .site-footer { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .site-footer p { margin: 0; text-align: center; }
+.footer-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 16px; }
+.visitor-count { font-size: var(--t14); font-variant-numeric: tabular-nums; }
 
 .chapter-jump {
   margin-top: 6px; max-width: 320px; min-height: 44px; padding: 0 8px; border: 1px solid var(--field-border); border-radius: var(--radius-small);
