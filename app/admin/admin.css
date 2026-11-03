@@ -318,3 +318,16 @@
   background-image: linear-gradient(color-mix(in srgb, var(--a-page-bg) 45%, transparent), color-mix(in srgb, var(--a-page-bg) 45%, transparent)), url("/textures/old-paper.webp");
   background-size: auto, cover; background-attachment: fixed; background-blend-mode: normal, multiply;
 }
+
+/* Rich text / HTML switch above the chapter text (like AO3) */
+.a-mode-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
+.a-mode-label { font-weight: 600; }
+.a-mode-toggle { display: flex; gap: 6px; }
+.a-mode-toggle button { appearance: none; min-height: 44px; padding: 0 14px; border: 1px solid var(--a-field-border); border-radius: 6px; background: transparent; color: var(--a-text); font: inherit; cursor: pointer; }
+.a-mode-toggle button[aria-pressed="true"] { background: var(--a-accent-fill); color: var(--a-on-accent); }
+.a-mode-hint { margin: 0; font-size: 14px; }
+.a-html-box {
+  box-sizing: border-box; width: 100%; min-height: 360px; padding: 12px; border: 1px solid var(--a-field-border); border-radius: 6px;
+  background: var(--a-card-bg); color: var(--a-text); font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 14px; line-height: 1.6;
+  text-transform: none; resize: vertical;
+}

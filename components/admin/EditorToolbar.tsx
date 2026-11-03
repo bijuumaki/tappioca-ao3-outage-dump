@@ -15,6 +15,7 @@ export const ICONS = {
   left: "M4 6h16M4 10h10M4 14h16M4 18h10", center: "M4 6h16M7 10h10M4 14h16M7 18h10",
   right: "M4 6h16M10 10h10M4 14h16M10 18h10", justify: "M4 6h16M4 10h16M4 14h16M4 18h16",
   clear: "M6 4h12M12 4l-4 16M4 20l16-16",
+  unlink: "M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1M4 4l16 16",
   image: "M4 5h16v14H4zM4 16l5-5 4 4 3-3 4 4M9 9h.01",
 };
 
@@ -87,6 +88,7 @@ export default function EditorToolbar({ editor, font, size, onFont, onSize, chil
         <input type="color" aria-label="Highlight color" defaultValue="#fff2a8" onChange={(e) => chain().setHighlight({ color: e.target.value }).run()} />
       </label>
       {btn("Link", ICONS.link, active.link, setLink)}
+      {btn("Remove link", ICONS.unlink, undefined, () => chain().unsetLink().run())}
       {btn("Quote", ICONS.quote, active.quote, () => chain().toggleBlockquote().run())}
       {btn("Scene break", ICONS.scene, undefined, () => chain().setHorizontalRule().run())}
       {btn("Bulleted list", ICONS.bullets, active.bullets, () => chain().toggleBulletList().run())}

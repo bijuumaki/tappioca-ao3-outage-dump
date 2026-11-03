@@ -30,6 +30,9 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
   const [notesAfter, setNotesAfter] = useState(initial.notes_after);
   const [state, setState] = useState<SaveState>("idle");
   const [words, setWords] = useState(countWords(initial.body));
+  const [codeMode, setCodeMode] = useState(false);
+  const [htmlText, setHtmlText] = useState("");
+  const htmlRef = useRef("");
   const [font, setFont] = useState("default");
   const [size, setSize] = useState(16);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -48,6 +51,11 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
   const fields = useRef({ title, notesBefore, notesAfter });
   fields.current = { title, notesBefore, notesAfter };
 
+  /* The chapter text as it stands: from the HTML box while that is open, otherwise from the rich editor. */
+  const codeModeRef = useRef(false);
+  codeModeRef.current = codeMode;
+  const bodyNow = () => (codeModeRef.current ? htmlRef.current : editor?.getHTML() ?? "");
+
   const inFlight = useRef<Promise<boolean> | null>(null);
   const save = useCallback(async (force = false): Promise<boolean> => {
     if (inFlight.current) {
@@ -58,7 +66,7 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
     dirty.current = false;
     setState("saving");
     const pending = saveChapter(chapterId, {
-      title: fields.current.title, notes_before: fields.current.notesBefore, notes_after: fields.current.notesAfter, body: editor.getHTML(),
+      title: fields.current.title, notes_before: fields.current.notesBefore, notes_after: fields.current.notesAfter, body: bodyNow(),
     }).catch(() => ({ ok: false as const, reason: "error" as const }));
     const run = pending.then(() => true, () => false);
     inFlight.current = run;
@@ -78,7 +86,7 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
   const backup = useCallback(() => {
     if (!editor) return;
     try {
-      localStorage.setItem(backupKey, JSON.stringify({ ...fields.current, body: editor.getHTML(), at: Date.now() }));
+      localStorage.setItem(backupKey, JSON.stringify({ ...fields.current, body: bodyNow(), at: Date.now() }));
     } catch { /* storage blocked */ }
   }, [editor, backupKey]);
 
@@ -132,6 +140,17 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
   }, []);
 
   if (!editor) return <p className="a-muted">Loading the editor…</p>;
+  /* Like AO3: the same chapter text, shown as rich text or as HTML with tags. Moving back cleans it to the allowed tags. */
+  function showHtml() {
+    if (codeMode) return;
+    const html = editor!.getHTML().replace(/(<\/(?:p|h2|h3|h4|blockquote|ul|ol|li|figure)>|<hr>|<hr\/>)/g, "$1\n").trim();
+    htmlRef.current = html; setHtmlText(html); setCodeMode(true);
+  }
+  function showRich() {
+    if (!codeMode) return;
+    editor!.commands.setContent(htmlRef.current, { emitUpdate: true });
+    setWords(countWords(editor!.getHTML())); setCodeMode(false);
+  }
   function pickFont(v: string) { setFont(v); loadWebFont(v); writePref("fic-admin-editor-font", v); }
   function changeSize(n: number) { const v = Math.max(12, Math.min(28, n)); setSize(v); writePref("fic-admin-editor-size", String(v)); }
   return (
@@ -141,13 +160,23 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
       <PreviewLinks chapterId={chapterId} />
       <VersionsPanel chapterId={chapterId} flush={() => save(true)} onRestored={(r) => {
         editor.commands.setContent(r.body, { emitUpdate: false });
+        setCodeMode(false);
         setTitle(r.title); setNotesBefore(r.notes_before); setNotesAfter(r.notes_after); setWords(countWords(r.body));
         dirty.current = false; setState("saved");
         try { localStorage.removeItem(backupKey); } catch { /* storage blocked */ }
       }} />
       <EditorMenu editor={editor} words={words} size={size} onSize={changeSize} onSave={() => void save(true)} />
-      <EditorToolbar editor={editor} font={font} size={size} onFont={pickFont} onSize={changeSize}><ImageButton editor={editor} ficId={ficId} /></EditorToolbar>
+      <div className="a-mode-row">
+        <span className="a-mode-label">Chapter text</span>
+        <div role="group" aria-label="Writing mode" className="a-mode-toggle">
+          <button type="button" aria-pressed={!codeMode} onClick={showRich}>Rich text</button>
+          <button type="button" aria-pressed={codeMode} onClick={showHtml}>HTML</button>
+        </div>
+      </div>
+      <p className="a-muted a-mode-hint">{codeMode ? "Type or paste HTML with tags. Tags that aren’t allowed are cleaned out when you save." : "Type or paste formatted text."}</p>
+      {!codeMode && <EditorToolbar editor={editor} font={font} size={size} onFont={pickFont} onSize={changeSize}><ImageButton editor={editor} ficId={ficId} /></EditorToolbar>}
       <PasteHtml ficId={ficId} onUse={async (html, mode) => {
+        showRich();
         if (mode === "replace") {
           /* Replacing the whole chapter: first save what's there and keep a copy, so it can always be brought back. */
           if (!(await save(true)) || !(await snapshotChapter(chapterId, "paste"))) { setState("error"); return; }
@@ -163,9 +192,14 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
         <summary>Notes before the chapter</summary>
         <textarea aria-label="Notes before the chapter" rows={3} value={notesBefore} onChange={(e) => { setNotesBefore(e.target.value); schedule(); }} />
       </details>
-      <div className="a-writing" style={{ fontFamily: FONT_STACKS[font], fontSize: `${size}px` }}>
-        <EditorContent editor={editor} />
-      </div>
+      {codeMode ? (
+        <textarea className="a-html-box" aria-label="Chapter text as HTML" spellCheck={false} rows={18} value={htmlText}
+          onChange={(e) => { htmlRef.current = e.target.value; setHtmlText(e.target.value); setWords(countWords(e.target.value)); schedule(); }} />
+      ) : (
+        <div className="a-writing" style={{ fontFamily: FONT_STACKS[font], fontSize: `${size}px` }}>
+          <EditorContent editor={editor} />
+        </div>
+      )}
       <details className="a-notes">
         <summary>Notes after the chapter</summary>
         <textarea aria-label="Notes after the chapter" rows={3} value={notesAfter} onChange={(e) => { setNotesAfter(e.target.value); schedule(); }} />
