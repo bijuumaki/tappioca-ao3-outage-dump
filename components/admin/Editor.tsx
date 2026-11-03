@@ -3,6 +3,7 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { saveChapter, type ChapterInput } from "@/lib/admin/actions";
 import { editorExtensions } from "@/lib/admin/editor-extensions";
+import EditorMenu from "./EditorMenu";
 import EditorToolbar from "./EditorToolbar";
 import ImageButton from "./ImageButton";
 import PasteHtml from "./PasteHtml";
@@ -144,6 +145,7 @@ export default function Editor({ chapterId, ficId, initial, publishAt }: { chapt
         dirty.current = false; setState("saved");
         try { localStorage.removeItem(backupKey); } catch { /* storage blocked */ }
       }} />
+      <EditorMenu editor={editor} words={words} size={size} onSize={changeSize} onSave={() => void save(true)} />
       <EditorToolbar editor={editor} font={font} size={size} onFont={pickFont} onSize={changeSize}><ImageButton editor={editor} ficId={ficId} /></EditorToolbar>
       <PasteHtml ficId={ficId} onUse={async (html, mode) => {
         if (mode === "replace") {

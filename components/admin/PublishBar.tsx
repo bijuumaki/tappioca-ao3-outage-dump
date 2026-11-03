@@ -1,9 +1,10 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getPublishChecks, publishChapter, scheduleChapter, unpublish, type PublishChecksResult, type PublishResult } from "@/lib/admin/actions";
 import { statusOf, type StoryStatus as Status } from "@/lib/admin/status";
 import { formatDate } from "@/lib/format/dates";
 import { saveDetailsNow } from "@/lib/client/details-saver";
+import { EDITOR_EVENT } from "./EditorMenu";
 import PublishCheck from "./PublishCheck";
 
 
@@ -47,6 +48,19 @@ export default function PublishBar({ ficId, chapterId, publishAt, save }: {
     if (!ok) { tab.close(); setError("Save didn’t go through, so the preview would be out of date."); return; }
     tab.location.href = `/admin/stories/${ficId}/preview/${chapterId}`;
   }
+
+  /* The editor's File menu asks for Preview and Publish through here. */
+  const latest = useRef({ preview, askPublish, status });
+  latest.current = { preview, askPublish, status };
+  useEffect(() => {
+    const on = (e: Event) => {
+      const what = (e as CustomEvent<string>).detail;
+      if (what === "preview") void latest.current.preview();
+      if (what === "publish" && latest.current.status === "draft") void latest.current.askPublish();
+    };
+    window.addEventListener(EDITOR_EVENT, on);
+    return () => window.removeEventListener(EDITOR_EVENT, on);
+  }, []);
 
   const label = status === "published" ? `Published${at ? ` · ${formatDate(at)}` : ""}`
     : status === "scheduled" ? `Scheduled · ${at ? new Date(at).toLocaleString("en-US", { timeZone: "Asia/Manila", dateStyle: "medium", timeStyle: "short" }) : ""}`

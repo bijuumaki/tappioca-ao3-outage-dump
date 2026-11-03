@@ -284,3 +284,19 @@
 .a-dialog-title { margin: 0; font-family: var(--a-font-heading, "IM Fell English", serif); font-size: 24px; line-height: 1.25; font-weight: 400; }
 .a-dialog p { margin: 0; }
 .a-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+
+/* Editor menu row: File, Edit, View */
+.a-menu { display: flex; flex-direction: column; gap: 4px; }
+.a-menu-bar { display: flex; align-items: center; gap: 8px; }
+.a-menu-burger { display: none; appearance: none; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 6px; background: none; color: var(--a-text); cursor: pointer; align-items: center; justify-content: center; }
+.a-menu-names { display: flex; flex-wrap: wrap; gap: 2px; }
+.a-menu-names button { appearance: none; min-height: 44px; padding: 0 12px; border: 0; border-radius: 6px; background: none; color: var(--a-text); font: inherit; font-size: 14px; cursor: pointer; }
+.a-menu-names button[aria-expanded="true"] { background: var(--a-accent-fill); color: var(--a-on-accent); font-weight: 600; }
+.a-menu-items { display: flex; flex-wrap: wrap; gap: 2px 8px; }
+.a-menu-items button, .a-menu-items a { appearance: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 10px; border: 0; background: none; color: var(--a-text); font: inherit; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.a-menu-info { margin: 0; }
+@media (max-width: 1023px) {
+  .a-menu-burger { display: inline-flex; }
+  .a-menu-names { display: none; }
+  .a-menu-names[data-open] { display: flex; }
+}
