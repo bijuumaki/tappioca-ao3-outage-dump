@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AdminHeader from "@/components/admin/AdminHeader";
 import CommentRow from "@/components/admin/CommentRow";
+import CommentStoryFilter from "@/components/admin/CommentStoryFilter";
 import { commentCounts, listAdminComments, storiesWithComments, type CommentStatus } from "@/lib/admin/comments";
 import { requireAdmin } from "@/lib/supabase/session";
 
@@ -35,16 +36,7 @@ export default async function CommentsScreen({ searchParams }: { searchParams: P
             <Link key={id} href={href(id)} aria-current={status === id ? "true" : undefined}>{label} <span>{counts[id]}</span></Link>
           ))}
         </nav>
-        <form action="/admin/comments" className="a-field-inline">
-          <input type="hidden" name="status" value={status} />
-          <label>Story{" "}
-            <select name="story" defaultValue={ficId ?? ""} >
-              <option value="">All stories</option>
-              {stories.map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}
-            </select>
-          </label>{" "}
-          <button type="submit" className="a-button">Filter</button>
-        </form>
+        <CommentStoryFilter stories={stories} value={ficId} status={status} />
       </div>
       {comments.length === 0
         ? <p className="a-muted">{EMPTY[status]}</p>
