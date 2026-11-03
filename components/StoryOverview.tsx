@@ -9,7 +9,6 @@ import { hasAck, placeOf, setAck, type Place } from "@/lib/client/reading-memory
 export type StoryOverviewProps = {
   slug: string;
   title: string;
-  coverUrl: string | null;
   fandom: { name: string; slug: string } | null;
   summary: ReactNode;
   notes: ReactNode;
@@ -67,10 +66,6 @@ export default function StoryOverview(p: StoryOverviewProps) {
     <article className="story">
       <div><Link href="/fics" className="story-back">Back to the fic list</Link></div>
       <section aria-label="About this story" className="story-head">
-        <div className="story-cover">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          {p.coverUrl ? <img src={p.coverUrl} alt="" /> : <span>[Cover]</span>}
-        </div>
         <header className="story-info">
           <h1 className="page-title">{p.title}</h1>
           {p.fandom && <p className="muted"><Link href={`/tags/fandom/${p.fandom.slug}`}>{p.fandom.name}</Link></p>}

@@ -3,12 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import AdminHeader from "@/components/admin/AdminHeader";
 import ChapterList from "@/components/admin/ChapterList";
-import CoverImage from "@/components/admin/CoverImage";
 import Editor from "@/components/admin/Editor";
 import StoryDetails from "@/components/admin/StoryDetails";
 import { htmlToNotes } from "@/lib/admin/notes";
 import { getAdminStory } from "@/lib/admin/queries";
-import { mediaUrl } from "@/lib/content/media";
 import type { TagType } from "@/lib/content/types";
 import { requireAdmin } from "@/lib/supabase/session";
 
@@ -46,7 +44,6 @@ export default async function EditStoryPage({ params, searchParams }: Props) {
               characters: names("character"), warnings: names("warning"), tags: names("freeform"),
             }}
           />
-          <CoverImage ficId={story.id} url={story.cover_path ? mediaUrl(story.cover_path) : null} />
           <ChapterList ficId={story.id} chapters={story.chapters} currentId={chapter?.id ?? null} />
         </aside>
         <section className="a-editor-area" aria-label="Editor">

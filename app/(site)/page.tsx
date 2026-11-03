@@ -3,7 +3,6 @@ import ContinueReading from "@/components/ContinueReading";
 import FicCard from "@/components/FicCard";
 import PostCard from "@/components/PostCard";
 import RichText from "@/components/RichText";
-import { mediaUrl } from "@/lib/content/media";
 import { getHomeData, getSnippet } from "@/lib/content/queries";
 import { fandomNames, lengthLine, ratingAndRelationships } from "@/lib/format/fic-meta";
 
@@ -49,10 +48,6 @@ export default async function Home() {
         <>
           <h2 className="section-bar">Featured: {f.title}</h2>
           <Link href={`/fics/${f.slug}`} className="featured">
-            <span className="featured-cover">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              {f.cover_path && <img src={mediaUrl(f.cover_path)} alt="" />}
-            </span>
             <span className="featured-body">
               <span className="featured-title">{f.title}</span>
               {f.summary && <span className="featured-summary keep-case">{f.summary.replace(/<[^>]*>/g, " ").trim()}</span>}

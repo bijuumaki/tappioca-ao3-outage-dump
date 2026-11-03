@@ -2,12 +2,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { htmlToChapter } from "@/lib/convert/html";
-import { extractDataUriImages, sniffImage } from "@/lib/convert/images";
+import { extractDataUriImages } from "@/lib/convert/images";
 import { createSessionClient, requireAdmin } from "@/lib/supabase/session";
 import { slugify } from "@/lib/text/slug";
 import { prepareChapter } from "./chapter";
 import { deleteStoriesCore, type DeleteResult } from "./delete-stories";
-import { NOT_AN_IMAGE, storeImage } from "./media";
+import { storeImage } from "./media";
 import { notesToHtml } from "./notes";
 import { loadStoryChecks, NotReadyError, publishChapterAt, unpublishChapter } from "./publish";
 import type { Check } from "./readiness";
@@ -61,38 +61,6 @@ export async function addChapter(ficId: number): Promise<void> {
   const { data, error } = await db.from("chapters").insert({ fic_id: ficId, position: (last?.position ?? 0) + 1 }).select("id").single();
   if (error) throw error;
   redirect(`/admin/stories/${ficId}?chapter=${data.id}`);
-}
-
-export async function uploadCover(ficId: number, _prev: SaveState, form: FormData): Promise<SaveState> {
-  const { db } = await requireAdmin();
-  const file = form.get("cover");
-  if (!(file instanceof File) || file.size === 0) return { ok: false, savedAt: null, error: "Choose an image first." };
-  if (file.size > 5 * 1024 * 1024) return { ok: false, savedAt: null, error: "That image is over 5 MB." };
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  const kind = sniffImage(bytes);
-  if (!kind) return { ok: false, savedAt: null, error: NOT_AN_IMAGE };
-  const { data: fic } = await db.from("fics").select("slug, cover_path").eq("id", ficId).single();
-  const path = `fics/${ficId}/cover-${Date.now()}.${kind.ext}`;
-  const up = await db.storage.from("media").upload(path, bytes, { contentType: kind.type });
-  if (up.error) return { ok: false, savedAt: null, error: "The upload didn’t go through. Try again." };
-  const upd = await db.from("fics").update({ cover_path: path }).eq("id", ficId);
-  if (upd.error) {
-    await db.storage.from("media").remove([path]);
-    return { ok: false, savedAt: null, error: "Couldn’t save the cover. Try again." };
-  }
-  if (fic?.cover_path?.startsWith("fics/")) await db.storage.from("media").remove([fic.cover_path]);
-  revalidatePath(`/admin/stories/${ficId}`);
-  refreshPublic(fic?.slug);
-  return { ok: true, savedAt: new Date().toISOString(), error: null };
-}
-
-export async function removeCover(ficId: number): Promise<void> {
-  const { db } = await requireAdmin();
-  const { data: fic } = await db.from("fics").select("slug, cover_path").eq("id", ficId).single();
-  await db.from("fics").update({ cover_path: null }).eq("id", ficId);
-  if (fic?.cover_path?.startsWith("fics/")) await db.storage.from("media").remove([fic.cover_path]);
-  revalidatePath(`/admin/stories/${ficId}`);
-  refreshPublic(fic?.slug);
 }
 
 export type ChapterInput = { title: string; notes_before: string; notes_after: string; body: string };

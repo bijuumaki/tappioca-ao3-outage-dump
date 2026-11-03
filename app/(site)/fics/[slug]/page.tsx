@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import RichText from "@/components/RichText";
 import StoryOverview from "@/components/StoryOverview";
-import { mediaUrl } from "@/lib/content/media";
 import { getFic } from "@/lib/content/queries";
 import { RATING_LABELS, STATUS_LABELS } from "@/lib/content/types";
 import { formatDate } from "@/lib/format/dates";
@@ -39,7 +38,6 @@ export default async function FicPage({ params }: Props) {
       <StoryOverview
         slug={slug}
         title={fic.title}
-        coverUrl={fic.cover_path ? mediaUrl(fic.cover_path) : null}
         fandom={fandomTag ? { name: fandomTag.name, slug: fandomTag.slug } : null}
         summary={fic.summary ? <RichText html={fic.summary} /> : null}
         notes={fic.notes ? <RichText html={fic.notes} /> : null}

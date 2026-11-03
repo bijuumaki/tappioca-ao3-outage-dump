@@ -47,13 +47,6 @@ test("a file that only pretends to be a picture is refused", async ({ page }) =>
   await expect(page.locator(".a-editor .ProseMirror img")).toHaveCount(0);
 });
 
-test("a cover that only pretends to be a picture is refused", async ({ page }) => {
-  await newStory(page, "(e2e image cover)");
-  await page.getByLabel("Upload image").setInputFiles({ name: "cover.png", mimeType: "image/png", buffer: Buffer.concat([Buffer.from("<html>"), Buffer.alloc(100)]) });
-  await expect(page.locator('[aria-label="Cover image"] .a-alert')).toContainText("isn’t a JPG, PNG, WebP, GIF or AVIF");
-  await expect(page.locator(".a-cover img")).toHaveCount(0);
-});
-
 test("an oversized picture is shrunk in the browser before it is sent", async ({ page }) => {
   await newStory(page, "(e2e image big)");
   // a real 3000x2000 PNG made in the page itself, so it needs shrinking
