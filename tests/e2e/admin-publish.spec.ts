@@ -132,6 +132,7 @@ test("Escape and Save as draft close the publish check without publishing", asyn
   await expect(dialog.getByRole("heading")).toHaveText("Publish “(e2e publish draft)”?");
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Publish", exact: true })).toBeFocused();
   await page.getByRole("button", { name: "Publish", exact: true }).click();
   await dialog.getByRole("button", { name: "Save as draft" }).click();
   await expect(dialog).toHaveCount(0);

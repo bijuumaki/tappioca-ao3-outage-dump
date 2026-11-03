@@ -96,6 +96,7 @@ test("a one-chapter story is read at chapter 1 with no chapter controls", async 
   await expect(page.locator(".progress")).toHaveCount(0);
 });
 
+/* getByText ignores the page data scripts, so this checks what the reader sees, not the page source. */
 test("a direct link to a Mature chapter shows the content notice instead of the text", async ({ page }) => {
   await page.goto("/fics/sample-mature/1");
   await expect(page.getByRole("heading", { name: "Content notice" })).toBeVisible();
@@ -148,4 +149,16 @@ test("a back-to-top button appears near the bottom of a chapter and returns to t
   await button.click();
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   await expect(button).toBeHidden();
+});
+
+test("the story's own notes show on the story page", async ({ page }) => {
+  await page.goto("/fics/sample-fic");
+  await expect(page.getByLabel("Fic notes")).toContainText("(fic notes)");
+});
+
+test("a one-chapter story's display options still push the page over on wide screens", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/fics/sample-oneshot/1");
+  await page.getByRole("button", { name: "Display options" }).click();
+  await expect(page.locator("html[data-dock]")).toHaveCount(1);
 });

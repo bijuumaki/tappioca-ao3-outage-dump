@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 import { missingCount, type Check } from "@/lib/admin/readiness";
 
 /* The "are you sure" step before a story goes public. It lists the basics and blocks Publish until they are there. */
-export default function PublishCheck({ checks, title, adult, ratingLabel, busy, onKeepEditing, onSaveDraft, onPublish }: {
-  checks: Check[]; title: string; adult: boolean; ratingLabel: string; busy: boolean;
+export default function PublishCheck({ checks, title, adult, ratingLabel, busy, returnFocus, onKeepEditing, onSaveDraft, onPublish }: {
+  checks: Check[]; title: string; adult: boolean; ratingLabel: string; busy: boolean; returnFocus: RefObject<HTMLElement | null>;
   onKeepEditing(): void; onSaveDraft(): void; onPublish(): void;
 }) {
   const box = useRef<HTMLDivElement>(null);
@@ -13,7 +13,6 @@ export default function PublishCheck({ checks, title, adult, ratingLabel, busy, 
   keepEditing.current = onKeepEditing;
 
   useEffect(() => {
-    const opener = document.activeElement as HTMLElement | null;
     box.current?.querySelector<HTMLElement>("button:not(:disabled)")?.focus();
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") { e.preventDefault(); keepEditing.current(); return; }
@@ -25,8 +24,8 @@ export default function PublishCheck({ checks, title, adult, ratingLabel, busy, 
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     }
     document.addEventListener("keydown", onKey);
-    return () => { document.removeEventListener("keydown", onKey); opener?.focus(); };
-  }, []);
+    return () => { document.removeEventListener("keydown", onKey); returnFocus.current?.focus(); };
+  }, [returnFocus]);
 
   const heading = todo > 0 ? (todo === 1 ? "1 thing to fix before publishing" : `${todo} things to fix before publishing`) : `Publish “${title}”?`;
   const body = todo > 0 ? "Fix these to publish. You can still save a draft." : "Readers will see this story on the fic list as soon as you publish.";

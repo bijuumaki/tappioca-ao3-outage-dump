@@ -10,6 +10,7 @@ export type StoryOverviewProps = {
   coverUrl: string | null;
   fandom: { name: string; slug: string } | null;
   summary: ReactNode;
+  notes: ReactNode;
   tags: { type: string; name: string; slug: string }[];
   ratingLabel: string;
   adult: boolean;
@@ -78,6 +79,8 @@ export default function StoryOverview(p: StoryOverviewProps) {
           )}
         </header>
       </section>
+
+      {p.notes && <aside className="notes" aria-label="Fic notes">{p.notes}</aside>}
 
       <section aria-labelledby="details-heading" className="story-section">
         <h2 id="details-heading" className="section-bar">Details</h2>

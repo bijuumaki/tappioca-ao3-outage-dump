@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { getPublishChecks, publishChapter, scheduleChapter, unpublish, type PublishChecksResult, type PublishResult } from "@/lib/admin/actions";
 import { statusOf, type StoryStatus as Status } from "@/lib/admin/status";
 import { formatDate } from "@/lib/format/dates";
@@ -16,6 +16,7 @@ export default function PublishBar({ ficId, chapterId, publishAt, save }: {
   const [error, setError] = useState<string | null>(null);
   const [scheduling, setScheduling] = useState(false);
   const [when, setWhen] = useState("");
+  const publishButton = useRef<HTMLButtonElement>(null);
   const [review, setReview] = useState<Extract<PublishChecksResult, { ok: true }> | null>(null);
 
   async function run(fn: () => Promise<PublishResult>) {
@@ -59,7 +60,7 @@ export default function PublishBar({ ficId, chapterId, publishAt, save }: {
         <button type="button" className="a-button" disabled={busy} onClick={() => void preview()}>Preview</button>
         {status === "draft" && <button type="button" className="a-button" disabled={busy} onClick={() => setScheduling(!scheduling)} aria-expanded={scheduling}>Schedule</button>}
         {status === "draft"
-          ? <button type="button" className="a-button-primary" disabled={busy} onClick={() => void askPublish()}>Publish</button>
+          ? <button ref={publishButton} type="button" className="a-button-primary" disabled={busy} onClick={() => void askPublish()}>Publish</button>
           : <button type="button" className="a-button" disabled={busy} onClick={() => void run(() => unpublish(chapterId))}>Unpublish</button>}
       </div>
       {scheduling && (
@@ -72,7 +73,7 @@ export default function PublishBar({ ficId, chapterId, publishAt, save }: {
       )}
       {error && <p className="a-alert" role="alert">{error}</p>}
       {review && (
-        <PublishCheck checks={review.checks} title={review.title} adult={review.adult} ratingLabel={review.ratingLabel} busy={busy}
+        <PublishCheck checks={review.checks} title={review.title} adult={review.adult} ratingLabel={review.ratingLabel} busy={busy} returnFocus={publishButton}
           onKeepEditing={() => setReview(null)}
           onSaveDraft={() => { setReview(null); void save(); }}
           onPublish={() => { setReview(null); void run(() => publishChapter(chapterId)); }} />

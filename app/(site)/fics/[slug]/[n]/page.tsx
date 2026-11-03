@@ -41,7 +41,7 @@ export default async function ChapterPage({ params }: Props) {
 
   return (
     <main className="page" id="main">
-      {several && <ReaderRegister info={{ slug, n: chapter.n, chapters: options }} />}
+      <ReaderRegister info={{ slug, n: chapter.n, chapters: options }} />
       <RecordPlace slug={slug} title={fic.title} n={chapter.n} count={count} />
       <article className="page">
         <header className="reader-header">

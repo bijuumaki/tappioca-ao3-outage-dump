@@ -42,6 +42,7 @@ export default async function FicPage({ params }: Props) {
         coverUrl={fic.cover_path ? mediaUrl(fic.cover_path) : null}
         fandom={fandomTag ? { name: fandomTag.name, slug: fandomTag.slug } : null}
         summary={fic.summary ? <RichText html={fic.summary} /> : null}
+        notes={fic.notes ? <RichText html={fic.notes} /> : null}
         tags={fic.tags.filter((t) => t.type !== "fandom").map((t) => ({ type: t.type, name: t.name, slug: t.slug }))}
         ratingLabel={RATING_LABELS[fic.rating]}
         adult={fic.rating === "mature" || fic.rating === "explicit"}
