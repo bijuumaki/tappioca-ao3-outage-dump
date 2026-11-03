@@ -94,6 +94,8 @@ Added in v130-v135 (Bijuu's canvas comments, handled by the design session):
 27. **Edit in place (Notion style) for the signed-in admin** on Disclaimer, About and Links: the text is the editor, with a toolbar (Bold, Italic, Underline, Heading, List, Quote, Link), link row restricted to http/https/mailto, autosave with a "Saved" line. New canvas boards "...: signed in (edit in place)". Howdy and The Archive boxes not drawn yet. The old `/admin/pages` screen may stay as a fallback; Bijuu has not said.
 28. **"Heart this story" is now "Like"** ("Liked" when pressed), icon kept; every "[N] hearts" count is gone (story page and cards). Sort option "Most hearts" is now "Most liked". The server count can still exist; it is just not shown.
 
+29. **Lagoon is now "Old paper"** (v142), with Bijuu's paper texture as the page background (multiplied, lightened 45%). Code key stays `lagoon`.
+
 ## 4. Rules for Claude Code
 
 - **The latest canvas wins over these docs** (see the top).
@@ -134,7 +136,7 @@ Added in v130-v135 (Bijuu's canvas comments, handled by the design session):
 - Should the Aa in the Admin, Stories, Comments and Uploads screens match the reader's plain 10pt Aa, and should Admin/Dashboard's "Close" word become an X like the reader and the new screens?
 - Is the comment form's Post button staying a box? (The bottom chapter row became links; Post was left alone.)
 - Do Anam Cara and MORIBUND stay marked "Published" in the dashboard demo?
-- Name for the Lagoon theme (working name).
+- (Answered 2026-11-03: the Lagoon theme is named "Old paper" and has a paper texture.)
 - Midnight: `muted` and `link` are both `#9BA8AB`. Separate them, or leave it since links are underlined and empty notes are italic?
 - Impeccable's design rules flagged three more things, none changed yet: (a) the check marks in Uploads, the Publish check and the Dashboard select boxes are typed characters, not drawn icons; (b) the Publish check could be inline instead of a modal; (c) "nothing here" style empty states could say what to do next. Bijuu to say which, if any.
 - Guesses made on comments, to confirm: "underline options" meant the Dashboard row actions; "put this on top" meant Featured (later superseded); "relocate under page title" meant the intro block; "these buttons" in the last comment meant the bottom chapter row.

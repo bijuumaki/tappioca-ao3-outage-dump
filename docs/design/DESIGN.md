@@ -20,7 +20,7 @@ Updated 2026-11-03 from the design canvas, **version 135**. Read `claude/HANDOFF
 - **Chapter text is justified** (`text-align: justify; hyphens: auto; max-width: 66ch`).
 - **Aa button, upper right.** It is **plain text "Aa" with no circle, border or fill**, set at **fixed 10pt in every theme, and it does not scale with the text size setting**. Keep a **44 x 44px tap area** (`top: 12px + safe-area`, `right: 16px`, fixed, `aria-label="Display options"`, `aria-expanded`). **It is positioned against the viewport's right edge, not the 708px reading column** (decided 2026-11-03): on a wide desktop it sits well outside the column on purpose, like a light switch by the door, and the title row reserves 64px of right padding so they never collide. Do not cap its distance from the column. **Hover shows an underline** (4px offset), because a brightness change is invisible on bare text; keyboard focus uses the normal 2px outline. On screens under 900px, in the reader only, it slides away when scrolling down and returns on scroll up, on focus, or on back-to-top. Measure the width on scroll as well as on resize (the prototype once kept a stale narrow reading and hid Aa on desktop). **The admin screens still use the older circle Aa** (open question).
 - **10px corners** on boxes and cards (buttons and small controls 6 to 8px, chips 6px).
-- Four themes everywhere, plus phone, tablet and desktop: **Day, Lagoon, Night, Midnight**. Check all four after any color change.
+- Four themes everywhere, plus phone, tablet and desktop: **Day, Old paper, Night, Midnight**. Check all four after any color change.
 - Tap targets at least 44px. Visible focus (`outline: 2px solid currentColor`). `prefers-reduced-motion` turns motion off. Respect safe-area insets.
 - **Icons instead of words** where Bijuu asked: the display options close is an X icon; chapter Previous/Next are small arrow icons. Icon-only buttons keep an `aria-label`.
 - **Links instead of boxes** where Bijuu asked: the reader's bottom chapter row is plain links (see Reader). Do not box things she asked to be links.
@@ -46,7 +46,7 @@ Each theme defines these. Names match the canvas code.
 
 Values (Tappioca palette, the default):
 
-| | Day | Lagoon | Night | Midnight |
+| | Day | Old paper (was Lagoon) | Night | Midnight |
 |---|---|---|---|---|
 | pageBg | `#EDF6F9` | `#F6F1E7` | `#14262D` | `#06141B` |
 | text | `#204B57` | `#0A1517` | `#EDF6F9` | `#CCD0CF` |
@@ -64,7 +64,7 @@ Values (Tappioca palette, the default):
 
 Defaults when a token is missing: `fieldBorder = border`, `bar = tint`, `accentFill = accentText`, `onAccent = pageBg`, `link = accentText`. (`tint` is the old teal, now only a source for `bar`.) The admin screens define no `link` token; their links are text color with an underline.
 
-The reader component (`Site.dc.html`) also still contains leftover palettes (Harbor, Milk Tea, Orchid, Custom) from the old look; the Admin, Stories, Comments and Uploads screens have only the four above. Ignore the leftovers unless Bijuu asks; Tappioca is the live one. "Lagoon" is a working name; Bijuu has not decided.
+The reader component (`Site.dc.html`) also still contains leftover palettes (Harbor, Milk Tea, Orchid, Custom) from the old look; the Admin, Stories, Comments and Uploads screens have only the four above. Ignore the leftovers unless Bijuu asks; Tappioca is the live one. **Lagoon was renamed "Old paper" on 2026-11-03 (v142).** In code its key is still `lagoon`, so saved choices keep working. **Old paper also has a texture** (`public/textures/old-paper.webp`, from Bijuu): multiplied into the page color (`background-blend-mode: multiply`), page background only, with the page color laid over it at 45% so text keeps 4.5:1. Cards, bars and fields stay solid.
 
 ## 3. Type
 
@@ -204,3 +204,4 @@ Rows, top to bottom: Home and Reader in four themes (Reader: Day opens with the 
 - 2026-11-03 (v125, terminal's type-scale critique checked against Impeccable's rules): The Archive box moved to the Howdy scale (24/16/padding 20, accent heading, no 1:1 square); Day `muted` changed from `#125E8A` to `#4F6F78` in all five components so muted text no longer matches links; the empty comments line is muted italic; Aa kept plain and at the viewport edge, with an underline on hover. Not changed, waiting on Bijuu: typed check marks vs drawn icons, Publish check as a modal, "nothing here" empty-state wording, Midnight muted equal to link.
 - 2026-11-03 (v127-v129, Bijuu's comments): end of story reduced to "Leave a comment" + icon-only heart (v127); chapter bar centered as "Chapter N: [chapter title]" (v128); the top Previous/Next arrow buttons removed (v129).
 - 2026-11-03 (v130-v135, Bijuu's comments): covers removed everywhere; edit-in-place with rich text and links on Disclaimer, About, Links (signed-in boards); "Heart this story" became "Like"/"Liked" and all "[N] hearts" counts were removed; sort option "Most liked".
+- 2026-11-03 (v142): Lagoon renamed Old paper; paper texture as its page background (multiply, lightened 45%).
