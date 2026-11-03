@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { secretClient } from "../support/supabase-admin";
-import { fillBasics, publishViaDialog, signIn } from "./admin-helpers";
+import { fillBasics, publishViaDialog, signIn, saveDetails } from "./admin-helpers";
 
 test.describe.configure({ mode: "serial" });
 async function cleanUp() {
@@ -21,8 +21,7 @@ test("publishing keeps a version, and an earlier one can be restored", async ({ 
   await page.waitForURL(/\/admin\/stories\/\d+$/);
   await page.getByLabel("Story title").fill("(e2e versions one)");
   await fillBasics(page, { fandom: "(e2e versions fandom)" });
-  await page.getByRole("button", { name: "Save details" }).click();
-  await expect(page.locator(".a-saved")).toBeVisible();
+  await saveDetails(page);
   await editor(page).click();
   await page.keyboard.type("version one");
   await saved(page);

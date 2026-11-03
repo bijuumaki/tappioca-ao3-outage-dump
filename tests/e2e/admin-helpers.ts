@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 import nextEnv from "@next/env";
 const { loadEnvConfig } = nextEnv;
 
@@ -24,4 +24,12 @@ export async function fillBasics(page: Page, o: { fandom: string; rating?: strin
 export async function publishViaDialog(page: Page) {
   await page.getByRole("button", { name: "Publish", exact: true }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Publish story" }).click();
+}
+
+/* "Save details", repeated until it really saved (the first click can land before the page is interactive). */
+export async function saveDetails(page: Page) {
+  await expect(async () => {
+    await page.getByRole("button", { name: "Save details" }).click({ timeout: 2000 });
+    await expect(page.locator(".a-saved")).toBeVisible({ timeout: 2500 });
+  }).toPass({ timeout: 15_000 });
 }

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { secretClient } from "../support/supabase-admin";
-import { signIn } from "./admin-helpers";
+import { signIn, saveDetails } from "./admin-helpers";
 
 test.describe.configure({ mode: "serial" });
 async function cleanUp() {
@@ -16,8 +16,7 @@ async function newStory(page: import("@playwright/test").Page, title: string) {
   await page.getByRole("link", { name: "Add new story" }).click();
   await page.waitForURL(/\/admin\/stories\/\d+$/);
   await page.getByLabel("Story title").fill(title);
-  await page.getByRole("button", { name: "Save details" }).click();
-  await expect(page.locator(".a-saved")).toBeVisible();
+  await saveDetails(page);
 }
 
 const SAMPLE = '<p style="color:#8b3253">hello <em>there</em></p><script>alert(1)</script><p style="font-family:Arial">more</p>';

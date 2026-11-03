@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { secretClient } from "../support/supabase-admin";
-import { fillBasics, publishViaDialog, signIn } from "./admin-helpers";
+import { fillBasics, publishViaDialog, signIn, saveDetails } from "./admin-helpers";
 
 test.describe.configure({ mode: "serial" });
 async function cleanUp() {
@@ -22,8 +22,7 @@ async function newStory(page: Page, title: string) {
   await page.waitForURL(/\/admin\/stories\/\d+$/);
   await page.getByLabel("Story title").fill(title);
   await fillBasics(page, { fandom: "(e2e image fandom)" });
-  await page.getByRole("button", { name: "Save details" }).click();
-  await expect(page.locator(".a-saved")).toBeVisible();
+  await saveDetails(page);
 }
 
 test("a picture is added to the chapter, saved, and shows on the public page", async ({ page }) => {

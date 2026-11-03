@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { secretClient } from "../support/supabase-admin";
-import { signIn } from "./admin-helpers";
+import { signIn, saveDetails } from "./admin-helpers";
 
 // These tests share one cleanup step, so they run one after another.
 test.describe.configure({ mode: "serial" });
@@ -30,8 +30,7 @@ test("new story: fill details, save, see it in the list, reopen with everything 
   await page.getByLabel("Characters").fill("(e2e a)");
   await page.getByLabel("Summary").fill("(e2e summary)");
   await page.getByLabel("Tags", { exact: true }).fill("(e2e tag)");
-  await page.getByRole("button", { name: "Save details" }).click();
-  await expect(page.locator(".a-saved")).toBeVisible();
+  await saveDetails(page);
 
   await page.goto("/admin");
   const row = page.locator(".a-story", { hasText: "(e2e story)" });

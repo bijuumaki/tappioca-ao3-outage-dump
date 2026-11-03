@@ -242,6 +242,7 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 }
 
 /* Story page (the page before chapter 1) */
+.story { width: 100%; display: flex; flex-direction: column; gap: 16px; }
 .story-back { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
 .story-head { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: flex-start; }
 .story-cover {

@@ -60,7 +60,7 @@ export default function StoryOverview(p: StoryOverviewProps) {
   }
 
   return (
-    <article className="page story">
+    <article className="story">
       <div><Link href="/fics" className="story-back">Back to the fic list</Link></div>
       <section aria-label="About this story" className="story-head">
         <div className="story-cover">

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { secretClient } from "../support/supabase-admin";
-import { signIn } from "./admin-helpers";
+import { signIn, saveDetails } from "./admin-helpers";
 
 test.describe.configure({ mode: "serial" });
 async function cleanUp() {
@@ -16,8 +16,7 @@ async function newStoryWithText(page: Page, title: string, text: string) {
   await page.getByRole("link", { name: "Add new story" }).click();
   await page.waitForURL(/\/admin\/stories\/\d+$/);
   await page.getByLabel("Story title").fill(title);
-  await page.getByRole("button", { name: "Save details" }).click();
-  await expect(page.locator(".a-saved")).toBeVisible();
+  await saveDetails(page);
   await page.locator(".a-editor .ProseMirror").click();
   await page.keyboard.type(text);
   await expect(page.locator(".a-save-state")).toHaveText(/saved/i, { timeout: 10_000 });

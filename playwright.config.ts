@@ -3,6 +3,8 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "tests/e2e",
   fullyParallel: true,
+  /* Two at a time: with four, the dev server sometimes stumbles compiling admin pages for the first time and the first test of a file fails. */
+  workers: 2,
   reporter: "line",
   globalSetup: "./tests/e2e/global-setup.ts",
   globalTeardown: "./tests/e2e/global-teardown.ts",
