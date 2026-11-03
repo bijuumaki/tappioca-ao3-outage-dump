@@ -55,8 +55,10 @@ export default async function ChapterPage({ params }: Props) {
           {several && <div className="progress" aria-hidden="true"><div style={{ width: `${Math.round((chapter.n / count) * 100)}%` }} /></div>}
         </header>
         <>
-          <h2 className="section-bar chapter-title">{chapterHeading(chapter.n, chapter.title)}</h2>
-          <ChapterBody id={`${slug}/${chapter.n}`} chapter={chapter} />
+          <div className="chapter-column">
+            <h2 className="section-bar chapter-title">{chapterHeading(chapter.n, chapter.title)}</h2>
+            <ChapterBody id={`${slug}/${chapter.n}`} chapter={chapter} />
+          </div>
           {several && <ChapterNav slug={slug} n={chapter.n} count={count} />}
           {chapter.n === count && <EndOfStory slug={slug} />}
           <Comments slug={slug} n={chapter.n} />

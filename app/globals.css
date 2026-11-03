@@ -234,12 +234,20 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .chapter-label { margin: 0; color: var(--muted); }
 .progress { height: 6px; border-radius: 3px; background: var(--bar); overflow: hidden; margin-top: 8px; }
 .progress > div { height: 100%; background: var(--accent-fill); }
+.chapter-column {
+  /* One column for the bar, notes and text; 66ch is measured in the reader font so it follows the text size. */
+  width: 100%; max-width: 66ch; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px;
+  font-family: var(--font-reader); font-size: var(--read);
+}
+.chapter-column .progress-note, .chapter-column .notes { font-family: var(--font-body); }
+.chapter-column .progress-note { font-size: var(--t16); }
+.chapter-column > .chapter-title { margin-top: 0; }
 .chapter-title { margin-top: 12px; text-align: center; font-family: var(--font-title); }
 .notes { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; font-size: max(14px, calc(var(--read) - 2pt)); color: var(--muted); }
 .notes .rich-text > :first-child { margin-top: 0; }
 .notes .rich-text > :last-child { margin-bottom: 0; }
 .chapter-text {
-  text-align: justify; hyphens: auto; max-width: 66ch;
+  text-align: justify; hyphens: auto;
   font-family: var(--font-reader); font-size: var(--read); line-height: var(--lh);
 }
 .chapter-buttons { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 16px; }
