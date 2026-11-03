@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { FicCardData } from "@/lib/content/queries";
 import { mediaUrl } from "@/lib/content/media";
-import { HeartIcon, heartsLabel } from "./HeartButton";
+import HeartIcon from "./HeartIcon";
+import { heartsLabel } from "@/lib/format/hearts";
 import { fandomNames, lengthLine, ratingAndRelationships } from "@/lib/format/fic-meta";
 
 export default function FicCard({ fic, showFandom = true }: { fic: FicCardData; showFandom?: boolean }) {
