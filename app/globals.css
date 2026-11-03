@@ -293,3 +293,16 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 }
 .story-end h2 { margin: 0; font-family: var(--font-heading); font-size: var(--h24); line-height: 1.25; font-weight: 600; color: var(--accent-text); overflow-wrap: anywhere; }
 .story-end p { margin: 0; }
+
+/* Back to top (chapter pages) */
+.to-top {
+  appearance: none; position: fixed; z-index: 4; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+  width: 40px; height: 40px; padding: 0; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--field-border); border-radius: 50%; background: var(--card-bg); color: var(--ink); cursor: pointer;
+  opacity: 0; visibility: hidden; transform: translateY(12px);
+  transition: opacity 200ms ease-out, transform 200ms ease-out, visibility 0s linear 200ms;
+}
+.to-top[data-shown="true"] { opacity: 1; visibility: visible; transform: none; transition: opacity 200ms ease-out, transform 200ms ease-out; }
+.to-top svg { width: 52%; height: 52%; }
+@media (max-width: 599px) { .to-top { width: 48px; height: 48px; } }
+@media (prefers-reduced-motion: reduce) { .to-top, .to-top[data-shown="true"] { transition: none; } }

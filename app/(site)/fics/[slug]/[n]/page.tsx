@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import BackToTop from "@/components/BackToTop";
 import ChapterBody from "@/components/ChapterBody";
 import ChapterGate from "@/components/ChapterGate";
 import ChapterNav, { TouchChapterNav } from "@/components/ChapterNav";
@@ -57,6 +58,7 @@ export default async function ChapterPage({ params }: Props) {
           {chapter.n === count && <EndOfStory slug={slug} title={fic.title} count={count} fandom={fandomTag ? { name: fandomTag.name, slug: fandomTag.slug } : null} />}
         </ChapterGate>
       </article>
+      <BackToTop />
     </main>
   );
 }

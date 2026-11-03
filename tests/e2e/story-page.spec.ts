@@ -1,4 +1,12 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+/* Clicks "Continue to the story" until the page has really saved it (the first click can land before the page is interactive). */
+async function acceptNotice(page: Page) {
+  await expect(async () => {
+    await page.getByRole("button", { name: "Continue to the story" }).click({ timeout: 1000 });
+    expect(await page.evaluate(() => localStorage.getItem("fic-site-ack"))).toContain("sample-mature");
+  }).toPass();
+}
 
 test("story page shows the details, tags and a start button", async ({ page }) => {
   await page.goto("/fics/sample-fic");
@@ -51,7 +59,7 @@ test("a Mature story shows a content notice before any chapter opens", async ({ 
   await expect(page.getByRole("link", { name: "Start reading" })).toHaveCount(0);
   await expect(notice.getByRole("link", { name: "Go back" })).toHaveAttribute("href", "/fics");
 
-  await notice.getByRole("button", { name: "Continue to the story" }).click();
+  await acceptNotice(page);
   await page.goto("/fics/sample-mature");
   await expect(page.getByRole("heading", { name: "Content notice" })).toHaveCount(0);
   await expect(page.getByText("You have seen the content notice for this story (Mature).")).toBeVisible();
@@ -92,7 +100,7 @@ test("a direct link to a Mature chapter shows the content notice instead of the 
   await page.goto("/fics/sample-mature/1");
   await expect(page.getByRole("heading", { name: "Content notice" })).toBeVisible();
   await expect(page.getByText("Mature sample text.")).toHaveCount(0);
-  await page.getByRole("button", { name: "Continue to the story" }).click();
+  await acceptNotice(page);
   await expect(page.getByText("Mature sample text.")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Content notice" })).toHaveCount(0);
   await expect(page).toHaveURL(/\/fics\/sample-mature\/1$/);
@@ -127,4 +135,17 @@ test("earlier chapters have no end-of-story box", async ({ page }) => {
 test("a one-chapter story says that was the whole story", async ({ page }) => {
   await page.goto("/fics/sample-oneshot/1");
   await expect(page.getByText("That was the whole story.")).toBeVisible();
+});
+
+test("a back-to-top button appears near the bottom of a chapter and returns to the top", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 300 });
+  await page.goto("/fics/sample-fic/2");
+  const button = page.getByRole("button", { name: "Back to top" });
+  await expect(button).toBeHidden();
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await expect(button).toBeVisible();
+  expect((await button.boundingBox())!.width).toBe(48);
+  await button.click();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await expect(button).toBeHidden();
 });
