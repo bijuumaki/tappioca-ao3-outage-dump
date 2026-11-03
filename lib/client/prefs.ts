@@ -6,7 +6,7 @@ export function writePref(key: string, value: string): void {
   try { localStorage.setItem(key, value); } catch { /* storage blocked */ }
 }
 
-export const THEMES = [["day", "Day"], ["lagoon", "Lagoon"], ["night", "Night"], ["midnight", "Midnight"]] as const;
+export const THEMES = [["day", "Day"], ["lagoon", "Old paper"], ["night", "Night"], ["midnight", "Midnight"]] as const;
 export const SPACINGS = [["tight", "Tight"], ["normal", "Normal"], ["loose", "Loose"]] as const;
 export const FONTS = [
   ["default", "Default"], ["lucida", "Lucida Sans"], ["cantarell", "Cantarell"], ["tahoma", "Tahoma"],

@@ -9,7 +9,7 @@ test("admin starts in day and the theme choice is remembered", async ({ page }) 
   expect(await bg(page)).toBe("rgb(237, 246, 249)");
   await page.getByRole("button", { name: "Display options" }).click();
   const themes = page.locator('[aria-label="Theme"] button');
-  await expect(themes).toHaveText(["Day", "Lagoon", "Night", "Midnight"]);
+  await expect(themes).toHaveText(["Day", "Old paper", "Night", "Midnight"]);
   await themes.nth(1).click();
   await expect(page.locator(".admin")).toHaveAttribute("data-admin-theme", "lagoon");
   expect(await bg(page)).toBe("rgb(246, 241, 231)");

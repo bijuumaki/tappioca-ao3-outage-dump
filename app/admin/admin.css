@@ -313,3 +313,9 @@
 }
 
 @media (hover: hover) { .a-aa:hover { text-decoration: underline; text-underline-offset: 4px; } }
+
+/* Old paper (the lagoon theme) in the admin too, same texture as the site. */
+.admin[data-admin-theme="lagoon"] {
+  background-image: linear-gradient(color-mix(in srgb, var(--a-page-bg) 45%, transparent), color-mix(in srgb, var(--a-page-bg) 45%, transparent)), url("/textures/old-paper.webp");
+  background-size: auto, cover; background-attachment: fixed; background-blend-mode: normal, multiply;
+}

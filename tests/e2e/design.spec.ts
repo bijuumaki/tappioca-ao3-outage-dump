@@ -40,7 +40,7 @@ test("clickable cards and buttons use the stronger field border in each theme", 
   }
 });
 
-test("Lagoon's Howdy rose is the deeper one", async ({ page }) => {
+test("Old paper's Howdy rose is the deeper one", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => document.documentElement.setAttribute("data-theme", "lagoon"));
   expect(await page.locator(".howdy h2").evaluate((el) => getComputedStyle(el).color)).toBe("rgb(168, 75, 78)");

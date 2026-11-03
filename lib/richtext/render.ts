@@ -1,7 +1,7 @@
 import { sanitizeRichText } from "./allowlist";
 import { adaptColor, contrastRatio, isPlainInk, parseColor } from "./colors";
 
-/* Page and card backgrounds and text colors of the light themes (Day, Lagoon) and dark themes (Night, Midnight).
+/* Page and card backgrounds and text colors of the light themes (Day, Old paper) and dark themes (Night, Midnight).
    Kept in step with app/tokens.css. A color is adapted against the hardest one in its group. */
 const LIGHT_BACKGROUNDS = ["#EDF6F9", "#F6F1E7", "#FBF8F2"];
 const DARK_BACKGROUNDS = ["#14262D", "#1B3540", "#06141B", "#11212D"];
