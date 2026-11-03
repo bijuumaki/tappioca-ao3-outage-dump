@@ -517,3 +517,10 @@ button[aria-busy="true"]::after {
   .skeleton { animation: none; }
   button[aria-busy="true"]::after { animation-duration: 2s; }
 }
+
+/* Dropdowns: one even chevron, set in from the right edge, in the text color (the browser's own arrow sits tight against the edge). */
+:root select {
+  appearance: none; -webkit-appearance: none; padding-right: 36px; background-repeat: no-repeat; background-size: 6px 6px, 6px 6px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
+  background-position: calc(100% - 21px) calc(50% + 1px), calc(100% - 15px) calc(50% + 1px);
+}
