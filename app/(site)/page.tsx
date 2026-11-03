@@ -12,7 +12,7 @@ import { formatDate } from "@/lib/format/dates";
 
 export const revalidate = 60;
 
-const ROWS = [["/disclaimer", "Disclaimer"], ["/about", "About"], ["/fics", "Fic List"], ["/links", "Links"], ["/highlights", "My highlights"]] as const;
+const ROWS = [["/disclaimer", "Disclaimer"], ["/about", "About"], ["/fics", "Fic List"], ["/links", "Links"]] as const;
 
 export default async function Home() {
   const [home, howdy, archive, photo] = await Promise.all([getHomeData(), getSnippet("howdy"), getSnippet("archive"), getSnippet("photo")]);
@@ -50,7 +50,16 @@ export default async function Home() {
         </div>
       </section>
 
-      <ContinueReading />
+      <div className="resume-row">
+        <ContinueReading />
+        <section aria-labelledby="highlights-heading" className="resume-card">
+          <div className="resume-text">
+            <h2 id="highlights-heading">My highlights</h2>
+            <p className="muted resume-where">Your highlights and notes</p>
+          </div>
+          <Link href="/highlights" className="story-primary resume-button">Open</Link>
+        </section>
+      </div>
 
       {home.activity.length > 0 && (
         <>

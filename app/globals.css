@@ -371,6 +371,9 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; padding: 16px 20px;
   border: 1px solid var(--field-border); border-radius: var(--radius); background: var(--card-bg);
 }
+.resume-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: stretch; }
+.resume-row > .resume-card { box-sizing: border-box; min-height: 120px; flex-direction: column; align-items: flex-start; justify-content: space-between; }
+@media (max-width: 599px) { .resume-row { grid-template-columns: 1fr; } }
 .resume-text { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .resume-text h2 { margin: 0; font-family: var(--font-heading); font-size: var(--h20); line-height: 1.25; font-weight: 600; color: var(--accent-text); }
 .resume-text p { margin: 0; }
@@ -601,4 +604,3 @@ button[aria-busy="true"]::after {
   background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
   background-position: calc(100% - 21px) calc(50% + 1px), calc(100% - 15px) calc(50% + 1px);
 }
-.pages-nav .home-row:last-child:nth-child(odd) { grid-column: 1 / -1; }
