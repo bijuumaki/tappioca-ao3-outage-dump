@@ -406,3 +406,10 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
   .heart-button:active svg { transform: none; }
   .heart-button svg, .card-hearts svg { transition: fill 180ms linear; }
 }
+
+/* Home's own heading is the link home, so the small site title is hidden there. */
+:root:has(.home-title) .site-title-wrap { display: none; }
+
+/* Touch targets: links that read as text still get a 44px tap height. */
+.browse-link { display: inline-flex; align-items: center; min-height: 44px; }
+.home-title a { display: inline-flex; align-items: center; min-height: 44px; }

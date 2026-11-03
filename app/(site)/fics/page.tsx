@@ -14,7 +14,7 @@ export default async function FicList() {
       <h1 className="page-title">Fic List</h1>
       {groups.length === 0 && <p className="empty-note">Nothing posted yet.</p>}
       {groups.length > 0 && <FicListBrowser groups={groups} />}
-      <p><Link href="/browse" className="muted">Filter by rating, status or tag →</Link></p>
+      <p><Link href="/browse" className="muted browse-link">Filter by rating, status or tag →</Link></p>
     </main>
   );
 }
