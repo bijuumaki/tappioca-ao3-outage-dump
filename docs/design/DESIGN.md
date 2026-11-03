@@ -1,8 +1,8 @@
 # DESIGN.md: Tappioca's Fic Archive (design spec for Claude Code)
 
-Updated 2026-11-03 from the design canvas, **version 129**. Read `claude/HANDOFF.md` too (data, hosting, Apps Script, repo rules). This file describes the design: what each screen looks like, how it behaves, and the rules to keep.
+Updated 2026-11-03 from the design canvas, **version 135**. Read `claude/HANDOFF.md` too (data, hosting, Apps Script, repo rules). This file describes the design: what each screen looks like, how it behaves, and the rules to keep.
 
-**Precedence (Bijuu's rule): the latest state of the canvas wins over this file.** This file is a description of the canvas at v129. If you open the canvas and it differs from what is written here, build what the canvas shows, and tell Bijuu so the docs can be corrected.
+**Precedence (Bijuu's rule): the latest state of the canvas wins over this file.** This file is a description of the canvas at v135. If you open the canvas and it differs from what is written here, build what the canvas shows, and tell Bijuu so the docs can be corrected.
 
 ## 0. How to use this file
 
@@ -89,14 +89,15 @@ Top to bottom:
 
 Earlier orders (fics first; Continue reading on top) were replaced by Bijuu's comments. Build the order above.
 
-**Fic cards** (Home and Fic list): well/cover 96px, title, rating and relationships line, words and chapters line, and a small muted **"heart icon + [N] hearts"** line. The hearts line is a count only; it is not a button.
+**Fic cards** (Home and Fic list): **no cover image** (v130), title, rating and relationships line, words and chapters line, and nothing about likes (the "[N] hearts" line was removed in v135). The hearts line is a count only; it is not a button.
 
 ### Fic list
-Fic cards grouped by fandom (bar heading per fandom). Cards as above. Opens the **story page**, not the reader. Above the groups: a **"Search the fic list"** field (matches title, fandom and pairing; typed text is not lowercased) and a **"Sort by"** select (**Newest, Title, Most hearts**), both 44px tall, side by side and wrapping on phones. Fandoms with no match disappear; if nothing matches, a status line says "No fics match that search." with an underlined "Clear the search" link. On the canvas only Title visibly reorders, because dates and hearts are placeholders; in the real app Newest uses the updated date and Most hearts uses the server count. Tag filtering is **not** drawn (all tags are placeholders); ask Bijuu before adding it.
+Fic cards grouped by fandom (bar heading per fandom). Cards as above. Opens the **story page**, not the reader. Above the groups: a **"Search the fic list"** field (matches title, fandom and pairing; typed text is not lowercased) and a **"Sort by"** select (**Newest, Title, Most liked**), both 44px tall, side by side and wrapping on phones. Fandoms with no match disappear; if nothing matches, a status line says "No fics match that search." with an underlined "Clear the search" link. On the canvas only Title visibly reorders, because dates and hearts are placeholders; in the real app Newest uses the updated date and Most liked uses the server count. Tag filtering is **not** drawn (all tags are placeholders); ask Bijuu before adding it.
 
 ### Story page (overview) and content notice
-- "Back to the fic list" link, cover (2:3 well), title, fandom, summary, tag chips.
-- **Hearts and follow row**, just under the tags: an outlined **"Heart this story"** button (heart icon in `accentText`, outline when off, filled when on, label becomes "Hearted", `aria-pressed`), a muted **"[N] hearts"** count beside it, and an outlined **"Follow new chapters (rss)"** button with an RSS icon. Pressing Follow copies the story's feed link and shows a quiet status line: "Feed link copied. Paste it into your feed reader." These are shown even before the content notice is accepted.
+- "Back to the fic list" link, title, fandom, summary, tag chips.
+- **Hearts and follow row**, just under the tags: an outlined **"Like"** (v135; "Liked" once pressed) button (heart icon in `accentText`, outline when off, filled when on, label becomes "Hearted", `aria-pressed`), and an outlined **"Follow new chapters (rss)"** button with an RSS icon. Pressing Follow copies the story's feed link and shows a quiet status line: "Feed link copied. Paste it into your feed reader." These are shown even before the content notice is accepted.
+- **No covers anywhere (v130, Bijuu: "i don't want a cover for a fic").** The story page, the Home and Fic list cards, and the editor's "Cover image" upload have no cover. Title, summary and tags take its place.
 - **Details** bar with Rating, Relationships, Words, Chapters, Status, Updated.
 - **Content notice gate.** If rating is Explicit or Mature and the reader has not accepted it for this story: show a "Content notice" box (rating line, `[author's content warnings]`, buttons "Continue to the story" (primary) and "Go back"). Chapter buttons are disabled until accepted (hint line explains). Accepting opens chapter 1 (or resume chapter) and remembers it for that story, in the browser.
 - After acceptance (or if no notice needed): primary button **"Start reading"**, or **"Resume at chapter N"** if there is progress. If a notice was accepted, a muted line says so.
@@ -107,7 +108,7 @@ Fic cards grouped by fandom (bar heading per fandom). Cards as above. Opens the 
 - Top: "Story details" link, story title, "Chapter N of T", **chapter dropdown with no visible label** (it carries `aria-label="Jump to chapter"`), thin progress bar. **No Previous / Next buttons under the title any more (v129, Bijuu: "remove these buttons")**; readers move with the dropdown and the bottom row of links.
 - Chapter heading bar (v128): **centered text "Chapter N: [chapter title]"** (the real title replaces the bracket), optional author's-notes box (not lowercased), chapter text (justified, `pt` size, chosen font).
 - **Bottom chapter row (Bijuu: "remove the boxes, make them links, center them"):** **no borders or fills**. A centered row of three links: **left arrow | Contents | right arrow**, in the `link` color, 48px tap areas, 8px apart, Contents underlined. Arrows dim at the first/last chapter and are disabled there. **Contents** currently scrolls to the top and focuses the chapter dropdown; it does not open a separate list (open question).
-- **End of story** (last chapter only, v127): **no box, heading, closing note or extra buttons.** Just one row: the primary **"Leave a comment"** button (scrolls to the comment form) and, next to it, an **icon-only heart** (no label, no box, `aria-label` "Heart this story" / "Hearted", `aria-pressed`, same behavior as on the story page). "Read again", "More in <fandom>" and "Story details" were removed (Bijuu's comment); the story page still has the heart count. Open: whether to show the count here.
+- **End of story** (last chapter only, v127): **no box, heading, closing note or extra buttons.** Just one row: the primary **"Leave a comment"** button (scrolls to the comment form) and, next to it, an **icon-only heart** (no label, no box, `aria-label` "Like" / "Liked", `aria-pressed`, same behavior as on the story page). "Read again", "More in <fandom>" and "Story details" were removed (Bijuu's comment); the story page still has the heart count. Open: whether to show the count here.
 - **Comments** per chapter, at the bottom of every chapter page: heading "Comments on chapter N (count)", list (name, when, body; typed text is not lowercased), form (name, comment, Post). With no comments the list shows **"No comments on this chapter yet." in muted italic** (an empty note, see section 1). **This is the only place a reader writes a comment.** The Post button is still a normal box. New comments go to the admin Comments screen and wait for approval (see Admin).
 - **Back to top** button: round, bottom right; shows near the bottom of the page, and on phones also when scrolling up after a long scroll.
 - **Aa panel** (display options): opens from the Aa button. Header row: on the reader, the muted 10pt text **"adjust for your eyes"** sits to the left of the **close X**; the X is a plain icon with **no box or border** (44px tap area, `aria-label="Close display options"`). Below: Text size − / +, Font, Line spacing, Theme. Esc closes and returns focus to Aa. Desktop: floating card under the Aa button; when open on wide screens the page makes room at the right. Phone (<600px): bottom sheet. The "adjust for your eyes" text shows only in the reader.
@@ -118,6 +119,9 @@ Fic cards grouped by fandom (bar heading per fandom). Cards as above. Opens the 
 
 ### Disclaimer, About, Links
 Placeholders with `[Your ... text]`. Photo circle placeholder on About. Links body is not lowercased and has four inline links.
+
+### Edit in place for Bijuu (v131-v134)
+When Bijuu is signed in as admin, the **Disclaimer, About and Links** pages can be edited right on the page, like Notion. Readers never see any of it. The text itself is the editor (`contenteditable`). Above it a toolbar: **Bold, Italic, Underline, Heading, List, Quote, Link** (44px buttons; they must not steal the text selection). **Link** opens a row: "Link address" field, **Add link**, **Remove link**, Cancel; only `http`, `https` and `mailto` are accepted, with a short message otherwise. A muted status line says "Saved" as she types (autosave). Dashed outline on the editor, normal focus ring. Stored as the allowed rich-text HTML in CLAUDE.md (heading = h3, list = ul, quote = blockquote). Canvas boards: "Disclaimer / About / Links: signed in (edit in place)" below the public ones. **Not drawn yet:** the same for the Howdy and The Archive boxes on Home (asked of Bijuu). The canvas is untested for typing; the real build decides undo and paste behavior.
 
 ### Admin: sections
 Every admin screen has a row of section links under its header: **Stories | Comments | Uploads** (current one in accent fill, `aria-current="page"`). The New Story editor sits under Stories.
@@ -177,7 +181,7 @@ The canvas keeps all of this in demo state; it reads and writes **no** browser s
 
 1. `viewport-fit=cover` in the viewport meta so safe-area insets work.
 2. Real-phone testing of the Admin bottom bar, the Aa panel, and the Aa slide-away on scroll.
-3. Saving covers and comments (storage, validation, moderation); hearts count storage; RSS feed generation (section 5).
+3. Saving comments (storage, validation, moderation); hearts count storage; RSS feed generation (section 5).
 4. Real table markup for the dashboard (semantic `<table>`), keeping the card layout on small screens.
 5. Focus trap and focus return for the delete dialogs, the Publish check dialog and the display options panel.
 6. Server-side check of the publish rules; unsaved-changes warning when leaving the editor.
@@ -199,3 +203,4 @@ Rows, top to bottom: Home and Reader in four themes (Reader: Day opens with the 
 - 2026-11-03 (docs only, no canvas change): added the canvas-wins rule; storage keys relabeled as proposed; Uploads demo rows marked as examples; leftover-palette note corrected.
 - 2026-11-03 (v125, terminal's type-scale critique checked against Impeccable's rules): The Archive box moved to the Howdy scale (24/16/padding 20, accent heading, no 1:1 square); Day `muted` changed from `#125E8A` to `#4F6F78` in all five components so muted text no longer matches links; the empty comments line is muted italic; Aa kept plain and at the viewport edge, with an underline on hover. Not changed, waiting on Bijuu: typed check marks vs drawn icons, Publish check as a modal, "nothing here" empty-state wording, Midnight muted equal to link.
 - 2026-11-03 (v127-v129, Bijuu's comments): end of story reduced to "Leave a comment" + icon-only heart (v127); chapter bar centered as "Chapter N: [chapter title]" (v128); the top Previous/Next arrow buttons removed (v129).
+- 2026-11-03 (v130-v135, Bijuu's comments): covers removed everywhere; edit-in-place with rich text and links on Disclaimer, About, Links (signed-in boards); "Heart this story" became "Like"/"Liked" and all "[N] hearts" counts were removed; sort option "Most liked".

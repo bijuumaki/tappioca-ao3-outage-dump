@@ -1,10 +1,10 @@
 # Handoff: Tappioca's fic archive and reader
 
-Updated 2026-11-03 (after canvas v129). The user is Bijuu (goes by tappioca; Philippines/Asia). Project in claude.ai: "TAPPIOCA NEOCITIES".
+Updated 2026-11-03 (after canvas v135). The user is Bijuu (goes by tappioca; Philippines/Asia). Project in claude.ai: "TAPPIOCA NEOCITIES".
 
 **Read order for Claude Code in the terminal:** this file first (what we are building, data, hosting, rules), then `claude/DESIGN.md` (the design: tokens, screens, behavior, what to build). Then the design canvas link in section 1.
 
-**Precedence (Bijuu's rule): the latest state of the canvas wins over both docs.** The docs describe the canvas at v129. If the canvas differs, build what it shows and tell Bijuu so the docs get fixed. **Anything marked "Nov 1 snapshot" below is old status from 2026-11-01: verify it before relying on it** (check the repo, the Drive folder and the Apps Script, not this file).
+**Precedence (Bijuu's rule): the latest state of the canvas wins over both docs.** The docs describe the canvas at v135. If the canvas differs, build what it shows and tell Bijuu so the docs get fixed. **Anything marked "Nov 1 snapshot" below is old status from 2026-11-01: verify it before relying on it** (check the repo, the Drive folder and the Apps Script, not this file).
 
 ## 0. Division of labor
 
@@ -20,7 +20,7 @@ The old v44 artifact (https://claude.ai/artifact/EorgyHdTy5dVNpkEjvmFZS) is **su
 
 ## 1. Where things live
 
-- **Design canvas** (Claude Design artifact, private to Bijuu's account): https://claude.ai/artifact/27nUAdqjtSjppMvVp9t2bP . Comment/canvas view: https://claude.ai/code/artifact/090b9f46-3f8f-4cb4-ba9f-582d2e923d46 . Latest published version at time of writing: **v129**. Its source files: `Site.dc.html` (the whole reader), `Admin.dc.html` (story editor), `Dashboard.dc.html` (stories list), `Comments.dc.html` (admin comments), `Uploads.dc.html` (admin uploads), plus small wrapper boards and `canvas.json`. They are prototype components, not production code; treat them as the visual and behavioral reference.
+- **Design canvas** (Claude Design artifact, private to Bijuu's account): https://claude.ai/artifact/27nUAdqjtSjppMvVp9t2bP . Comment/canvas view: https://claude.ai/code/artifact/090b9f46-3f8f-4cb4-ba9f-582d2e923d46 . Latest published version at time of writing: **v135**. Its source files: `Site.dc.html` (the whole reader), `Admin.dc.html` (story editor), `Dashboard.dc.html` (stories list), `Comments.dc.html` (admin comments), `Uploads.dc.html` (admin uploads), plus small wrapper boards and `canvas.json`. They are prototype components, not production code; treat them as the visual and behavioral reference.
 - **Project docs:** `claude/HANDOFF.md` (this), `claude/DESIGN.md`.
 - **Code:** GitHub repo (source of truth for code). Fics are **not** in the repo.
 - **Deploy:** Vercel via GitHub (batched, see rules).
@@ -88,6 +88,12 @@ Added in v127-v129 (Bijuu's canvas comments, handled by the design session):
 24. **Chapter bar** reads "Chapter N: [chapter title]", centered.
 25. **The boxed Previous / Next arrows under the reader title are gone** (touch widths). The bottom link row and the dropdown remain.
 
+Added in v130-v135 (Bijuu's canvas comments, handled by the design session):
+
+26. **No covers anywhere:** removed from the story page, the Home and Fic list cards and the editor ("Cover image" upload). The cover code in the repo can go.
+27. **Edit in place (Notion style) for the signed-in admin** on Disclaimer, About and Links: the text is the editor, with a toolbar (Bold, Italic, Underline, Heading, List, Quote, Link), link row restricted to http/https/mailto, autosave with a "Saved" line. New canvas boards "...: signed in (edit in place)". Howdy and The Archive boxes not drawn yet. The old `/admin/pages` screen may stay as a fallback; Bijuu has not said.
+28. **"Heart this story" is now "Like"** ("Liked" when pressed), icon kept; every "[N] hearts" count is gone (story page and cards). Sort option "Most hearts" is now "Most liked". The server count can still exist; it is just not shown.
+
 ## 4. Rules for Claude Code
 
 - **The latest canvas wins over these docs** (see the top).
@@ -118,6 +124,7 @@ Added in v127-v129 (Bijuu's canvas comments, handled by the design session):
 12. Confirm every "Nov 1 snapshot" item in section 2 against the real repo, Drive folder and script, and correct this file.
 13. **Match the v125 decisions in code** (items 20-22 above): Archive box on the Howdy scale; empty notes muted, italic, not underlined, with Day muted `#4F6F78`; Aa plain, at the viewport edge, underline on hover.
 14. **Match v127-v129 in code** (items 23-25 above): end-of-story panel reduced to Leave a comment + heart icon; centered "Chapter N: title" bar; remove the top arrow buttons. The current build still has the old box.
+15. **Match v130-v135 in code** (items 26-28): remove cover upload and cover images; build edit-in-place on Disclaimer, About, Links (and ask about Howdy/Archive); relabel Like/Liked and drop the visible counts.
 
 ## 6. Open design questions (waiting on Bijuu)
 
@@ -148,6 +155,7 @@ Added in v127-v129 (Bijuu's canvas comments, handled by the design session):
 - 2026-11-03: canvas v125 (items 20-22: Archive box scale, muted vs link, Aa kept plain with hover underline); both docs updated.
 - 2026-11-03 (terminal): built Home order, plain Aa, X close, arrow nav, link token, hearts, RSS, approve-first Comments, Drive panel in Uploads, Stories delete, Jump to chapter, editor menus, fic list search and sort, motion, hydration fix, tap targets, outlined Home tiles. Repo is Next.js + Supabase (not static HTML); Drive is an optional copy; the script is apps-script/drive-bridge.gs (not Code.gs) and also returns no links or status yet.
 - 2026-11-03: canvas v127-v129 (items 23-25); both docs updated.
+- 2026-11-03: canvas v130-v135 (items 26-28); both docs updated.
 - (Add terminal-side changes here, one line each, with the date.)
 
 ## 8. Next steps
