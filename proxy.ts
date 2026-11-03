@@ -1,8 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isBlockedBot } from "@/lib/security/bots";
 
-/* Keeps the admin session fresh and sends signed-out visitors to the sign-in page. Public pages never pass through here. */
+/* Turns away named AI and scraping crawlers on every page, then keeps the admin session fresh and sends signed-out visitors to the sign-in page. */
 export async function proxy(request: NextRequest) {
+  if (isBlockedBot(request.headers.get("user-agent"))) return new NextResponse("Automated access to this site is not allowed.", { status: 403, headers: { "content-type": "text/plain" } });
+  if (!request.nextUrl.pathname.startsWith("/admin")) return NextResponse.next();
   let response = NextResponse.next({ request });
   const db = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
     cookies: {
@@ -34,4 +37,4 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
-export const config = { matcher: ["/admin/:path*"] };
+export const config = { matcher: ["/((?!_next/static|_next/image|robots.txt|favicon.ico|icon.svg|textures/).*)"] };
