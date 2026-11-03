@@ -109,3 +109,22 @@ test("a Mature chapter stays hidden when the browser blocks saved settings", asy
   await expect(page.getByRole("heading", { name: "Content notice" })).toBeVisible();
   await expect(page.getByText("Mature sample text.")).toHaveCount(0);
 });
+
+test("the last chapter ends with an end-of-story box", async ({ page }) => {
+  await page.goto("/fics/sample-fic/3");
+  const end = page.getByRole("region", { name: "You have reached the end of (sample fic)" });
+  await expect(end).toContainText("That was chapter 3, the last one.");
+  await expect(end.getByRole("link", { name: "Read again" })).toHaveAttribute("href", "/fics/sample-fic/1");
+  await expect(end.getByRole("link", { name: "More in (sample fandom)" })).toHaveAttribute("href", "/tags/fandom/sample-fandom");
+  await expect(end.getByRole("link", { name: "Story details" })).toHaveAttribute("href", "/fics/sample-fic");
+});
+
+test("earlier chapters have no end-of-story box", async ({ page }) => {
+  await page.goto("/fics/sample-fic/1");
+  await expect(page.getByText("You have reached the end of")).toHaveCount(0);
+});
+
+test("a one-chapter story says that was the whole story", async ({ page }) => {
+  await page.goto("/fics/sample-oneshot/1");
+  await expect(page.getByText("That was the whole story.")).toBeVisible();
+});

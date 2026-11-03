@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import ChapterBody from "@/components/ChapterBody";
 import ChapterGate from "@/components/ChapterGate";
 import ChapterNav, { TouchChapterNav } from "@/components/ChapterNav";
+import EndOfStory from "@/components/EndOfStory";
 import ReaderRegister from "@/components/ReaderRegister";
 import RecordPlace from "@/components/RecordPlace";
 import { getChapter } from "@/lib/content/queries";
@@ -34,6 +35,7 @@ export default async function ChapterPage({ params }: Props) {
   const several = count > 1;
   const options = fic.chapters.map((c) => ({ n: c.n, label: c.title ? `${c.n}. ${c.title}` : `Chapter ${c.n}` }));
   const adult = fic.rating === "mature" || fic.rating === "explicit";
+  const fandomTag = fic.tags.find((t) => t.type === "fandom") ?? null;
   const warnings = fic.tags.filter((t) => t.type === "warning").map((t) => t.name);
 
   return (
@@ -52,6 +54,7 @@ export default async function ChapterPage({ params }: Props) {
           <h2 className="section-bar chapter-title">{chapter.title ?? `Chapter ${chapter.n}`}</h2>
           <ChapterBody id={`${slug}/${chapter.n}`} chapter={chapter} />
           {several && <ChapterNav slug={slug} n={chapter.n} count={count} />}
+          {chapter.n === count && <EndOfStory slug={slug} title={fic.title} count={count} fandom={fandomTag ? { name: fandomTag.name, slug: fandomTag.slug } : null} />}
         </ChapterGate>
       </article>
     </main>

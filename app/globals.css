@@ -285,3 +285,11 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .story-chapters button:disabled { opacity: 0.5; cursor: default; }
 .story-chapters a span:last-child { font-size: var(--t13); }
 .story-toggle { align-self: flex-start; flex: none; min-height: 44px; }
+
+/* End of story (under the last chapter) */
+.story-end {
+  display: flex; flex-direction: column; gap: 12px; margin-top: 16px; padding: 20px; border: 1px solid var(--field-border);
+  border-radius: var(--radius); background: var(--card-bg);
+}
+.story-end h2 { margin: 0; font-family: var(--font-heading); font-size: var(--h24); line-height: 1.25; font-weight: 600; color: var(--accent-text); overflow-wrap: anywhere; }
+.story-end p { margin: 0; }
