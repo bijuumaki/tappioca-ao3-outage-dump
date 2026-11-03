@@ -11,6 +11,7 @@ const FONT_GROUPS = [
 const fontLabel = (v: string) => (v === "default" ? "Inclusive Sans (default)" : FONTS.find(([k]) => k === v)?.[1] ?? v);
 import { useReaderInfo } from "@/lib/client/reader-store";
 import SyncDialog from "@/components/SyncDialog";
+import { setSharing, sharing } from "@/lib/client/notes-share";
 
 export default function DisplayOptions() {
   const reader = useReaderInfo();
@@ -21,6 +22,7 @@ export default function DisplayOptions() {
   const [spacing, setSpacing] = useState("normal");
   const [hidden, setHidden] = useState(false);
   const [syncOpen, setSyncOpen] = useState(false);
+  const [share, setShare] = useState(true);
   const button = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLElement>(null);
 
@@ -30,6 +32,7 @@ export default function DisplayOptions() {
     setSize(clampSize(readPref("fic-site-size")));
     setFont(root.getAttribute("data-font") ?? "default");
     setSpacing(root.getAttribute("data-spacing") ?? "normal");
+    setShare(sharing());
   }, []);
 
   /* On narrow screens, the button slides away while reading downward and comes back on the way up. */
@@ -151,6 +154,10 @@ export default function DisplayOptions() {
             <button type="button" onClick={() => setSyncOpen(true)}>Sync across devices</button>
             <Link className="options-link" href="/highlights" onClick={() => setOpen(false)}>My highlights</Link>
           </div>
+          <label className="options-check">
+            <input type="checkbox" checked={share} onChange={(e) => { setShare(e.target.checked); void setSharing(e.target.checked); }} />
+            <span>Share my highlights and notes with the author, without my name</span>
+          </label>
         </div>
         <SyncDialog open={syncOpen} onClose={() => setSyncOpen(false)} />
       </section>

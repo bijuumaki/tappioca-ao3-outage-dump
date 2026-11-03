@@ -136,7 +136,7 @@ export default function ChapterHighlights({ slug, n, fic, ch }: { slug: string; 
         <Dots value={editing.color} onPick={(c) => { upsertMark({ ...editing, color: c, note: draft }); }} />
         <label className="hl-note-label">
           <span>Note</span>
-          <textarea className="keep-case" value={draft} maxLength={LIMITS.note} rows={3} onChange={(e) => setDraft(e.target.value)} onBlur={saveNote} placeholder="write a note (only you can see it)" />
+          <textarea className="keep-case" value={draft} maxLength={LIMITS.note} rows={3} onChange={(e) => setDraft(e.target.value)} onBlur={saveNote} placeholder="write a note (the author can read it, without your name)" />
         </label>
         <div className="hl-actions">
           <button type="button" className="hl-text-btn" onClick={close}>Done</button>

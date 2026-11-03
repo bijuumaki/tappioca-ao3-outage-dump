@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const SECTIONS = [["/admin", "Stories"], ["/admin/comments", "Comments"], ["/admin/uploads", "Uploads"], ["/admin/pages", "Pages"]] as const;
+const SECTIONS = [["/admin", "Stories"], ["/admin/comments", "Comments"], ["/admin/reader-experience", "Reader experience"], ["/admin/uploads", "Uploads"], ["/admin/pages", "Pages"]] as const;
 
 /* The row of section links under every admin header. The current one is filled. */
 export default function AdminSections() {

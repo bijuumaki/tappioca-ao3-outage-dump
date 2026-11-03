@@ -337,3 +337,12 @@
   background-image: linear-gradient(45deg, transparent 50%, var(--a-text) 50%), linear-gradient(135deg, var(--a-text) 50%, transparent 50%);
   background-position: calc(100% - 21px) calc(50% + 1px), calc(100% - 15px) calc(50% + 1px);
 }
+
+/* Reader experience */
+.a-rx-group { display: flex; flex-direction: column; gap: 10px; }
+.a-rx-title { margin: 8px 0 0; font-size: 18px; font-weight: 600; text-transform: none; overflow-wrap: anywhere; }
+.a-rx-quote { margin: 0; padding-left: 10px; border-left: 3px solid var(--a-field-border); text-transform: none; overflow-wrap: anywhere; }
+.a-rx-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--a-field-border); background: rgb(255 204 0 / 0.7); vertical-align: -1px; }
+.a-rx-swatch[data-color="pink"] { background: rgb(255 120 170 / 0.7); }
+.a-rx-swatch[data-color="green"] { background: rgb(90 200 120 / 0.7); }
+.a-rx-swatch[data-color="blue"] { background: rgb(90 170 255 / 0.7); }

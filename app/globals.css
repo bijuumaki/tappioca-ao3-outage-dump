@@ -563,6 +563,8 @@ button[aria-busy="true"]::after {
 .hl-where { margin: 0; font-size: var(--t14); }
 .hl-where a { text-decoration: underline; text-underline-offset: 3px; color: var(--link); }
 .hl-item .hl-text-btn { align-self: flex-start; }
+.options-check { display: flex; align-items: flex-start; gap: 10px; font-size: var(--t14); line-height: 1.4; cursor: pointer; }
+.options-check input { flex: none; width: 24px; height: 24px; margin: 0; accent-color: var(--accent-fill); }
 .options-link {
   display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 10px; flex: 1 1 0; min-width: 0;
   border: 1px solid var(--field-border); border-radius: var(--radius-small); background: var(--bg); color: var(--ink); text-decoration: none;
