@@ -135,6 +135,11 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .muted { color: var(--muted); }
 .empty-note { margin: 0; color: var(--muted); font-style: italic; text-decoration: none; }
 
+/* Reader pages: no selecting, copying or dragging. Boxes people type in stay normal (iOS needs the text rule back on them). */
+.site { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.site input, .site textarea, .site [contenteditable="true"], .site [contenteditable="true"] * { -webkit-user-select: text; user-select: text; }
+.site img { -webkit-user-drag: none; }
+
 /* Home */
 .home-intro { display: flex; flex-wrap: wrap; gap: 24px 20px; align-items: stretch; margin-bottom: 20px; }
 .home-side { flex: 1 1 240px; max-width: min(253px, 64vw); margin-inline: auto; display: flex; flex-direction: column; gap: 0; }
