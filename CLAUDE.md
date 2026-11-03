@@ -10,6 +10,13 @@ A public blog for Bijuu's ("tappioca") fanfics and art, like a small WordPress b
 - **One session does both jobs now**: draw on the canvas, then build the code to match. Change the canvas first, then the code, and say when the canvas says nothing.
 - Every canvas button must have working code. Demo props on the canvas (`signedIn`, `showEnd`, `panelStartsOpen`, `longStory`, `resumeDemo`, `reviewDemo`, `showTopDemo`) and bracketed placeholders (`[N]`, `[Date]`) never ship.
 
+## Starting a chat (saves her usage)
+
+- **Do not run a startup routine.** This file is already loaded, so don't re-read DESIGN.md, the canvas or the comments, don't republish the canvas to watch it, and don't ask her to paste a hand-off prompt. Wait for her request and read only what it needs.
+- Read the canvas (`Artifact` read, one file at a time) only for a canvas change or a question about what is drawn. Every board is `<dc-import name="Site" ...>`, so almost all drawing lives in `project/Site.dc.html`. Comments only when she mentions one or a comment message arrives.
+- Say the pending count (`git rev-list --count origin/main..HEAD`) only when it changes or she asks.
+- **Where we left off** (update at the end of a chat when it changes): not drawn on the canvas, waiting on her call: `/browse`, tag, 404 and Comms pages; edit in place for the Howdy and The Archive boxes; the admin Aa panel matching the reader's; tag filtering on the Fic list. Loading feedback (top line, waiting cursor, placeholders, busy spinners) is built but not drawn on the canvas. Waiting on her outside the code: `RESEND_API_KEY`, `RESEND_FROM`, `ALERT_EMAIL` in Vercel (comment emails); `DRIVE_BRIDGE_URL`, `DRIVE_BRIDGE_TOKEN` (Drive parts stay hidden). Possible speed-up not done: a faster admin sign-in check (`getClaims`), untested without her login.
+
 ## Working with Bijuu
 
 - Analogies help when explaining. Give step-by-step instructions as a flow chart.
