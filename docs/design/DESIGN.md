@@ -41,7 +41,7 @@ Site title and headings: **IM Fell English** (the site title, the "Chapter N: ti
 
 ## 4. Reader screens
 
-**Home**, top to bottom: site title; the intro (photo circle 205px, "The Archive" box with stats, "Howdy" box, outlined page buttons Disclaimer / About / Fic List / Links; stacks on phones); **Continue reading** (returning readers only: title, "Chapter N of T", Resume); **Latest activity** bar with 3 rows ("New story", "New chapter" or "New comment", the title with "Chapter N", the date; story and chapter rows open the story page, a comment row opens that chapter's comments); **More stories** (up to 6 cards); Recent Art if any exists. No "See the whole fic list" button.
+**Home**, top to bottom: site title; the intro (photo circle 205px, "The Archive" box with stats, "Howdy" box, outlined page buttons Disclaimer / About / Fic List / Links in a 2 by 2 grid, 52px tall); **Continue reading** (returning readers only: title, "Chapter N of T", Resume); **Latest activity** bar with 3 rows ("New story", "New chapter" or "New comment", the title with "Chapter N", the date; story and chapter rows open the story page, a comment row opens that chapter's comments); **More stories** (up to 6 cards); Recent Art if any exists. No "See the whole fic list" button.
 
 **Fic card**: title, rating and relationships line, words and chapters line. No cover, no like count.
 
