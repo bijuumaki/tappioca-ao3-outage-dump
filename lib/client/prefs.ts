@@ -10,22 +10,23 @@ export const THEMES = [["day", "Day"], ["lagoon", "Old paper"], ["night", "Night
 export const SPACINGS = [["tight", "Tight"], ["normal", "Normal"], ["loose", "Loose"]] as const;
 export const FONTS = [
   ["default", "Default"], ["lucida", "Lucida Sans"], ["cantarell", "Cantarell"],
-  ["crimson", "Crimson Pro"], ["ebgaramond", "EB Garamond"], ["charter", "Charter"],
+  ["crimson", "Crimson Pro"], ["ebgaramond", "EB Garamond"], ["charter", "Charter"], ["avenir", "Avenir Next"],
 ] as const;
 const FONT_NAMES = FONTS.map(([v]) => v).filter((v) => v !== "default");
 /* Each web font is asked for its real regular, bold, italic and bold italic, so nothing on screen is a browser-faked bold or slant. */
 const WEB_FONTS: Record<string, string> = {
   cantarell: "Cantarell:ital,wght@0,400;0,700;1,400;1,700", crimson: "Crimson+Pro:ital,wght@0,400;0,700;1,400;1,700", ebgaramond: "EB+Garamond:ital,wght@0,400;0,700;1,400;1,700",
-  charter: "Charis+SIL:ital,wght@0,400;0,700;1,400;1,700",
+  charter: "Charis+SIL:ital,wght@0,400;0,700;1,400;1,700", avenir: "Nunito+Sans:ital,wght@0,400;0,700;1,400;1,700",
 };
-/* Apple devices ship the real Charter, so Charter is the only font that is not downloaded there; everywhere else it is Charis SIL, a font built from Charter. */
+/* Apple devices ship the real Charter and Avenir Next, so those two are not downloaded there; everywhere else they are Charis SIL (built from Charter) and Nunito Sans (a close match to Avenir Next). */
+const NATIVE_ON_APPLE = ["charter", "avenir"];
 function isApple(): boolean { return /Mac|iPhone|iPad|iPod/.test(navigator.userAgent); }
 export const SIZE_MIN = 10;
 export const SIZE_MAX = 20;
 
 export function loadWebFont(name: string): void {
   const family = WEB_FONTS[name];
-  if (!family || (name === "charter" && isApple()) || document.querySelector(`link[data-webfont="${name}"]`)) return;
+  if (!family || (NATIVE_ON_APPLE.includes(name) && isApple()) || document.querySelector(`link[data-webfont="${name}"]`)) return;
   const link = document.createElement("link");
   link.rel = "stylesheet";
   link.dataset.webfont = name;
@@ -45,7 +46,7 @@ export const PREFS_BOOT_SCRIPT = `(function(){var r=document.documentElement,s;t
 function g(k){try{return s&&s.getItem(k)}catch(e){return null}}
 var t=g("fic-site-theme");if(${JSON.stringify(THEMES.map(([v]) => v))}.indexOf(t)<0)t=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"night":"day";r.setAttribute("data-theme",t);
 var f=g("fic-site-font"),w=${JSON.stringify(WEB_FONTS)};
-if(${JSON.stringify(FONT_NAMES)}.indexOf(f)>-1){r.setAttribute("data-font",f);if(w[f]&&!(f==="charter"&&/Mac|iPhone|iPad|iPod/.test(navigator.userAgent))){var l=document.createElement("link");l.rel="stylesheet";l.setAttribute("data-webfont",f);l.href="https://fonts.googleapis.com/css2?family="+w[f]+"&display=swap";document.head.appendChild(l);}}
+if(${JSON.stringify(FONT_NAMES)}.indexOf(f)>-1){r.setAttribute("data-font",f);if(w[f]&&!(${JSON.stringify(NATIVE_ON_APPLE)}.indexOf(f)>-1&&/Mac|iPhone|iPad|iPod/.test(navigator.userAgent))){var l=document.createElement("link");l.rel="stylesheet";l.setAttribute("data-webfont",f);l.href="https://fonts.googleapis.com/css2?family="+w[f]+"&display=swap";document.head.appendChild(l);}}
 var z=parseFloat(g("fic-site-size"));if(!isNaN(z)){z=Math.max(${SIZE_MIN},Math.min(${SIZE_MAX},10+Math.round((z-10)/2)*2));r.style.setProperty("--fs",String(z/14));r.style.setProperty("--read",z+"pt");}
 var p=g("fic-site-spacing");if(p==="tight"||p==="loose")r.setAttribute("data-spacing",p);
 })();`;

@@ -20,7 +20,7 @@ const SAVE_LABEL: Record<SaveState, string> = {
 };
 const FONT_STACKS: Record<string, string> = {
   default: "var(--font-body)", lucida: "var(--stack-lucida)", cantarell: "var(--stack-cantarell)",
-  crimson: "var(--stack-crimson)", ebgaramond: "var(--stack-ebgaramond)", charter: "var(--stack-charter)",
+  crimson: "var(--stack-crimson)", ebgaramond: "var(--stack-ebgaramond)", charter: "var(--stack-charter)", avenir: "var(--stack-avenir)",
 };
 
 
