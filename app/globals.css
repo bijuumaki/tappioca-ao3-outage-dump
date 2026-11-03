@@ -387,3 +387,22 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
   background: var(--card-bg); color: var(--ink); font: inherit; font-size: 16px;
 }
 .fic-clear { appearance: none; border: 0; background: none; padding: 0; color: var(--link); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; min-height: 44px; }
+
+/* Motion: feedback only. Short, ease-out, nothing on page load. Reduced motion keeps the fades and drops the movement. */
+:root { --ease-out: cubic-bezier(0.16, 1, 0.3, 1); }
+.heart-button svg, .card-hearts svg { fill: none; transition: fill 180ms var(--ease-out), transform 180ms var(--ease-out); }
+.heart-button svg[data-filled="true"] { fill: currentColor; }
+.heart-button:active svg { transform: scale(0.85); }
+@keyframes notice-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@keyframes panel-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@keyframes sheet-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.follow-status:not(:empty), .comment-sent, .comment-error { animation: notice-in 220ms var(--ease-out); }
+.options-panel:not([hidden]) { animation: panel-in 200ms var(--ease-out); }
+@media (max-width: 599px) { .options-panel:not([hidden]) { animation-name: sheet-in; } }
+@media (prefers-reduced-motion: reduce) {
+  @keyframes notice-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes panel-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes sheet-in { from { opacity: 0; } to { opacity: 1; } }
+  .heart-button:active svg { transform: none; }
+  .heart-button svg, .card-hearts svg { transition: fill 180ms linear; }
+}
