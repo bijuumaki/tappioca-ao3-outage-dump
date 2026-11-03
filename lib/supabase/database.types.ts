@@ -63,17 +63,17 @@ export type Database = {
       };
       fics: {
         Row: {
-          category_id: number; cover_path: string | null; created_at: string; featured: boolean; id: number; notes: string; publish_at: string | null;
+          category_id: number; cover_path: string | null; created_at: string; featured: boolean; hearts: number; id: number; notes: string; publish_at: string | null;
           rating: Database["public"]["Enums"]["rating"]; slug: string; status: Database["public"]["Enums"]["fic_status"];
           summary: string; title: string; updated_at: string;
         };
         Insert: {
-          category_id: number; cover_path?: string | null; created_at?: string; featured?: boolean; id?: never; notes?: string; publish_at?: string | null;
+          category_id: number; cover_path?: string | null; created_at?: string; featured?: boolean; hearts?: number; id?: never; notes?: string; publish_at?: string | null;
           rating?: Database["public"]["Enums"]["rating"]; slug: string; status?: Database["public"]["Enums"]["fic_status"];
           summary?: string; title: string; updated_at?: string;
         };
         Update: {
-          category_id?: number; cover_path?: string | null; created_at?: string; featured?: boolean; id?: never; notes?: string; publish_at?: string | null;
+          category_id?: number; cover_path?: string | null; created_at?: string; featured?: boolean; hearts?: number; id?: never; notes?: string; publish_at?: string | null;
           rating?: Database["public"]["Enums"]["rating"]; slug?: string; status?: Database["public"]["Enums"]["fic_status"];
           summary?: string; title?: string; updated_at?: string;
         };
@@ -148,6 +148,7 @@ export type Database = {
     };
     Views: { [_ in never]: never };
     Functions: {
+      heart_fic: { Args: { p_slug: string; p_delta: number }; Returns: number | null };
       post_comment: {
         Args: { p_chapter_id: number; p_name: string; p_body: string; p_ip_hash: string; p_max: number; p_window_seconds: number };
         Returns: number | null;

@@ -1,8 +1,9 @@
 import Link from "next/link";
+import HeartButton from "./HeartButton";
 
 /* Shown under the last chapter. */
-export default function EndOfStory({ slug, title, count, fandom }: {
-  slug: string; title: string; count: number; fandom: { name: string; slug: string } | null;
+export default function EndOfStory({ slug, title, count, fandom, hearts }: {
+  slug: string; title: string; count: number; hearts: number; fandom: { name: string; slug: string } | null;
 }) {
   const heading = `You have reached the end of ${title}`;
   return (
@@ -11,6 +12,7 @@ export default function EndOfStory({ slug, title, count, fandom }: {
       <p>{count > 1 ? `That was chapter ${count}, the last one.` : "That was the whole story."}</p>
       <div className="story-actions">
         <a href="#comments-heading" className="story-primary comment-jump">Leave a comment</a>
+        <HeartButton slug={slug} count={hearts} />
         <Link href={`/fics/${slug}/1`} className="story-secondary">Read again</Link>
         {fandom
           ? <Link href={`/tags/fandom/${fandom.slug}`} className="story-secondary">More in {fandom.name}</Link>

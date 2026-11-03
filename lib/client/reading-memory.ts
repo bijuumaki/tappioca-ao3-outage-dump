@@ -48,3 +48,15 @@ export function setAck(slug: string): void {
   all[slug] = true;
   writePref(ACK_KEY, JSON.stringify(all));
 }
+
+const HEART_KEY = "fic-site-hearted";
+
+export function isHearted(slug: string): boolean {
+  return load(HEART_KEY)[slug] === true;
+}
+
+export function setHearted(slug: string, on: boolean): void {
+  const all = load(HEART_KEY);
+  if (on) all[slug] = true; else delete all[slug];
+  writePref(HEART_KEY, JSON.stringify(all));
+}

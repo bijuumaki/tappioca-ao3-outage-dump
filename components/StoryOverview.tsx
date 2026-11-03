@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
+import FollowButton from "./FollowButton";
+import HeartButton from "./HeartButton";
 import { hasAck, placeOf, setAck, type Place } from "@/lib/client/reading-memory";
 
 export type StoryOverviewProps = {
@@ -17,6 +19,7 @@ export type StoryOverviewProps = {
   warnings: string[];
   details: { k: string; v: string }[];
   chapters: { n: number; label: string }[];
+  hearts: number;
 };
 
 /* The notice readers see before a Mature or Explicit story. Also used on chapter pages opened by a direct link. */
@@ -77,6 +80,10 @@ export default function StoryOverview(p: StoryOverviewProps) {
               {p.tags.map((t) => <li key={`${t.type}/${t.slug}`}><Link href={`/tags/${t.type}/${t.slug}`}>{t.name}</Link></li>)}
             </ul>
           )}
+          <div className="heart-follow">
+            <HeartButton slug={p.slug} count={p.hearts} />
+            <FollowButton path={`/feed/${p.slug}.xml`} label="Follow new chapters (rss)" />
+          </div>
         </header>
       </section>
 

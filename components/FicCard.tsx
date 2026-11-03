@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { FicCardData } from "@/lib/content/queries";
 import { mediaUrl } from "@/lib/content/media";
+import { HeartIcon, heartsLabel } from "./HeartButton";
 import { fandomNames, lengthLine, ratingAndRelationships } from "@/lib/format/fic-meta";
 
 export default function FicCard({ fic, showFandom = true }: { fic: FicCardData; showFandom?: boolean }) {
@@ -15,6 +16,7 @@ export default function FicCard({ fic, showFandom = true }: { fic: FicCardData; 
         {showFandom && fandomNames(fic) && <span className="card-meta">{fandomNames(fic)}</span>}
         <span className="card-meta">{ratingAndRelationships(fic)}</span>
         <span className="card-meta card-words" data-words={fic.totalWords}>{lengthLine(fic)}</span>
+        <span className="card-meta card-hearts"><HeartIcon filled={false} />{heartsLabel(fic.hearts)}</span>
       </span>
     </Link>
   );

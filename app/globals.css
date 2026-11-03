@@ -353,3 +353,22 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .comment-post { align-self: flex-start; flex: none; }
 .comment-post:disabled { opacity: 0.6; cursor: default; }
 .comment-jump { flex: 1 1 100%; }
+
+/* Hearts and following */
+.heart-follow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 8px; }
+.heart-row { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.heart-button {
+  appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px;
+  border: 1px solid var(--field-border); border-radius: var(--radius-small); background: var(--card-bg); color: var(--ink); font: inherit; cursor: pointer;
+}
+.heart-button svg { color: var(--accent-text); }
+.heart-button[aria-pressed="true"] { border-color: var(--accent-text); }
+.story-actions .heart-row { flex: 1 1 100%; }
+.story-actions .heart-button { flex: 1 1 auto; }
+.follow { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.follow-status:empty { display: none; }
+.follow-link { color: var(--link); text-decoration: underline; text-underline-offset: 4px; display: inline-flex; align-items: center; min-height: 44px; }
+.card-hearts { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+.card-hearts svg { width: 14px; height: 14px; }
+.site-footer { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.site-footer p { margin: 0; }
