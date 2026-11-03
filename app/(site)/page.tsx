@@ -50,15 +50,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <div className="resume-row">
-        <ContinueReading />
-        <section aria-labelledby="highlights-heading" className="resume-card">
-          <div className="resume-text">
-            <h2 id="highlights-heading"><Link href="/highlights" className="card-link">My highlights</Link></h2>
-            <p className="muted resume-where">Your highlights and notes</p>
-          </div>
-        </section>
-      </div>
+      <ContinueReading />
 
       {home.activity.length > 0 && (
         <>
