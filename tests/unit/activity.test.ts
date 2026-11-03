@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { latestActivity } from "@/lib/content/activity";
 
-const fic = (slug: string, title: string, dates: (string | null)[]) => ({ slug, title, chapters: dates.map((publish_at, i) => ({ n: i + 1, publish_at })) });
+const fic = (slug: string, title: string, dates: (string | null)[], base = 0) => ({ slug, title, chapters: dates.map((publish_at, i) => ({ id: base + i + 1, n: i + 1, publish_at })) });
 
 describe("latestActivity", () => {
   it("lists the newest chapters first, three by default", () => {
     const out = latestActivity([
       fic("a", "A", ["2026-01-01T00:00:00Z", "2026-03-01T00:00:00Z"]),
-      fic("b", "B", ["2026-02-01T00:00:00Z", "2026-04-01T00:00:00Z"]),
+      fic("b", "B", ["2026-02-01T00:00:00Z", "2026-04-01T00:00:00Z"], 10),
     ]);
     expect(out.map((x) => `${x.slug}${x.n}`)).toEqual(["b2", "a2", "b1"]);
   });
@@ -18,5 +18,10 @@ describe("latestActivity", () => {
   it("skips chapters without a date and copes with no stories", () => {
     expect(latestActivity([fic("a", "A", [null])])).toEqual([]);
     expect(latestActivity([])).toEqual([]);
+  });
+  it("counts a reader's new comment, pointing at the chapter it is on", () => {
+    const a = fic("a", "A", ["2026-01-01T00:00:00Z", "2026-02-01T00:00:00Z"]);
+    const out = latestActivity([a], [{ chapter_id: 2, created_at: "2026-05-01T00:00:00Z" }, { chapter_id: 99, created_at: "2026-06-01T00:00:00Z" }]);
+    expect(out.map((x) => `${x.kind}:${x.n}`)).toEqual(["comment:2", "chapter:2", "story:1"]);
   });
 });

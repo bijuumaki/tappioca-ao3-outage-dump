@@ -83,7 +83,7 @@ Reader-facing app is one page with hash routes: `#home`, `#fics`, `#story/<id>` 
 Top to bottom:
 1. Site title "Tappioca's Fic Archive" (links to Home).
 2. **Intro block**, directly under the title: photo circle placeholder + "The Archive" stats box (per-fandom counts, `[N]`) on the left; "Howdy" box and four outlined page tiles (Disclaimer, About, Fic List, Links) on the right. Stacks and centers on phones. **The Archive box and the Howdy box are one component at one scale** (h2 24 in `accentText`, body 16, padding 20, gap 12, 10px corners). The Archive box is **not a 1:1 square any more** (v125): it takes its natural height, and "[N] stories" is a plain bold line above the per-fandom list.
-3. **Latest activity** bar + three rows (v146, replaces Featured): "New story" or "New chapter", the title (with "Chapter N"), the date. Each opens the story page.
+3. **Latest activity** bar + three rows (v146, replaces Featured; v147 added comments): "New story", "New chapter" or "New comment", the title (with "Chapter N"), the date. Story and chapter rows open the story page; a comment row opens that chapter's comments.
 4. **More stories** bar + grid of fic cards (auto-fill, min 200px). There is **no "See the whole fic list" button**; the Fic List tile in the intro is the way to the list.
 5. **Continue reading** card, **only for a returning reader** (has progress), at the **very bottom, just above the footer**: title, "Chapter N of T", primary "Resume". Resume goes straight into the reader at that chapter. First-time readers never see it.
 

@@ -168,12 +168,20 @@ export function groupByFandom(fics: FicCardData[]): { name: string; slug: string
   return [...groups.values()].sort((a, b) => (a.slug === null ? 1 : b.slug === null ? -1 : a.name.localeCompare(b.name)));
 }
 
+/* The newest comments readers can see (row-level security hides the hidden ones). Replies from Bijuu don't count as activity. */
+async function latestReaderComments(): Promise<{ chapter_id: number; created_at: string }[]> {
+  const { data, error } = await createReaderClient().from("comments").select("chapter_id, created_at").eq("by_author", false)
+    .order("created_at", { ascending: false }).limit(10);
+  if (error) throw error;
+  return data;
+}
+
 export async function getHomeData(): Promise<HomeData> {
-  const [{ fics, posts }, everything] = await Promise.all([browse({ sort: "updated" }), allFics()]);
+  const [{ fics, posts }, everything, recentComments] = await Promise.all([browse({ sort: "updated" }), allFics(), latestReaderComments()]);
   const fandoms = groupByFandom(fics)
     .filter((g) => g.slug !== null)
     .map((g) => ({ name: g.name, slug: g.slug as string, count: g.fics.length }));
-  return { activity: latestActivity(everything), moreFics: fics.slice(0, 6), recentPosts: posts.slice(0, 3), storyCount: fics.length, fandoms };
+  return { activity: latestActivity(everything, recentComments), moreFics: fics.slice(0, 6), recentPosts: posts.slice(0, 3), storyCount: fics.length, fandoms };
 }
 
 /* Short home-page texts ("howdy", "archive"), stored in the pages table but not public pages. */

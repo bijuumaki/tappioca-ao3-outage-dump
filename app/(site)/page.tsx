@@ -52,10 +52,10 @@ export default async function Home() {
           <h2 className="section-bar">Latest activity</h2>
           <ul aria-label="Latest activity" className="activity">
             {home.activity.map((a) => (
-              <li key={`${a.slug}/${a.n}`}>
-                <Link href={`/fics/${a.slug}`}>
+              <li key={`${a.kind}/${a.slug}/${a.n}/${a.at}`}>
+                <Link href={a.kind === "comment" ? `/fics/${a.slug}/${a.n}#comments-heading` : `/fics/${a.slug}`}>
                   <span className="activity-text">
-                    <span className="activity-kind">{a.kind === "story" ? "New story" : "New chapter"}</span>
+                    <span className="activity-kind">{a.kind === "story" ? "New story" : a.kind === "chapter" ? "New chapter" : "New comment"}</span>
                     <span className="activity-title">{a.kind === "story" ? a.title : `${a.title} · Chapter ${a.n}`}</span>
                   </span>
                   <span className="activity-when">{formatDate(a.at)}</span>
