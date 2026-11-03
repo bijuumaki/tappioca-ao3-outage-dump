@@ -7,6 +7,7 @@ import RichText from "@/components/RichText";
 import { mediaUrl } from "@/lib/content/media";
 import { parsePhoto } from "@/lib/content/photo";
 import { getHomeData, getSnippet } from "@/lib/content/queries";
+import { topFandoms } from "@/lib/content/top-fandoms";
 import { formatDate } from "@/lib/format/dates";
 
 export const revalidate = 60;
@@ -16,6 +17,7 @@ const ROWS = [["/disclaimer", "Disclaimer"], ["/about", "About"], ["/fics", "Fic
 export default async function Home() {
   const [home, howdy, archive, photo] = await Promise.all([getHomeData(), getSnippet("howdy"), getSnippet("archive"), getSnippet("photo")]);
   const photoFrame = parsePhoto(photo);
+  const { shown: fandoms, hidden: moreFandoms } = topFandoms(home.fandoms);
   return (
     <main className="page" id="main">
       <h1 className="page-title home-title"><Link href="/">Tappioca’s Fic Archive</Link></h1>
@@ -28,10 +30,11 @@ export default async function Home() {
             {archive && <RichText html={archive} />}
             <p className="archive-count">{home.storyCount === 1 ? "1 story" : `${home.storyCount} stories`}</p>
             <ul>
-              {home.fandoms.map((g) => (
+              {fandoms.map((g) => (
                 <li key={g.slug}><Link href={`/tags/fandom/${g.slug}`}>{g.name}</Link><span>{g.count}</span></li>
               ))}
             </ul>
+            {moreFandoms > 0 && <Link href="/fics" className="archive-more">see all fandoms</Link>}
           </section>
         </div>
         <div className="home-main">

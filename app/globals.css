@@ -172,6 +172,7 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .archive-box li a { display: inline-flex; align-items: center; min-height: 44px; }
 .archive-box li { align-items: center; }
 .archive-box li span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
+.archive-more { display: inline-flex; align-items: center; min-height: 44px; align-self: flex-start; }
 .home-main { flex: 999 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
 .howdy { flex: 1 1 auto; display: flex; flex-direction: column; gap: 12px; }
 .howdy h2 { margin: 0; font-family: var(--font-heading); font-size: var(--h24); line-height: 1.3; font-weight: 600; color: var(--accent-text); }
