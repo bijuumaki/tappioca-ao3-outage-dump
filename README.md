@@ -21,4 +21,6 @@ npm test        # logic and database tests (Vitest)
 npm run e2e     # page tests in a real browser (Playwright)
 ```
 
+Comments: readers post without an account; the server stores them with `SUPABASE_SECRET_KEY` (so that key must be set on Vercel too) and emails the author through Resend when `RESEND_API_KEY`, `RESEND_FROM` and `ALERT_EMAIL` are set (see `.env.example`). Replies and hiding are on `/admin/comments`.
+
 The tests share the live database: they add their own sample stories at the start of a run and remove them at the end, so don't run them while the author is writing. They need `SUPABASE_SECRET_KEY` and `E2E_ADMIN_PASSWORD` in `.env.local`.
