@@ -47,6 +47,8 @@ export default async function Home() {
         </div>
       </section>
 
+      <ContinueReading />
+
       {home.activity.length > 0 && (
         <>
           <h2 className="section-bar">Latest activity</h2>
@@ -84,7 +86,6 @@ export default async function Home() {
         </>
       )}
 
-      <ContinueReading />
     </main>
   );
 }

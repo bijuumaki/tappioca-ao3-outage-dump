@@ -43,6 +43,14 @@ test("continue reading offers to resume the last chapter you opened", async ({ p
   await expect(resume.getByRole("link", { name: "Resume" })).toHaveAttribute("href", "/fics/sample-fic/2");
 });
 
+test("continue reading comes right after the intro, before latest activity (canvas)", async ({ page }) => {
+  await page.goto("/fics/sample-fic/2");
+  await page.goto("/");
+  const resume = await page.getByRole("heading", { name: "Continue reading" }).boundingBox();
+  const latest = await page.getByRole("heading", { name: "Latest activity" }).boundingBox();
+  expect(resume!.y).toBeLessThan(latest!.y);
+});
+
 test("a first-time visitor sees no continue reading box", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Howdy" })).toBeVisible();
