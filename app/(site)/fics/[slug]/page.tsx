@@ -48,7 +48,7 @@ export default async function FicPage({ params }: Props) {
         adult={fic.rating === "mature" || fic.rating === "explicit"}
         warnings={names("warning")}
         details={details}
-        hearts={fic.hearts}
+        hearts={fic.hearts ?? 0}
         chapters={fic.chapters.map((c) => ({ n: c.n, label: c.title ? `${c.n}. ${c.title}` : `Chapter ${c.n}` }))}
       />
     </main>

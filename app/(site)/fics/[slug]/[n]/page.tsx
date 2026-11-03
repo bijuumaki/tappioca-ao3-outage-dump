@@ -56,7 +56,7 @@ export default async function ChapterPage({ params }: Props) {
           <h2 className="section-bar chapter-title">{chapter.title ?? `Chapter ${chapter.n}`}</h2>
           <ChapterBody id={`${slug}/${chapter.n}`} chapter={chapter} />
           {several && <ChapterNav slug={slug} n={chapter.n} count={count} />}
-          {chapter.n === count && <EndOfStory slug={slug} title={fic.title} count={count} hearts={fic.hearts} fandom={fandomTag ? { name: fandomTag.name, slug: fandomTag.slug } : null} />}
+          {chapter.n === count && <EndOfStory slug={slug} title={fic.title} count={count} hearts={fic.hearts ?? 0} fandom={fandomTag ? { name: fandomTag.name, slug: fandomTag.slug } : null} />}
           <Comments slug={slug} n={chapter.n} />
         </ChapterGate>
       </article>

@@ -122,6 +122,7 @@ Added in v121 after terminal Claude Code asked for the missing screens (Bijuu ch
 - 2026-11-03: canvas v106-v120 from Bijuu's comments (items 7-11); both docs updated.
 - 2026-11-03: canvas v121-v122 (items 12-16 and the bottom chapter row links); both docs updated.
 - 2026-11-03: docs only, per Bijuu: added the canvas-wins rule; marked Nov 1 snapshot items to verify; DESIGN storage keys relabeled as proposed; Uploads demo rows marked as examples.
+- 2026-11-03 (terminal): built Home order, plain Aa, X close, arrow nav, link token, hearts, RSS, approve-first Comments, Drive panel in Uploads. Repo is Next.js + Supabase (not static HTML); Drive is an optional copy; the script is apps-script/drive-bridge.gs (not Code.gs) and also returns no links or status yet.
 - (Add terminal-side changes here, one line each, with the date.)
 
 ## 8. Next steps

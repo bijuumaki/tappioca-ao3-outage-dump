@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AdminHeader from "@/components/admin/AdminHeader";
+import DriveLibrary from "@/components/admin/DriveLibrary";
 import UploadBin, { type BinFic } from "@/components/admin/UploadBin";
 import { listAdminStories } from "@/lib/admin/queries";
 import { requireAdmin } from "@/lib/supabase/session";
@@ -25,6 +26,7 @@ export default async function UploadsPage() {
       <AdminHeader title="Uploads">
         <Link href="/admin" className="a-link">Back to all stories</Link>
       </AdminHeader>
+      <DriveLibrary />
       <UploadBin fics={fics} />
     </main>
   );

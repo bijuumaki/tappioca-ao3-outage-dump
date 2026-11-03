@@ -42,7 +42,7 @@ function toFicCard(fic: FicWithChapters): FicCardData {
   const latest = fic.chapters.reduce((max, c) => (c.publish_at && c.publish_at > max ? c.publish_at : max), fic.publish_at ?? "");
   return {
     slug: fic.slug, title: fic.title, summary: fic.summary, rating: fic.rating, status: fic.status, publish_at: fic.publish_at,
-    cover_path: fic.cover_path, featured: fic.featured, hearts: fic.hearts, category: fic.category, tags: fic.tags, totalWords: fic.totalWords, chapterCount: fic.chapters.length, updatedAt: latest,
+    cover_path: fic.cover_path, featured: fic.featured, hearts: fic.hearts ?? 0, category: fic.category, tags: fic.tags, totalWords: fic.totalWords, chapterCount: fic.chapters.length, updatedAt: latest,
   };
 }
 

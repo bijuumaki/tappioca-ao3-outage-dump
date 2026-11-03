@@ -6,7 +6,7 @@ Project rules for Claude Code. Read this first, every session.
 
 A public blog for Bijuu's ("tappioca") fanfics and art, like a small WordPress built around fics. Bijuu is the only author. Anyone can read without an account; readers can comment, give hearts and subscribe.
 
-- Design (the authority): `docs/superpowers/specs/2026-11-02-fic-blog-design.md`
+- Design (the authority): the live canvas, then `docs/design/DESIGN.md` and `docs/design/HANDOFF.md` (written by the design chat, canvas v122; the canvas wins over them). Older spec: `docs/superpowers/specs/2026-11-02-fic-blog-design.md`. Those two docs describe an older static-HTML + Drive-only plan in places; this repo is Next.js + Supabase with Drive as an optional copy.
 - Build plans: `docs/superpowers/plans/` (Plan 1 foundation and reader; Plans 2 to 4 dashboard and uploads, comments and hearts, emails and RSS)
 
 ## Working with Bijuu
@@ -100,3 +100,11 @@ There is one Supabase project, and the live site reads it. Tests add their own s
 ## Checking your work
 
 Look at the rendered page, not just the code. Run `npm test` and `npm run e2e`. Take Playwright screenshots at 1440, 820 and 390 wide in all four themes, at 10pt and 20pt. Check: no sideways scroll, text contrast of at least 4.5:1, visible focus rings, Escape closes the Aa panel.
+
+## Added after canvas v122 (2026-11-03)
+
+- **Hearts**: `fics.hearts` (migration 0012) is the shared count; `heart_fic(slug, ±1)` is callable by the server only (`lib/hearts/actions.ts`). Whether a browser has hearted lives in `fic-site-hearted`. Heart button + count on the story page and end of story; a count-only line on every fic card. One reader can heart again from another browser (accepted).
+- **RSS**: `/feed.xml` (all stories) and `/feed/<slug>.xml` (one story), one item per visible chapter (`lib/feed/rss.ts`). Follow buttons and the footer link copy the feed address.
+- **Comments wait for approval**: migration 0013 makes `post_comment` store new comments as `hidden = true` (= "Waiting"). Approve sets `hidden = false`; "Hide from site" sets it back. `/admin/comments` has Waiting/Approved/All tabs, a story filter, Approve, Hide, Delete (confirm) and the author reply. Comments that were already live stay approved.
+- **Uploads**: the Drive panel "Fics found in Google Drive" (`components/admin/DriveLibrary.tsx`, `lib/drive/library.ts`) lists what is in the Fic Library folder with Ready / Needs attention. "Open the Drive folder" / "View in Drive" links are not shown because the Apps Script doesn't return links yet.
+- **Reader chrome**: Aa is plain 10pt text; display options close with an X and (in the reader) say "adjust for your eyes"; chapter arrows are icons; the bottom chapter row is plain centered links. Contents still opens the Aa panel (the docs say it should scroll to the top and focus the dropdown; open question).

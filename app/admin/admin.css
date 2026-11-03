@@ -261,3 +261,8 @@
 .a-tabs a[aria-current="true"] { background: var(--a-accent-fill); color: var(--a-on-accent); font-weight: 600; }
 .a-filter-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .a-confirm { padding: 12px 16px; border: 1px solid var(--a-field-border); border-radius: 10px; background: var(--a-card-bg); display: flex; flex-direction: column; gap: 8px; }
+
+.a-drive-list { list-style: none; margin: 0; padding: 0; border: 1px solid var(--a-border); border-radius: 10px; overflow: hidden; }
+.a-drive-list li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 20px; padding: 14px 16px; border-bottom: 1px solid var(--a-border); }
+.a-drive-list li:last-child { border-bottom: 0; }
+.a-drive-list li > div { flex: 1 1 240px; min-width: 0; overflow-wrap: anywhere; }
