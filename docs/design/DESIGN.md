@@ -70,7 +70,7 @@ The reader component (`Site.dc.html`) also still contains leftover palettes (Har
 
 - Display and headings: **IM Fell English** (site title always; headings follow the chosen font when it is not Default).
 - Body and UI: **Inclusive Sans**. Admin uses the same.
-- Reader font menu (Aa panel, checked in the canvas code): Default (Inclusive Sans), Lucida Sans, Cantarell, Tahoma, Crimson Pro, IM Fell English, Cormorant Garamond.
+- Reader font menu (Aa panel, checked in the canvas code): Default (Inclusive Sans), Lucida Sans, Cantarell, Crimson Pro, Cormorant Garamond (Tahoma and IM Fell English were removed as choices in v149).
 - Sizes: page title `clamp(30px, 7vw, 40px) * --fs`; section bar heading `24px * --fs`; **intro box heading (Howdy, The Archive) `24px * --fs`, body `16px * --fs`, padding 20px**; card title `15px * --fs`; meta `13px * --fs`; body `16px * --fs`.
 - Line spacing options: Tight 1.4, Normal 1.7 (default), Loose 2.1.
 - Paper texture from the old v44 page is **not** in the canvas. Decide with Bijuu before bringing it back.
@@ -208,3 +208,4 @@ Rows, top to bottom: Home and Reader in four themes (Reader: Day opens with the 
 - 2026-11-03 (v144): content notice removed everywhere.
 - 2026-11-03 (v146): Home Featured became "latest activity": three rows of the newest chapters (New story / New chapter, title, date).
 - 2026-11-03 (v148): visitor count next to the rss link in the footer.
+- 2026-11-03 (v149): Tahoma and IM Fell English removed from the font menu.

@@ -9,12 +9,12 @@ export function writePref(key: string, value: string): void {
 export const THEMES = [["day", "Day"], ["lagoon", "Old paper"], ["night", "Night"], ["midnight", "Midnight"]] as const;
 export const SPACINGS = [["tight", "Tight"], ["normal", "Normal"], ["loose", "Loose"]] as const;
 export const FONTS = [
-  ["default", "Default"], ["lucida", "Lucida Sans"], ["cantarell", "Cantarell"], ["tahoma", "Tahoma"],
-  ["crimson", "Crimson Pro"], ["imfell", "IM Fell English"], ["cormorant", "Cormorant Garamond"],
+  ["default", "Default"], ["lucida", "Lucida Sans"], ["cantarell", "Cantarell"],
+  ["crimson", "Crimson Pro"], ["cormorant", "Cormorant Garamond"],
 ] as const;
 const FONT_NAMES = FONTS.map(([v]) => v).filter((v) => v !== "default");
 const WEB_FONTS: Record<string, string> = {
-  cantarell: "Cantarell", crimson: "Crimson+Pro", imfell: "IM+Fell+English", cormorant: "Cormorant+Garamond",
+  cantarell: "Cantarell", crimson: "Crimson+Pro", cormorant: "Cormorant+Garamond",
 };
 export const SIZE_MIN = 10;
 export const SIZE_MAX = 20;

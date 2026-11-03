@@ -19,8 +19,8 @@ const SAVE_LABEL: Record<SaveState, string> = {
   idle: "", saving: "Saving…", saved: "Saved", signed_out: "Not saved: sign in again", error: "Not saved: try again in a moment",
 };
 const FONT_STACKS: Record<string, string> = {
-  default: "var(--font-body)", lucida: "var(--stack-lucida)", cantarell: "var(--stack-cantarell)", tahoma: "var(--stack-tahoma)",
-  crimson: "var(--stack-crimson)", imfell: "var(--stack-imfell)", cormorant: "var(--stack-cormorant)",
+  default: "var(--font-body)", lucida: "var(--stack-lucida)", cantarell: "var(--stack-cantarell)",
+  crimson: "var(--stack-crimson)", cormorant: "var(--stack-cormorant)",
 };
 
 

@@ -43,7 +43,6 @@
   --font-ui: var(--nf-body, "Inclusive Sans"), ui-sans-serif, system-ui, sans-serif;   /* Aa button and panel */
   --stack-lucida: "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, sans-serif;
   --stack-cantarell: "Cantarell", sans-serif;
-  --stack-tahoma: Tahoma, Verdana, sans-serif;
   --stack-crimson: "Crimson Pro", Georgia, serif;
   --stack-imfell: "IM Fell English", Georgia, serif;
   --stack-cormorant: "Cormorant Garamond", Georgia, serif;
@@ -69,9 +68,7 @@
 /* Font choice from the Aa panel: changes the whole site's text (the site title and the Aa panel keep their own faces) */
 :root[data-font="lucida"] { --font-body: var(--stack-lucida); --font-heading: var(--stack-lucida); --font-reader: var(--stack-lucida); }
 :root[data-font="cantarell"] { --font-body: var(--stack-cantarell); --font-heading: var(--stack-cantarell); --font-reader: var(--stack-cantarell); }
-:root[data-font="tahoma"] { --font-body: var(--stack-tahoma); --font-heading: var(--stack-tahoma); --font-reader: var(--stack-tahoma); }
 :root[data-font="crimson"] { --font-body: var(--stack-crimson); --font-heading: var(--stack-crimson); --font-reader: var(--stack-crimson); }
-:root[data-font="imfell"] { --font-body: var(--stack-imfell); --font-heading: var(--stack-imfell); --font-reader: var(--stack-imfell); }
 :root[data-font="cormorant"] { --font-body: var(--stack-cormorant); --font-heading: var(--stack-cormorant); --font-reader: var(--stack-cormorant); }
 
 /* Old paper (the lagoon theme): a paper texture multiplied into the page color, lightened a little so text keeps 4.5:1 contrast. */
