@@ -156,7 +156,7 @@ export default function DisplayOptions() {
           </div>
           <label className="options-check">
             <input type="checkbox" checked={share} onChange={(e) => { setShare(e.target.checked); void setSharing(e.target.checked); }} />
-            <span>Let the author know my highlights and notes</span>
+            <span>Let the author know my highlights and notes<small className="options-sub">Your name is not known to the author.</small></span>
           </label>
         </div>
         <SyncDialog open={syncOpen} onClose={() => setSyncOpen(false)} />
