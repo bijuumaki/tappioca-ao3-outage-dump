@@ -19,3 +19,12 @@ export async function savePageText(slug: PageSlug, html: string): Promise<PageSa
   revalidatePath(`/${slug}`);
   return { ok: true };
 }
+
+/* Lets a public page ask "is Bijuu signed in?" so the editing tools show only for her. The pages themselves stay cached for readers. */
+export async function amSignedInAsAdmin(): Promise<boolean> {
+  const db = await createSessionClient();
+  const { data: { user } } = await db.auth.getUser();
+  if (!user) return false;
+  const { data } = await db.from("admins").select("user_id").eq("user_id", user.id).maybeSingle();
+  return !!data;
+}

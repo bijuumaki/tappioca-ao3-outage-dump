@@ -397,3 +397,29 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .home-title a { display: inline-flex; align-items: center; min-height: 44px; }
 
 @media (hover: hover) { .aa-button:hover { text-decoration: underline; text-underline-offset: 4px; } }
+
+/* Edit in place for the signed-in author (Disclaimer, About, Links, Comms) */
+.inline-edit { display: flex; flex-direction: column; gap: 10px; }
+.inline-edit-toolbar { display: flex; flex-wrap: wrap; gap: 6px; }
+.inline-edit-toolbar button {
+  appearance: none; min-width: 44px; min-height: 44px; padding: 0 12px; border: 1px solid var(--field-border); border-radius: var(--radius-small);
+  background: var(--card-bg); color: var(--ink); font: inherit; cursor: pointer;
+}
+.inline-edit-toolbar button[aria-pressed="true"] { background: var(--accent-fill); color: var(--on-accent); border-color: var(--accent-fill); }
+.ie-bold { font-weight: 700; }
+.ie-italic { font-style: italic; }
+.ie-underline { text-decoration: underline; text-underline-offset: 3px; }
+.inline-edit-link { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; }
+.inline-edit-link label { display: flex; flex-direction: column; gap: 4px; flex: 1 1 240px; font-size: var(--t14); }
+.inline-edit-link input {
+  box-sizing: border-box; min-height: 44px; padding: 0 10px; border: 1px solid var(--field-border); border-radius: var(--radius-small);
+  background: var(--card-bg); color: var(--ink); font: inherit;
+}
+.inline-edit-link .story-primary, .inline-edit-link .story-secondary { flex: none; padding: 0 16px; }
+.inline-edit-link p { flex: 1 1 100%; margin: 0; font-style: italic; font-size: var(--t14); }
+.ie-cancel { appearance: none; min-height: 44px; padding: 0 12px; border: 0; background: transparent; color: var(--link); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.inline-edit-text { min-height: 120px; padding: 12px; border: 1px dashed var(--field-border); border-radius: var(--radius-small); outline: none; line-height: 1.7; }
+.inline-edit-text:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.inline-edit-text a { text-decoration: underline; text-underline-offset: 3px; }
+.inline-edit-status { margin: 0; font-style: italic; font-size: var(--t14); }
+.inline-edit-status:empty { display: none; }
