@@ -8,7 +8,7 @@ import type { Category, Chapter, Fic, FicStatus, Page, Post, PostImage, Rating, 
 
 export type ChapterSummary = Pick<Chapter, "id" | "position" | "title" | "word_count" | "publish_at"> & { n: number };
 export type FicWithChapters = Fic & { category: Category; tags: Tag[]; chapters: ChapterSummary[]; totalWords: number };
-export type FicCardData = Pick<Fic, "slug" | "title" | "summary" | "rating" | "status" | "publish_at" | "hearts"> & {
+export type FicCardData = Pick<Fic, "slug" | "title" | "summary" | "rating" | "status" | "publish_at" | "hearts" | "planned_chapters"> & {
   category: Category; tags: Tag[]; totalWords: number; chapterCount: number; updatedAt: string;
 };
 export type PostWithImages = Post & { category: Category; tags: Tag[]; images: PostImage[] };
@@ -43,7 +43,7 @@ function toFicCard(fic: FicWithChapters): FicCardData {
   const latest = fic.chapters.reduce((max, c) => (c.publish_at && c.publish_at > max ? c.publish_at : max), fic.publish_at ?? "");
   return {
     slug: fic.slug, title: fic.title, summary: fic.summary, rating: fic.rating, status: fic.status, publish_at: fic.publish_at,
-    hearts: fic.hearts ?? 0, category: fic.category, tags: fic.tags, totalWords: fic.totalWords, chapterCount: fic.chapters.length, updatedAt: latest,
+    hearts: fic.hearts ?? 0, planned_chapters: fic.planned_chapters ?? null, category: fic.category, tags: fic.tags, totalWords: fic.totalWords, chapterCount: fic.chapters.length, updatedAt: latest,
   };
 }
 
