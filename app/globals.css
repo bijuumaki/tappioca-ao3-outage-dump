@@ -88,6 +88,8 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 
 /* Page column */
 .page { max-width: var(--page-width); margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+/* A column inside the page column fills it. Without this, margin auto on a flex child shrinks it to its content and centers it. */
+.page .page { width: 100%; max-width: none; margin: 0; }
 .page-title { margin: 0 0 16px; font-family: var(--font-heading); font-size: var(--h40); line-height: 1.2; font-weight: 700; }
 .home-title { font-family: var(--font-title); padding-right: 64px; }
 .home-title a { display: inline-block; }

@@ -28,7 +28,7 @@ export default function FicListBrowser({ groups }: { groups: FicGroup[] }) {
     <>
       <div className="fic-tools">
         <label className="fic-search">Search the fic list
-          <input type="search" className="keep-case" value={q} onChange={(e) => setQ(e.target.value)} autoComplete="off" />
+          <input type="search" className="keep-case" placeholder="title, fandom or pairing" value={q} onChange={(e) => setQ(e.target.value)} autoComplete="off" />
         </label>
         <label className="fic-sort">Sort by
           <select value={sort} onChange={(e) => setSort(e.target.value as Sort)}>
