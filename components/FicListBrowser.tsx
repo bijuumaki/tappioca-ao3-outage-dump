@@ -32,7 +32,7 @@ export default function FicListBrowser({ groups }: { groups: FicGroup[] }) {
         </label>
         <label className="fic-sort">Sort by
           <select value={sort} onChange={(e) => setSort(e.target.value as Sort)}>
-            <option value="newest">Newest</option><option value="title">Title</option><option value="hearts">Most hearts</option>
+            <option value="newest">Newest</option><option value="title">Title</option><option value="hearts">Most liked</option>
           </select>
         </label>
       </div>

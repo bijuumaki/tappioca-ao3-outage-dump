@@ -18,7 +18,6 @@ export type StoryOverviewProps = {
   warnings: string[];
   details: { k: string; v: string }[];
   chapters: { n: number; label: string }[];
-  hearts: number;
 };
 
 /* The notice readers see before a Mature or Explicit story. Also used on chapter pages opened by a direct link. */
@@ -76,7 +75,7 @@ export default function StoryOverview(p: StoryOverviewProps) {
             </ul>
           )}
           <div className="heart-follow">
-            <HeartButton slug={p.slug} count={p.hearts} />
+            <HeartButton slug={p.slug} />
             <FollowButton path={`/feed/${p.slug}.xml`} label="Follow new chapters (rss)" />
           </div>
         </header>

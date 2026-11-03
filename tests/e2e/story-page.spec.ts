@@ -122,7 +122,7 @@ test("the last chapter ends with just a comment button and a heart icon", async 
   await page.goto("/fics/sample-fic/3");
   const end = page.locator(".story-end");
   await expect(end.getByRole("link", { name: "Leave a comment" })).toBeVisible();
-  await expect(end.getByRole("button", { name: "Heart this story" })).toBeVisible();
+  await expect(end.getByRole("button", { name: "Like" })).toBeVisible();
   await expect(end.getByRole("link")).toHaveCount(1);
   await expect(page.getByText("You have reached the end of")).toHaveCount(0);
 });

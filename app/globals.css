@@ -352,8 +352,6 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .follow { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .follow-status:empty { display: none; }
 .follow-link { color: var(--link); text-decoration: underline; text-underline-offset: 4px; display: inline-flex; align-items: center; min-height: 44px; }
-.card-hearts { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
-.card-hearts svg { width: 14px; height: 14px; }
 .site-footer { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .site-footer p { margin: 0; text-align: center; }
 
@@ -374,7 +372,7 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 
 /* Motion: feedback only. Short, ease-out, nothing on page load. Reduced motion keeps the fades and drops the movement. */
 :root { --ease-out: cubic-bezier(0.16, 1, 0.3, 1); }
-.heart-button svg, .card-hearts svg { fill: none; transition: fill 180ms var(--ease-out), transform 180ms var(--ease-out); }
+.heart-button svg { fill: none; transition: fill 180ms var(--ease-out), transform 180ms var(--ease-out); }
 .heart-button svg[data-filled="true"] { fill: currentColor; }
 .heart-button:active svg { transform: scale(0.85); }
 @keyframes notice-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
@@ -388,7 +386,7 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
   @keyframes panel-in { from { opacity: 0; } to { opacity: 1; } }
   @keyframes sheet-in { from { opacity: 0; } to { opacity: 1; } }
   .heart-button:active svg { transform: none; }
-  .heart-button svg, .card-hearts svg { transition: fill 180ms linear; }
+  .heart-button svg { transition: fill 180ms linear; }
 }
 
 /* Home's own heading is the link home, so the small site title is hidden there. */
