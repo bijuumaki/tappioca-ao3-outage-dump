@@ -377,3 +377,13 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
   margin-top: 6px; max-width: 320px; min-height: 44px; padding: 0 8px; border: 1px solid var(--field-border); border-radius: var(--radius-small);
   background: var(--card-bg); color: var(--ink); font: inherit; font-size: 16px;
 }
+
+/* Fic list search and sort */
+.fic-tools { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.fic-search { flex: 1 1 240px; display: flex; flex-direction: column; gap: 4px; font-size: var(--t14); }
+.fic-sort { flex: 0 1 200px; display: flex; flex-direction: column; gap: 4px; font-size: var(--t14); }
+.fic-tools input, .fic-tools select {
+  min-height: 44px; padding: 0 10px; border: 1px solid var(--field-border); border-radius: var(--radius-small);
+  background: var(--card-bg); color: var(--ink); font: inherit; font-size: 16px;
+}
+.fic-clear { appearance: none; border: 0; background: none; padding: 0; color: var(--link); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; min-height: 44px; }
