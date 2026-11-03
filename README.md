@@ -2,7 +2,7 @@
 
 A public blog for fanfics and art: fics with chapters, tags and categories. Readers browse, read by chapter in their own theme, font and size, and pick up where they left off. One author writes and publishes from a private admin side.
 
-Built with Next.js and Supabase, hosted on Vercel. Project rules and how things work are in `CLAUDE.md`; the original design is in `docs/superpowers/specs/` and the build plans are in `docs/superpowers/plans/`.
+Built with Next.js and Supabase, hosted on Vercel. Project rules and how things work are in `CLAUDE.md`; the design in words is `docs/design/DESIGN.md` (the design canvas it follows is linked there).
 
 ## Run it locally
 

@@ -1,6 +1,6 @@
 import sanitizeHtml from "sanitize-html";
 
-/* The one place the rich-text format set lives. Editor, paste and uploads (Plan 2) and the reader all use it. */
+/* The one place the rich-text format set lives. Editor, paste and uploads and the reader all use it. */
 const COLOR_VALUE = /^[#a-zA-Z0-9\s(),.%]+$/;
 
 const OPTIONS: sanitizeHtml.IOptions = {

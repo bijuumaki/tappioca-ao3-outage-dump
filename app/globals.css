@@ -67,15 +67,10 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
   appearance: none; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0;
   border: 0; background: transparent; color: var(--ink); cursor: pointer;
 }
-.options-field { display: flex; flex-direction: column; gap: 4px; }
-.options-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.options-wrap { flex-wrap: wrap; }
 .options-panel select {
   min-height: 44px; padding: 0 8px; border: 1px solid var(--field-border); border-radius: var(--radius-small);
   background: var(--bg); color: var(--ink); font: inherit; font-size: 16px;
 }
-.options-stepper { display: flex; align-items: center; gap: 8px; }
-.options-stepper output { min-width: 40px; text-align: center; }
 .options-panel button {
   appearance: none; min-height: 44px; min-width: 44px; padding: 0 10px;
   border: 1px solid var(--field-border); border-radius: var(--radius-small);
@@ -84,7 +79,6 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .options-panel button[aria-pressed="true"] { background: var(--accent-fill); color: var(--on-accent); }
 .options-panel button:disabled { opacity: 0.5; cursor: default; }
 .options-choices { display: flex; flex-wrap: wrap; gap: 6px; }
-.options-field .options-choices button { flex: 1 1 0; min-width: 0; }
 .options-group { display: flex; flex-direction: column; gap: 10px; }
 .options-group .options-choices button { flex: 1 1 0; min-width: 0; }
 .options-heading { margin: 0; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font: inherit; font-size: var(--t13); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
@@ -319,7 +313,6 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .story-details > div { display: flex; flex-wrap: wrap; gap: 0 16px; }
 .story-details dt { flex: 0 0 120px; color: var(--muted); }
 .story-details dd { margin: 0; flex: 1 1 160px; min-width: 0; overflow-wrap: anywhere; }
-.story-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
 .story-primary, .story-secondary {
   appearance: none; display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 18px;
   border-radius: 8px; font: inherit; cursor: pointer; text-align: center;
@@ -400,15 +393,12 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 
 /* Hearts and following */
 .heart-follow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 8px; }
-.heart-row { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .heart-button {
   appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px;
   border: 1px solid var(--field-border); border-radius: var(--radius-small); background: var(--card-bg); color: var(--ink); font: inherit; cursor: pointer;
 }
 .heart-button svg { color: var(--accent-text); }
 .heart-button[aria-pressed="true"] { border-color: var(--accent-text); }
-.story-actions .heart-row { flex: 1 1 100%; }
-.story-actions .heart-button { flex: 1 1 auto; }
 .follow { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .follow-status:empty { display: none; }
 .follow-link { color: var(--link); text-decoration: underline; text-underline-offset: 4px; display: inline-flex; align-items: center; min-height: 44px; }

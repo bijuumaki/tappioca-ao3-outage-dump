@@ -7,9 +7,8 @@ test.describe.configure({ mode: "serial" });
 
 async function cleanUp() {
   const db = secretClient();
-  const { data } = await db.from("fics").select("id, cover_path").like("title", "(e2e%");
+  const { data } = await db.from("fics").select("id").like("title", "(e2e%");
   for (const f of data ?? []) {
-    if (f.cover_path) await db.storage.from("media").remove([f.cover_path]);
     await db.from("fics").delete().eq("id", f.id);
   }
   await db.from("tags").delete().like("name", "(e2e%");

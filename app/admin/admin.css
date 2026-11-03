@@ -126,11 +126,7 @@
 .a-side { flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
 .a-section { border: 1px solid var(--a-border); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
 .a-bar { margin: 0; padding: 3px 6px; border-radius: 6px; background: var(--a-bar); font-size: 16px; font-weight: 600; }
-.a-field-label { font-size: 14px; }
 .a-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.a-upload label { position: relative; }
-.a-upload input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-.a-busy { opacity: 0.6; }
 .a-chapters { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .a-chapters a {
   display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 44px; padding: 0 10px;
