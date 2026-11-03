@@ -10,12 +10,12 @@ export const THEMES = [["day", "Day"], ["lagoon", "Old paper"], ["night", "Night
 export const SPACINGS = [["tight", "Tight"], ["normal", "Normal"], ["loose", "Loose"]] as const;
 export const FONTS = [
   ["default", "Default"], ["lucida", "Lucida Sans"], ["cantarell", "Cantarell"],
-  ["crimson", "Crimson Pro"], ["cormorant", "Cormorant Garamond"],
+  ["crimson", "Crimson Pro"], ["ebgaramond", "EB Garamond"],
 ] as const;
 const FONT_NAMES = FONTS.map(([v]) => v).filter((v) => v !== "default");
 /* Each web font is asked for its real regular, bold, italic and bold italic, so nothing on screen is a browser-faked bold or slant. */
 const WEB_FONTS: Record<string, string> = {
-  cantarell: "Cantarell:ital,wght@0,400;0,700;1,400;1,700", crimson: "Crimson+Pro:ital,wght@0,400;0,700;1,400;1,700", cormorant: "Cormorant+Garamond:ital,wght@0,400;0,700;1,400;1,700",
+  cantarell: "Cantarell:ital,wght@0,400;0,700;1,400;1,700", crimson: "Crimson+Pro:ital,wght@0,400;0,700;1,400;1,700", ebgaramond: "EB+Garamond:ital,wght@0,400;0,700;1,400;1,700",
 };
 export const SIZE_MIN = 10;
 export const SIZE_MAX = 20;

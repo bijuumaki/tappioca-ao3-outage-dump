@@ -116,7 +116,7 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .font-card[data-font="lucida"] .font-name { font-family: var(--stack-lucida); }
 .font-card[data-font="cantarell"] .font-name { font-family: var(--stack-cantarell); }
 .font-card[data-font="crimson"] .font-name { font-family: var(--stack-crimson); }
-.font-card[data-font="cormorant"] .font-name { font-family: var(--stack-cormorant); }
+.font-card[data-font="ebgaramond"] .font-name { font-family: var(--stack-ebgaramond); }
 
 /* Page column */
 .page { max-width: var(--page-width); margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }

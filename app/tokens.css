@@ -44,7 +44,7 @@
   --stack-lucida: "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, sans-serif;
   --stack-cantarell: "Cantarell", sans-serif;
   --stack-crimson: "Crimson Pro", Georgia, serif;
-  --stack-cormorant: "Cormorant Garamond", Georgia, serif;
+  --stack-ebgaramond: "EB Garamond", Georgia, serif;
   --page-width: 708px;
   --radius: 10px;
   --radius-small: 6px;
@@ -68,7 +68,7 @@
 :root[data-font="lucida"] { --font-body: var(--stack-lucida); --font-heading: var(--stack-lucida); --font-reader: var(--stack-lucida); }
 :root[data-font="cantarell"] { --font-body: var(--stack-cantarell); --font-heading: var(--stack-cantarell); --font-reader: var(--stack-cantarell); }
 :root[data-font="crimson"] { --font-body: var(--stack-crimson); --font-heading: var(--stack-crimson); --font-reader: var(--stack-crimson); }
-:root[data-font="cormorant"] { --font-body: var(--stack-cormorant); --font-heading: var(--stack-cormorant); --font-reader: var(--stack-cormorant); }
+:root[data-font="ebgaramond"] { --font-body: var(--stack-ebgaramond); --font-heading: var(--stack-ebgaramond); --font-reader: var(--stack-ebgaramond); }
 
 /* Old paper (the lagoon theme): a paper texture multiplied into the page color, lightened a little so text keeps 4.5:1 contrast. */
 :root[data-theme="lagoon"] body {
