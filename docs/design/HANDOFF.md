@@ -96,6 +96,8 @@ Added in v130-v135 (Bijuu's canvas comments, handled by the design session):
 
 29. **Lagoon is now "Old paper"** (v142), with Bijuu's paper texture as the page background (multiplied, lightened 45%). Code key stays `lagoon`.
 
+30. **The content notice is gone** (v144). No gate on the story page or on chapter links, no "seen the notice" line, no line in the Publish check.
+
 ## 4. Rules for Claude Code
 
 - **The latest canvas wins over these docs** (see the top).
@@ -140,7 +142,7 @@ Added in v130-v135 (Bijuu's canvas comments, handled by the design session):
 - Midnight: `muted` and `link` are both `#9BA8AB`. Separate them, or leave it since links are underlined and empty notes are italic?
 - Impeccable's design rules flagged three more things, none changed yet: (a) the check marks in Uploads, the Publish check and the Dashboard select boxes are typed characters, not drawn icons; (b) the Publish check could be inline instead of a modal; (c) "nothing here" style empty states could say what to do next. Bijuu to say which, if any.
 - Guesses made on comments, to confirm: "underline options" meant the Dashboard row actions; "put this on top" meant Featured (later superseded); "relocate under page title" meant the intro block; "these buttons" in the last comment meant the bottom chapter row.
-- Content notice wording and whether to ask readers to confirm they are adults.
+- (Answered 2026-11-03: no content notice at all.)
 - Bring back the old paper texture? (Not in the new canvas.)
 - One of Bijuu's canvas edits (saved just before the v119 publish) may have been overwritten in `Site.dc.html`; she was told. If something she changed is missing, ask her.
 

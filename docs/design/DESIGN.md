@@ -94,12 +94,12 @@ Earlier orders (fics first; Continue reading on top) were replaced by Bijuu's co
 ### Fic list
 Fic cards grouped by fandom (bar heading per fandom). Cards as above. Opens the **story page**, not the reader. Above the groups: a **"Search the fic list"** field (matches title, fandom and pairing; typed text is not lowercased) and a **"Sort by"** select (**Newest, Title, Most liked**), both 44px tall, side by side and wrapping on phones. Fandoms with no match disappear; if nothing matches, a status line says "No fics match that search." with an underlined "Clear the search" link. On the canvas only Title visibly reorders, because dates and hearts are placeholders; in the real app Newest uses the updated date and Most liked uses the server count. Tag filtering is **not** drawn (all tags are placeholders); ask Bijuu before adding it.
 
-### Story page (overview) and content notice
+### Story page (overview)
 - "Back to the fic list" link, title, fandom, summary, tag chips.
 - **Hearts and follow row**, just under the tags: an outlined **"Like"** (v135; "Liked" once pressed) button (heart icon in `accentText`, outline when off, filled when on, label becomes "Hearted", `aria-pressed`), and an outlined **"Follow new chapters (rss)"** button with an RSS icon. Pressing Follow copies the story's feed link and shows a quiet status line: "Feed link copied. Paste it into your feed reader." These are shown even before the content notice is accepted.
 - **No covers anywhere (v130, Bijuu: "i don't want a cover for a fic").** The story page, the Home and Fic list cards, and the editor's "Cover image" upload have no cover. Title, summary and tags take its place.
 - **Details** bar with Rating, Relationships, Words, Chapters, Status, Updated.
-- **Content notice gate.** If rating is Explicit or Mature and the reader has not accepted it for this story: show a "Content notice" box (rating line, `[author's content warnings]`, buttons "Continue to the story" (primary) and "Go back"). Chapter buttons are disabled until accepted (hint line explains). Accepting opens chapter 1 (or resume chapter) and remembers it for that story, in the browser.
+- **No content notice (v144).** Bijuu removed it ("they know what they're going into anyway"). Mature and Explicit stories open straight to the chapters. Do not build it, and do not ask readers to confirm they are adults.
 - After acceptance (or if no notice needed): primary button **"Start reading"**, or **"Resume at chapter N"** if there is progress. If a notice was accepted, a muted line says so.
 - **Chapters** bar + list of chapter buttons (first 6, then "Show all N chapters" / "Show fewer chapters"). The resume chapter shows "Resume here".
 - The notice wording is not final. Whether to ask readers to confirm they are adults is Bijuu's call; do not add an age claim without asking.
@@ -205,3 +205,4 @@ Rows, top to bottom: Home and Reader in four themes (Reader: Day opens with the 
 - 2026-11-03 (v127-v129, Bijuu's comments): end of story reduced to "Leave a comment" + icon-only heart (v127); chapter bar centered as "Chapter N: [chapter title]" (v128); the top Previous/Next arrow buttons removed (v129).
 - 2026-11-03 (v130-v135, Bijuu's comments): covers removed everywhere; edit-in-place with rich text and links on Disclaimer, About, Links (signed-in boards); "Heart this story" became "Like"/"Liked" and all "[N] hearts" counts were removed; sort option "Most liked".
 - 2026-11-03 (v142): Lagoon renamed Old paper; paper texture as its page background (multiply, lightened 45%).
+- 2026-11-03 (v144): content notice removed everywhere.
