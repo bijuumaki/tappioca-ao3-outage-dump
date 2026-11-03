@@ -17,33 +17,6 @@ export default async function Home() {
   return (
     <main className="page" id="main">
       <h1 className="page-title home-title"><Link href="/">Tappioca’s Fic Archive</Link></h1>
-      <ContinueReading />
-
-      {f && (
-        <>
-          <h2 className="section-bar">Featured: {f.title}</h2>
-          <Link href={`/fics/${f.slug}`} className="featured">
-            <span className="featured-cover">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              {f.cover_path && <img src={mediaUrl(f.cover_path)} alt="" />}
-            </span>
-            <span className="featured-body">
-              <span className="featured-title">{f.title}</span>
-              {f.summary && <span className="featured-summary keep-case">{f.summary.replace(/<[^>]*>/g, " ").trim()}</span>}
-              <span className="featured-meta">{[fandomNames(f), ratingAndRelationships(f), lengthLine(f)].filter(Boolean).join(" · ")}</span>
-            </span>
-          </Link>
-        </>
-      )}
-
-      {home.moreFics.length > 0 && (
-        <>
-          <h2 className="section-bar">More stories</h2>
-          <section aria-label="More stories" className="card-grid">
-            {home.moreFics.map((fic) => <FicCard key={fic.slug} fic={fic} />)}
-          </section>
-        </>
-      )}
 
       <section className="home-intro">
         <div className="home-side">
@@ -72,6 +45,32 @@ export default async function Home() {
         </div>
       </section>
 
+      {f && (
+        <>
+          <h2 className="section-bar">Featured: {f.title}</h2>
+          <Link href={`/fics/${f.slug}`} className="featured">
+            <span className="featured-cover">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {f.cover_path && <img src={mediaUrl(f.cover_path)} alt="" />}
+            </span>
+            <span className="featured-body">
+              <span className="featured-title">{f.title}</span>
+              {f.summary && <span className="featured-summary keep-case">{f.summary.replace(/<[^>]*>/g, " ").trim()}</span>}
+              <span className="featured-meta">{[fandomNames(f), ratingAndRelationships(f), lengthLine(f)].filter(Boolean).join(" · ")}</span>
+            </span>
+          </Link>
+        </>
+      )}
+
+      {home.moreFics.length > 0 && (
+        <>
+          <h2 className="section-bar">More stories</h2>
+          <section aria-label="More stories" className="card-grid">
+            {home.moreFics.map((fic) => <FicCard key={fic.slug} fic={fic} />)}
+          </section>
+        </>
+      )}
+
       {home.recentPosts.length > 0 && (
         <>
           <h2 className="section-bar">Recent Art</h2>
@@ -80,6 +79,8 @@ export default async function Home() {
           </section>
         </>
       )}
+
+      <ContinueReading />
     </main>
   );
 }
