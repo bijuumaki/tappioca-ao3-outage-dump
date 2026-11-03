@@ -67,11 +67,11 @@ describe.skipIf(!configured)("reader queries", async () => {
     expect(res!.posts.map((p) => p.slug)).toEqual(["sample-art"]);
   });
 
-  test("getHomeData lists the other published stories after the featured one", async () => {
+  test("getHomeData lists the latest activity and the published stories", async () => {
     const home = await q.getHomeData();
-    expect(home.featured!.slug).toBe("sample-fic");
+    expect(home.activity.length).toBeGreaterThan(0);
+    expect(home.activity.length).toBeLessThanOrEqual(3);
     const slugs = home.moreFics.map((f) => f.slug);
-    expect(slugs).not.toContain("sample-fic");
     expect(slugs).not.toContain("sample-draft");
     expect(slugs).toEqual(expect.arrayContaining(["sample-oneshot", "sample-mature", "sample-empty"]));
     expect(slugs.length).toBeLessThanOrEqual(6);

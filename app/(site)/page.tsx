@@ -7,7 +7,7 @@ import RichText from "@/components/RichText";
 import { mediaUrl } from "@/lib/content/media";
 import { parsePhoto } from "@/lib/content/photo";
 import { getHomeData, getSnippet } from "@/lib/content/queries";
-import { fandomNames, lengthLine, ratingAndRelationships } from "@/lib/format/fic-meta";
+import { formatDate } from "@/lib/format/dates";
 
 export const revalidate = 60;
 
@@ -16,7 +16,6 @@ const ROWS = [["/disclaimer", "Disclaimer"], ["/about", "About"], ["/fics", "Fic
 export default async function Home() {
   const [home, howdy, archive, photo] = await Promise.all([getHomeData(), getSnippet("howdy"), getSnippet("archive"), getSnippet("photo")]);
   const photoFrame = parsePhoto(photo);
-  const f = home.featured;
   return (
     <main className="page" id="main">
       <h1 className="page-title home-title"><Link href="/">Tappioca’s Fic Archive</Link></h1>
@@ -48,16 +47,22 @@ export default async function Home() {
         </div>
       </section>
 
-      {f && (
+      {home.activity.length > 0 && (
         <>
-          <h2 className="section-bar">Featured: {f.title}</h2>
-          <Link href={`/fics/${f.slug}`} className="featured">
-            <span className="featured-body">
-              <span className="featured-title">{f.title}</span>
-              {f.summary && <span className="featured-summary keep-case">{f.summary.replace(/<[^>]*>/g, " ").trim()}</span>}
-              <span className="featured-meta">{[fandomNames(f), ratingAndRelationships(f), lengthLine(f)].filter(Boolean).join(" · ")}</span>
-            </span>
-          </Link>
+          <h2 className="section-bar">Latest activity</h2>
+          <ul aria-label="Latest activity" className="activity">
+            {home.activity.map((a) => (
+              <li key={`${a.slug}/${a.n}`}>
+                <Link href={`/fics/${a.slug}`}>
+                  <span className="activity-text">
+                    <span className="activity-kind">{a.kind === "story" ? "New story" : "New chapter"}</span>
+                    <span className="activity-title">{a.kind === "story" ? a.title : `${a.title} · Chapter ${a.n}`}</span>
+                  </span>
+                  <span className="activity-when">{formatDate(a.at)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </>
       )}
 

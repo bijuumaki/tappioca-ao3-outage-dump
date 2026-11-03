@@ -1,5 +1,6 @@
 import "server-only";
 import { createReaderClient } from "@/lib/supabase/server";
+import { latestActivity, type ActivityItem } from "./activity";
 import { numberVisibleChapters } from "./chapters";
 import type { Category, Chapter, Fic, FicStatus, Page, Post, PostImage, Rating, Tag, TagType } from "./types";
 
@@ -145,7 +146,7 @@ export async function getCategories(): Promise<Category[]> {
 }
 
 export type HomeData = {
-  featured: FicCardData | null;
+  activity: ActivityItem[];
   moreFics: FicCardData[];
   recentPosts: PostCardData[];
   storyCount: number;
@@ -168,13 +169,11 @@ export function groupByFandom(fics: FicCardData[]): { name: string; slug: string
 }
 
 export async function getHomeData(): Promise<HomeData> {
-  const { fics, posts } = await browse({ sort: "updated" });
-  const featured = fics.filter((f) => f.featured).sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))[0] ?? null;
+  const [{ fics, posts }, everything] = await Promise.all([browse({ sort: "updated" }), allFics()]);
   const fandoms = groupByFandom(fics)
     .filter((g) => g.slug !== null)
     .map((g) => ({ name: g.name, slug: g.slug as string, count: g.fics.length }));
-  const moreFics = fics.filter((f) => f.slug !== featured?.slug).slice(0, 6);
-  return { featured, moreFics, recentPosts: posts.slice(0, 3), storyCount: fics.length, fandoms };
+  return { activity: latestActivity(everything), moreFics: fics.slice(0, 6), recentPosts: posts.slice(0, 3), storyCount: fics.length, fandoms };
 }
 
 /* Short home-page texts ("howdy", "archive"), stored in the pages table but not public pages. */

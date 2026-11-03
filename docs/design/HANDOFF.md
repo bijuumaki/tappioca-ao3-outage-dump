@@ -98,6 +98,8 @@ Added in v130-v135 (Bijuu's canvas comments, handled by the design session):
 
 30. **The content notice is gone** (v144). No gate on the story page or on chapter links, no "seen the notice" line, no line in the Publish check.
 
+31. **Home: "latest activity" replaces Featured** (v146): three rows (New story / New chapter, title, date), each opening the story page. Bijuu renamed the bar herself; the three-item list was her next comment.
+
 ## 4. Rules for Claude Code
 
 - **The latest canvas wins over these docs** (see the top).

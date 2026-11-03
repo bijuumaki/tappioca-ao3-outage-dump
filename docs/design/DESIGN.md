@@ -83,7 +83,7 @@ Reader-facing app is one page with hash routes: `#home`, `#fics`, `#story/<id>` 
 Top to bottom:
 1. Site title "Tappioca's Fic Archive" (links to Home).
 2. **Intro block**, directly under the title: photo circle placeholder + "The Archive" stats box (per-fandom counts, `[N]`) on the left; "Howdy" box and four outlined page tiles (Disclaimer, About, Fic List, Links) on the right. Stacks and centers on phones. **The Archive box and the Howdy box are one component at one scale** (h2 24 in `accentText`, body 16, padding 20, gap 12, 10px corners). The Archive box is **not a 1:1 square any more** (v125): it takes its natural height, and "[N] stories" is a plain bold line above the per-fandom list.
-3. **Featured** bar + featured fic card (Anam Cara now). Opens the story page.
+3. **Latest activity** bar + three rows (v146, replaces Featured): "New story" or "New chapter", the title (with "Chapter N"), the date. Each opens the story page.
 4. **More stories** bar + grid of fic cards (auto-fill, min 200px). There is **no "See the whole fic list" button**; the Fic List tile in the intro is the way to the list.
 5. **Continue reading** card, **only for a returning reader** (has progress), at the **very bottom, just above the footer**: title, "Chapter N of T", primary "Resume". Resume goes straight into the reader at that chapter. First-time readers never see it.
 
@@ -206,3 +206,4 @@ Rows, top to bottom: Home and Reader in four themes (Reader: Day opens with the 
 - 2026-11-03 (v130-v135, Bijuu's comments): covers removed everywhere; edit-in-place with rich text and links on Disclaimer, About, Links (signed-in boards); "Heart this story" became "Like"/"Liked" and all "[N] hearts" counts were removed; sort option "Most liked".
 - 2026-11-03 (v142): Lagoon renamed Old paper; paper texture as its page background (multiply, lightened 45%).
 - 2026-11-03 (v144): content notice removed everywhere.
+- 2026-11-03 (v146): Home Featured became "latest activity": three rows of the newest chapters (New story / New chapter, title, date).

@@ -10,12 +10,13 @@ test("home has the title, the archive box with counts, howdy and page buttons", 
   await expect(page.locator("nav[aria-label=\"Pages\"] .home-row")).toHaveText(["Disclaimer", "About", "Fic List", "Links"]);
 });
 
-test("featured fic is the one marked featured", async ({ page }) => {
+test("latest activity lists the newest chapters", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator(".section-bar").first()).toHaveText("Featured: (sample fic)");
-  await expect(page.locator(".featured")).toHaveAttribute("href", "/fics/sample-fic");
-  await expect(page.locator(".featured-meta")).toContainText("Teen and Up");
-  await expect(page.locator(".featured-meta")).toContainText("675 words");
+  await expect(page.locator(".section-bar").first()).toHaveText("Latest activity");
+  const items = page.locator('[aria-label="Latest activity"] li');
+  await expect(items).toHaveCount(3);
+  await expect(items.first().locator("a")).toHaveAttribute("href", /^\/fics\/sample-/);
+  await expect(items.first()).toContainText(/New (story|chapter)/);
 });
 
 test("recent art shows posts", async ({ page }) => {
@@ -48,20 +49,12 @@ test("a first-time visitor sees no continue reading box", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Continue reading" })).toHaveCount(0);
 });
 
-test("more stories lists the other published stories, not the featured one", async ({ page }) => {
+test("more stories lists the published stories", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "More stories" })).toBeVisible();
   const cards = page.locator('[aria-label="More stories"] .card');
   await expect(cards.filter({ hasText: "(sample oneshot)" })).toHaveCount(1);
   await expect(cards.filter({ hasText: "(sample mature)" })).toHaveCount(1);
-  await expect(cards.filter({ hasText: "(sample fic)" })).toHaveCount(0);
   await expect(cards.filter({ hasText: "(sample draft)" })).toHaveCount(0);
   await expect(page.getByRole("link", { name: "See the whole fic list" })).toHaveCount(0);
-});
-
-test("the featured story comes before the intro, as in the design", async ({ page }) => {
-  await page.goto("/");
-  const featured = await page.getByRole("heading", { name: "Featured: (sample fic)" }).boundingBox();
-  const howdy = await page.getByRole("heading", { name: "Howdy" }).boundingBox();
-  expect(featured!.y).toBeLessThan(howdy!.y);
 });

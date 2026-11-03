@@ -36,7 +36,7 @@ test("clickable cards and buttons use the stronger field border in each theme", 
   const expected: Record<string, string> = { day: "rgb(63, 133, 144)", lagoon: "rgb(60, 85, 88)", night: "rgb(106, 154, 163)", midnight: "rgb(116, 133, 143)" };
   for (const [theme, color] of Object.entries(expected)) {
     await page.evaluate((t) => document.documentElement.setAttribute("data-theme", t), theme);
-    expect(await page.locator(".featured").evaluate((el) => getComputedStyle(el).borderTopColor), theme).toBe(color);
+    expect(await page.locator(".activity a").first().evaluate((el) => getComputedStyle(el).borderTopColor), theme).toBe(color);
   }
 });
 
