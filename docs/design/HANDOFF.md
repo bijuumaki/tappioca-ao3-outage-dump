@@ -1,10 +1,10 @@
 # Handoff: Tappioca's fic archive and reader
 
-Updated 2026-11-03 (after canvas v123). The user is Bijuu (goes by tappioca; Philippines/Asia). Project in claude.ai: "TAPPIOCA NEOCITIES".
+Updated 2026-11-03 (after canvas v125). The user is Bijuu (goes by tappioca; Philippines/Asia). Project in claude.ai: "TAPPIOCA NEOCITIES".
 
 **Read order for Claude Code in the terminal:** this file first (what we are building, data, hosting, rules), then `claude/DESIGN.md` (the design: tokens, screens, behavior, what to build). Then the design canvas link in section 1.
 
-**Precedence (Bijuu's rule): the latest state of the canvas wins over both docs.** The docs describe the canvas at v123. If the canvas differs, build what it shows and tell Bijuu so the docs get fixed. **Anything marked "Nov 1 snapshot" below is old status from 2026-11-01: verify it before relying on it** (check the repo, the Drive folder and the Apps Script, not this file).
+**Precedence (Bijuu's rule): the latest state of the canvas wins over both docs.** The docs describe the canvas at v125. If the canvas differs, build what it shows and tell Bijuu so the docs get fixed. **Anything marked "Nov 1 snapshot" below is old status from 2026-11-01: verify it before relying on it** (check the repo, the Drive folder and the Apps Script, not this file).
 
 ## 0. Division of labor
 
@@ -20,7 +20,7 @@ The old v44 artifact (https://claude.ai/artifact/EorgyHdTy5dVNpkEjvmFZS) is **su
 
 ## 1. Where things live
 
-- **Design canvas** (Claude Design artifact, private to Bijuu's account): https://claude.ai/artifact/27nUAdqjtSjppMvVp9t2bP . Comment/canvas view: https://claude.ai/code/artifact/090b9f46-3f8f-4cb4-ba9f-582d2e923d46 . Latest published version at time of writing: **v123**. Its source files: `Site.dc.html` (the whole reader), `Admin.dc.html` (story editor), `Dashboard.dc.html` (stories list), `Comments.dc.html` (admin comments), `Uploads.dc.html` (admin uploads), plus small wrapper boards and `canvas.json`. They are prototype components, not production code; treat them as the visual and behavioral reference.
+- **Design canvas** (Claude Design artifact, private to Bijuu's account): https://claude.ai/artifact/27nUAdqjtSjppMvVp9t2bP . Comment/canvas view: https://claude.ai/code/artifact/090b9f46-3f8f-4cb4-ba9f-582d2e923d46 . Latest published version at time of writing: **v125**. Its source files: `Site.dc.html` (the whole reader), `Admin.dc.html` (story editor), `Dashboard.dc.html` (stories list), `Comments.dc.html` (admin comments), `Uploads.dc.html` (admin uploads), plus small wrapper boards and `canvas.json`. They are prototype components, not production code; treat them as the visual and behavioral reference.
 - **Project docs:** `claude/HANDOFF.md` (this), `claude/DESIGN.md`.
 - **Code:** GitHub repo (source of truth for code). Fics are **not** in the repo.
 - **Deploy:** Vercel via GitHub (batched, see rules).
@@ -76,6 +76,12 @@ Added in v123 (Bijuu approved all three suggestions after the terminal listed wh
 18. **Dashboard has no "show" button.** The Fandom select filters as soon as it changes, like the status tabs. The terminal's "show" button should be removed.
 19. **Fic list search and sort:** a "Search the fic list" field (matches title, fandom, pairing) and a "Sort by" select (Newest, Title, Most hearts), above the fandom groups. No match shows "No fics match that search" with a "Clear the search" link. Tag filtering is not drawn (all tags are placeholders); ask Bijuu before adding it.
 
+Added in v125 (the terminal's type-scale critique, answered by the design chat and checked against Impeccable's design rules; the terminal had left all three for a decision and changed nothing):
+
+20. **The Archive box matches the Howdy box:** h2 24 in the accent color, body 16, padding 20, gap 12. It is no longer a forced 1:1 square; it takes its natural height.
+21. **Muted is not a link.** Day `muted` moved from `#125E8A` (same as Day `link`) to `#4F6F78` in all five components. Empty notes ("No comments on this chapter yet.", and on the live site "(intro coming soon)" and "nothing posted yet.") are **muted, italic, not underlined**. Muted text never sits on the teal bar or an image well. Midnight muted still equals Midnight link (`#9BA8AB`); not changed.
+22. **Aa stays plain, 10pt, no outline, and stays at the viewport's right edge** (not aligned to the 708px column, no distance cap). It gets an **underline on hover**.
+
 ## 4. Rules for Claude Code
 
 - **The latest canvas wins over these docs** (see the top).
@@ -101,9 +107,10 @@ Added in v123 (Bijuu approved all three suggestions after the terminal listed wh
 7. Saving covers and comments (storage, validation, approve/hide/delete); the shared **hearts count** (server side); **RSS feeds** (per story and site-wide, paths your choice).
 8. Real table markup (`<table>`) for the dashboard; cards on small screens.
 9. Real data from Drive via the Apps Script link; chapters grouped by `<Title> - <N>` naming. The Uploads screen needs per-fic status and a reason from the script, and a "check again" that skips the 5-minute cache; "Open the Drive folder" and "View in Drive" need real links.
-10. **Verify what the canvas never rendered:** board heights on phone/tablet, script errors, contrast in all four themes, no sideways scroll at 390/820/1280 at 10, 14 and 20pt; the plain-text Aa and the title at 390px; the bottom chapter row at 390px; the heart/follow row wrapping on the story page; the Comments and Uploads screens in all themes and widths.
+10. **Verify what the canvas never rendered:** board heights on phone/tablet, script errors, contrast in all four themes, no sideways scroll at 390/820/1280 at 10, 14 and 20pt; the plain-text Aa and the title at 390px; the bottom chapter row at 390px; the heart/follow row wrapping on the story page; the Comments and Uploads screens in all themes and widths; **the Home intro in all four themes now that the Archive box is not a square (columns still line up, the list fits the 253px column at 20pt)**.
 11. Check the repo's `CLAUDE.md` and starter files against the current direction (Drive via Apps Script, not GitHub, holds the fics) and refresh them.
 12. Confirm every "Nov 1 snapshot" item in section 2 against the real repo, Drive folder and script, and correct this file.
+13. **Match the v125 decisions in code** (items 20-22 above): Archive box on the Howdy scale; empty notes muted, italic, not underlined, with Day muted `#4F6F78`; Aa plain, at the viewport edge, underline on hover.
 
 ## 6. Open design questions (waiting on Bijuu)
 
@@ -114,11 +121,14 @@ Added in v123 (Bijuu approved all three suggestions after the terminal listed wh
 - Is the comment form's Post button staying a box? (The bottom chapter row became links; Post was left alone.)
 - Do Anam Cara and MORIBUND stay marked "Published" in the dashboard demo?
 - Name for the Lagoon theme (working name).
-- Day muted text on teal bars measured 3.6:1 in an earlier audit; no instance found. Recheck once built.
+- Midnight: `muted` and `link` are both `#9BA8AB`. Separate them, or leave it since links are underlined and empty notes are italic?
+- Impeccable's design rules flagged three more things, none changed yet: (a) the check marks in Uploads, the Publish check and the Dashboard select boxes are typed characters, not drawn icons; (b) the Publish check could be inline instead of a modal; (c) "nothing here" style empty states could say what to do next. Bijuu to say which, if any.
 - Guesses made on comments, to confirm: "underline options" meant the Dashboard row actions; "put this on top" meant Featured (later superseded); "relocate under page title" meant the intro block; "these buttons" in the last comment meant the bottom chapter row.
 - Content notice wording and whether to ask readers to confirm they are adults.
 - Bring back the old paper texture? (Not in the new canvas.)
 - One of Bijuu's canvas edits (saved just before the v119 publish) may have been overwritten in `Site.dc.html`; she was told. If something she changed is missing, ask her.
+
+(The old worry that Day muted text on the teal bar measured 3.6:1 is closed: muted no longer goes on bars, and Day muted is now `#4F6F78`.)
 
 ## 7. Change log
 
@@ -128,7 +138,8 @@ Added in v123 (Bijuu approved all three suggestions after the terminal listed wh
 - 2026-11-03: canvas v121-v122 (items 12-16 and the bottom chapter row links); both docs updated.
 - 2026-11-03: canvas v123 (items 17-19: editor menus, no dashboard show button, fic list search and sort); both docs updated.
 - 2026-11-03: docs only, per Bijuu: added the canvas-wins rule; marked Nov 1 snapshot items to verify; DESIGN storage keys relabeled as proposed; Uploads demo rows marked as examples.
-- 2026-11-03 (terminal): built Home order, plain Aa, X close, arrow nav, link token, hearts, RSS, approve-first Comments, Drive panel in Uploads, Stories delete, Jump to chapter. Repo is Next.js + Supabase (not static HTML); Drive is an optional copy; the script is apps-script/drive-bridge.gs (not Code.gs) and also returns no links or status yet.
+- 2026-11-03: canvas v125 (items 20-22: Archive box scale, muted vs link, Aa kept plain with hover underline); both docs updated.
+- 2026-11-03 (terminal): built Home order, plain Aa, X close, arrow nav, link token, hearts, RSS, approve-first Comments, Drive panel in Uploads, Stories delete, Jump to chapter, editor menus, fic list search and sort, motion, hydration fix, tap targets, outlined Home tiles. Repo is Next.js + Supabase (not static HTML); Drive is an optional copy; the script is apps-script/drive-bridge.gs (not Code.gs) and also returns no links or status yet.
 - (Add terminal-side changes here, one line each, with the date.)
 
 ## 8. Next steps

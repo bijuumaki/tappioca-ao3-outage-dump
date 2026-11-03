@@ -1,8 +1,8 @@
 # DESIGN.md: Tappioca's Fic Archive (design spec for Claude Code)
 
-Updated 2026-11-03 from the design canvas, **version 123**. Read `claude/HANDOFF.md` too (data, hosting, Apps Script, repo rules). This file describes the design: what each screen looks like, how it behaves, and the rules to keep.
+Updated 2026-11-03 from the design canvas, **version 125**. Read `claude/HANDOFF.md` too (data, hosting, Apps Script, repo rules). This file describes the design: what each screen looks like, how it behaves, and the rules to keep.
 
-**Precedence (Bijuu's rule): the latest state of the canvas wins over this file.** This file is a description of the canvas at v123. If you open the canvas and it differs from what is written here, build what the canvas shows, and tell Bijuu so the docs can be corrected.
+**Precedence (Bijuu's rule): the latest state of the canvas wins over this file.** This file is a description of the canvas at v125. If you open the canvas and it differs from what is written here, build what the canvas shows, and tell Bijuu so the docs can be corrected.
 
 ## 0. How to use this file
 
@@ -18,12 +18,13 @@ Updated 2026-11-03 from the design canvas, **version 123**. Read `claude/HANDOFF
 - Small **lowercase** text site-wide (`text-transform: lowercase` on the root). **Exceptions:** chapter text, comment names/bodies (reader and admin), anything typed, author notes, the Links page body, file names in Uploads.
 - Reader text size **10 to 20pt in steps of 2, default 14**. Base `--fs = size / 14`. Reader chapter text is set in `pt`; UI scales with `--fs`. Floors: UI text never below 12px.
 - **Chapter text is justified** (`text-align: justify; hyphens: auto; max-width: 66ch`).
-- **Aa button, upper right.** It is **plain text "Aa" with no circle, border or fill**, set at **fixed 10pt in every theme, and it does not scale with the text size setting**. Keep a **44 x 44px tap area** (`top: 12px + safe-area`, `right: 16px`, fixed, `aria-label="Display options"`, `aria-expanded`). On screens under 900px, in the reader only, it slides away when scrolling down and returns on scroll up, on focus, or on back-to-top. Measure the width on scroll as well as on resize (the prototype once kept a stale narrow reading and hid Aa on desktop). **The admin screens still use the older circle Aa** (open question).
+- **Aa button, upper right.** It is **plain text "Aa" with no circle, border or fill**, set at **fixed 10pt in every theme, and it does not scale with the text size setting**. Keep a **44 x 44px tap area** (`top: 12px + safe-area`, `right: 16px`, fixed, `aria-label="Display options"`, `aria-expanded`). **It is positioned against the viewport's right edge, not the 708px reading column** (decided 2026-11-03): on a wide desktop it sits well outside the column on purpose, like a light switch by the door, and the title row reserves 64px of right padding so they never collide. Do not cap its distance from the column. **Hover shows an underline** (4px offset), because a brightness change is invisible on bare text; keyboard focus uses the normal 2px outline. On screens under 900px, in the reader only, it slides away when scrolling down and returns on scroll up, on focus, or on back-to-top. Measure the width on scroll as well as on resize (the prototype once kept a stale narrow reading and hid Aa on desktop). **The admin screens still use the older circle Aa** (open question).
 - **10px corners** on boxes and cards (buttons and small controls 6 to 8px, chips 6px).
 - Four themes everywhere, plus phone, tablet and desktop: **Day, Lagoon, Night, Midnight**. Check all four after any color change.
 - Tap targets at least 44px. Visible focus (`outline: 2px solid currentColor`). `prefers-reduced-motion` turns motion off. Respect safe-area insets.
 - **Icons instead of words** where Bijuu asked: the display options close is an X icon; chapter Previous/Next are small arrow icons. Icon-only buttons keep an `aria-label`.
 - **Links instead of boxes** where Bijuu asked: the reader's bottom chapter row is plain links (see Reader). Do not box things she asked to be links.
+- **Muted is not a link.** Muted text (secondary lines, counts, hints) and links must never look alike. Links are underlined (or, in the title and chapter row, use the `link` color and are plainly buttons); muted text is never underlined. **Empty notes** ("No comments on this chapter yet.", and in the live site "(intro coming soon)" and "nothing posted yet.") are drawn **muted and italic, with no underline**.
 - She often reverses values. Apply the latest and say what it replaced.
 
 ## 2. Tokens
@@ -33,7 +34,7 @@ Each theme defines these. Names match the canvas code.
 | token | job |
 |---|---|
 | `pageBg`, `text`, `muted` | page, body text, secondary text |
-| `accentText` | headings like "Howdy" / "Continue reading" / notice heading, delete icon, heart color |
+| `accentText` | headings like "Howdy" / "The Archive" / "Continue reading" / notice heading, delete icon, heart color |
 | `accentFill` + `onAccent` | primary buttons AND every selected state (tab, theme option, spacing option, toolbar toggle, current admin section) |
 | `cardBg` | cards, tiles, buttons, dialogs, fields |
 | `border` | quiet hairlines AND empty image wells (`well = border`) |
@@ -49,7 +50,7 @@ Values (Tappioca palette, the default):
 |---|---|---|---|---|
 | pageBg | `#EDF6F9` | `#F6F1E7` | `#14262D` | `#06141B` |
 | text | `#204B57` | `#0A1517` | `#EDF6F9` | `#CCD0CF` |
-| muted | `#125E8A` | `#3C5558` | `#83C5BE` | `#9BA8AB` |
+| muted | `#4F6F78` | `#3C5558` | `#83C5BE` | `#9BA8AB` |
 | accentText | `#51344D` | `#A84B4E` | `#D8B4D1` | `#CCD0CF` |
 | cardBg | `#EDF6F9` | `#FBF8F2` | `#1B3540` | `#11212D` |
 | border / well | `#B7D3D8` | `#E0C3A8` | `#2F5A66` | `#4A5C6A` |
@@ -59,7 +60,9 @@ Values (Tappioca palette, the default):
 | onAccent | = pageBg | `#0A1517` | = pageBg | = pageBg |
 | link | `#125E8A` | = accentText | = accentText | `#9BA8AB` |
 
-Defaults when a token is missing: `fieldBorder = border`, `bar = tint`, `accentFill = accentText`, `onAccent = pageBg`, `link = accentText`. (`tint` is the old teal, now only a source for `bar`.)
+**Changed 2026-11-03 (v125): Day `muted` was `#125E8A`, the same blue as Day `link`**, so muted lines and empty notes read as clickable. It is now `#4F6F78` (4.94:1 on the Day page and cards). Day `link` stays `#125E8A`. **Rule: muted text only goes on `pageBg` or `cardBg`, never on a `bar` or an image well** (Day muted measures 2.76:1 on the bar and 3.44:1 on a well). In **Midnight, `muted` and `link` are still the same value (`#9BA8AB`)**; the underline and italic rules above are what tell them apart there. Whether to separate them is an open question.
+
+Defaults when a token is missing: `fieldBorder = border`, `bar = tint`, `accentFill = accentText`, `onAccent = pageBg`, `link = accentText`. (`tint` is the old teal, now only a source for `bar`.) The admin screens define no `link` token; their links are text color with an underline.
 
 The reader component (`Site.dc.html`) also still contains leftover palettes (Harbor, Milk Tea, Orchid, Custom) from the old look; the Admin, Stories, Comments and Uploads screens have only the four above. Ignore the leftovers unless Bijuu asks; Tappioca is the live one. "Lagoon" is a working name; Bijuu has not decided.
 
@@ -68,7 +71,7 @@ The reader component (`Site.dc.html`) also still contains leftover palettes (Har
 - Display and headings: **IM Fell English** (site title always; headings follow the chosen font when it is not Default).
 - Body and UI: **Inclusive Sans**. Admin uses the same.
 - Reader font menu (Aa panel, checked in the canvas code): Default (Inclusive Sans), Lucida Sans, Cantarell, Tahoma, Crimson Pro, IM Fell English, Cormorant Garamond.
-- Sizes: page title `clamp(30px, 7vw, 40px) * --fs`; section bar heading `24px * --fs`; card title `15px * --fs`; meta `13px * --fs`; body `16px * --fs`.
+- Sizes: page title `clamp(30px, 7vw, 40px) * --fs`; section bar heading `24px * --fs`; **intro box heading (Howdy, The Archive) `24px * --fs`, body `16px * --fs`, padding 20px**; card title `15px * --fs`; meta `13px * --fs`; body `16px * --fs`.
 - Line spacing options: Tight 1.4, Normal 1.7 (default), Loose 2.1.
 - Paper texture from the old v44 page is **not** in the canvas. Decide with Bijuu before bringing it back.
 
@@ -79,7 +82,7 @@ Reader-facing app is one page with hash routes: `#home`, `#fics`, `#story/<id>` 
 ### Home (order set by Bijuu on 2026-11-03)
 Top to bottom:
 1. Site title "Tappioca's Fic Archive" (links to Home).
-2. **Intro block**, directly under the title: photo circle placeholder + "The Archive" stats box (per-fandom counts, `[N]`) on the left; "Howdy" box and four outlined page tiles (Disclaimer, About, Fic List, Links) on the right. Stacks and centers on phones.
+2. **Intro block**, directly under the title: photo circle placeholder + "The Archive" stats box (per-fandom counts, `[N]`) on the left; "Howdy" box and four outlined page tiles (Disclaimer, About, Fic List, Links) on the right. Stacks and centers on phones. **The Archive box and the Howdy box are one component at one scale** (h2 24 in `accentText`, body 16, padding 20, gap 12, 10px corners). The Archive box is **not a 1:1 square any more** (v125): it takes its natural height, and "[N] stories" is a plain bold line above the per-fandom list.
 3. **Featured** bar + featured fic card (Anam Cara now). Opens the story page.
 4. **More stories** bar + grid of fic cards (auto-fill, min 200px). There is **no "See the whole fic list" button**; the Fic List tile in the intro is the way to the list.
 5. **Continue reading** card, **only for a returning reader** (has progress), at the **very bottom, just above the footer**: title, "Chapter N of T", primary "Resume". Resume goes straight into the reader at that chapter. First-time readers never see it.
@@ -105,7 +108,7 @@ Fic cards grouped by fandom (bar heading per fandom). Cards as above. Opens the 
 - Chapter heading bar, optional author's-notes box (not lowercased), chapter text (justified, `pt` size, chosen font).
 - **Bottom chapter row (Bijuu: "remove the boxes, make them links, center them"):** **no borders or fills**. A centered row of three links: **left arrow | Contents | right arrow**, in the `link` color, 48px tap areas, 8px apart, Contents underlined. Arrows dim at the first/last chapter and are disabled there. **Contents** currently scrolls to the top and focuses the chapter dropdown; it does not open a separate list (open question).
 - **End of story** (last chapter only): panel "You have reached the end of <title>", "That was chapter T, the last one." (single chapter: "That was the whole story."), `[author's closing note, if any]`, buttons in this order: Leave a comment (primary, full width, scrolls to the comment form), **Heart this story** (full width, outlined, same behavior as on the story page), Read again (chapter 1), More in <fandom> (fic list), Story details.
-- **Comments** per chapter, at the bottom of every chapter page: heading "Comments on chapter N (count)", list (name, when, body; typed text is not lowercased), form (name, comment, Post). **This is the only place a reader writes a comment.** The Post button is still a normal box. New comments go to the admin Comments screen and wait for approval (see Admin).
+- **Comments** per chapter, at the bottom of every chapter page: heading "Comments on chapter N (count)", list (name, when, body; typed text is not lowercased), form (name, comment, Post). With no comments the list shows **"No comments on this chapter yet." in muted italic** (an empty note, see section 1). **This is the only place a reader writes a comment.** The Post button is still a normal box. New comments go to the admin Comments screen and wait for approval (see Admin).
 - **Back to top** button: round, bottom right; shows near the bottom of the page, and on phones also when scrolling up after a long scroll.
 - **Aa panel** (display options): opens from the Aa button. Header row: on the reader, the muted 10pt text **"adjust for your eyes"** sits to the left of the **close X**; the X is a plain icon with **no box or border** (44px tap area, `aria-label="Close display options"`). Below: Text size − / +, Font, Line spacing, Theme. Esc closes and returns focus to Aa. Desktop: floating card under the Aa button; when open on wide screens the page makes room at the right. Phone (<600px): bottom sheet. The "adjust for your eyes" text shows only in the reader.
 - Where the heart and comment controls are **not**: no heart in the chapter pages, no comment button on Home, fic cards or the story page.
@@ -166,8 +169,9 @@ The canvas keeps all of this in demo state; it reads and writes **no** browser s
 
 - Real `<button>`, `<a>`, `<select>`, labelled fields. Icon-only buttons (Aa, X, arrows, back to top, delete) have `aria-label`. Status is never color alone (publish check and Uploads use a check or "!" plus text; published/approved dot is filled vs hollow).
 - The dialogs use `role="dialog"` / `alertdialog` with labelled titles. Heart is a toggle with `aria-pressed`. Status lines use `role="status"`.
-- Known gap: Day muted text on teal bars measured 3.6:1 in an earlier audit (no instance found; recheck when built).
+- Contrast: Day muted is now 4.94:1 on the page and cards (v125). The old 3.6:1 worry (Day muted on the teal bar) is closed by the rule that muted never sits on a bar or well. Midnight muted is 7.6:1. Recheck all four themes once built.
 - "adjust for your eyes" is visual hint text inside the panel; the panel itself is labelled "Display options".
+- Known gap (from Impeccable's craft rules, not changed): the check marks in Uploads, the Publish check and the Dashboard select boxes are typed characters (✓, !, –), not drawn icons. Build them as one consistent SVG icon set.
 
 ## 7. For the terminal (not solved by the design)
 
@@ -178,7 +182,8 @@ The canvas keeps all of this in demo state; it reads and writes **no** browser s
 5. Focus trap and focus return for the delete dialogs, the Publish check dialog and the display options panel.
 6. Server-side check of the publish rules; unsaved-changes warning when leaving the editor.
 7. Browser storage for progress, notice-seen and hearts (section 5).
-8. Verify what was never rendered: board heights, script errors, contrast in all four themes, no sideways scroll at 390/820/1280 and at 10, 14 and 20pt. Specifically check the reader's top-right at 390px (plain-text Aa), the bottom chapter row at 390px, the story page heart/follow row wrapping, and the new Comments and Uploads screens in all four themes and three widths.
+8. Verify what was never rendered: board heights, script errors, contrast in all four themes, no sideways scroll at 390/820/1280 and at 10, 14 and 20pt. Specifically check the reader's top-right at 390px (plain-text Aa), the bottom chapter row at 390px, the story page heart/follow row wrapping, the new Comments and Uploads screens in all four themes and three widths, and **the Home intro in all four themes (the Archive box is no longer a square, so check that the left and right columns still line up and the Archive list fits in the 253px column at 20pt)**.
+9. **Match the canvas on the three points the terminal raised (decided 2026-11-03):** (a) the Archive box uses the Howdy scale; (b) empty notes are muted, italic, not underlined, using Day muted `#4F6F78`; (c) the plain 10pt Aa stays outline-free and stays at the viewport's right edge, with an underline on hover.
 
 ## 8. Canvas boards (so you know where to look)
 
@@ -192,3 +197,4 @@ Rows, top to bottom: Home and Reader in four themes (Reader: Day opens with the 
 - 2026-11-03 (v122, Bijuu's comment): reader bottom chapter row became centered plain links (no boxes).
 - 2026-11-03 (v123, from the terminal's gap list, Bijuu: "all as suggested"): editor menu row reduced to File/Edit/View with items; dashboard "show" button confirmed absent; fic list search and sort.
 - 2026-11-03 (docs only, no canvas change): added the canvas-wins rule; storage keys relabeled as proposed; Uploads demo rows marked as examples; leftover-palette note corrected.
+- 2026-11-03 (v125, terminal's type-scale critique checked against Impeccable's rules): The Archive box moved to the Howdy scale (24/16/padding 20, accent heading, no 1:1 square); Day `muted` changed from `#125E8A` to `#4F6F78` in all five components so muted text no longer matches links; the empty comments line is muted italic; Aa kept plain and at the viewport edge, with an underline on hover. Not changed, waiting on Bijuu: typed check marks vs drawn icons, Publish check as a modal, "nothing here" empty-state wording, Midnight muted equal to link.
