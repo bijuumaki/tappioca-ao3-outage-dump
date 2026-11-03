@@ -1,7 +1,6 @@
 import Link from "next/link";
 import AdminHeader from "@/components/admin/AdminHeader";
 import StoryList from "@/components/admin/StoryList";
-import { signOut } from "@/lib/admin/auth-actions";
 import { listAdminStories } from "@/lib/admin/queries";
 import type { StoryStatus } from "@/lib/admin/status";
 import { requireAdmin } from "@/lib/supabase/session";
@@ -28,7 +27,6 @@ export default async function StoriesPage({ searchParams }: { searchParams: Prom
     <main className="a-page">
       <AdminHeader title="Stories">
         <Link href="/admin/stories/new" className="a-add a-add-desktop"><span aria-hidden="true">+</span>Add new story</Link>
-        <form action={signOut}><button type="submit" className="a-button">Sign out</button></form>
       </AdminHeader>
 
       <div className="a-toolbar">

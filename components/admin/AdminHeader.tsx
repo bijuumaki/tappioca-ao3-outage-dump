@@ -1,3 +1,4 @@
+import { signOut } from "@/lib/admin/auth-actions";
 import AdminOptions from "./AdminOptions";
 import AdminSections from "./AdminSections";
 
@@ -11,6 +12,7 @@ export default function AdminHeader({ title, children }: { title: string; childr
       </div>
       <div className="a-header-actions">
         {children}
+        <form action={signOut} className="a-signout-form"><button type="submit" className="a-signout a-link">Sign out</button></form>
         <AdminOptions />
       </div>
     </header>

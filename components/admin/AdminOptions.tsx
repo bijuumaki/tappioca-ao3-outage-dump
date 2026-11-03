@@ -32,11 +32,13 @@ export default function AdminOptions() {
     <>
       <button ref={button} type="button" className="a-aa" aria-label="Display options" aria-expanded={open} onClick={() => setOpen(!open)}>Aa</button>
       <section ref={panel} className="a-options" role="dialog" aria-label="Display options" hidden={!open}>
-        <button type="button" className="a-button a-close" onClick={() => { setOpen(false); button.current?.focus(); }}>Close</button>
         <span>Theme</span>
         <div className="a-choices" role="group" aria-label="Theme">
           {THEMES.map(([v, l]) => <button key={v} type="button" aria-pressed={theme === v} onClick={() => pick(v)}>{l}</button>)}
         </div>
+        <button type="button" className="a-close" aria-label="Close display options" onClick={() => { setOpen(false); button.current?.focus(); }}>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" /></svg>
+        </button>
       </section>
     </>
   );
