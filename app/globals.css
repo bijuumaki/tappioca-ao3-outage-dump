@@ -228,7 +228,7 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .chapter-label { margin: 0; color: var(--muted); }
 .progress { height: 6px; border-radius: 3px; background: var(--bar); overflow: hidden; margin-top: 8px; }
 .progress > div { height: 100%; background: var(--accent-fill); }
-.chapter-title { margin-top: 12px; text-align: center; }
+.chapter-title { margin-top: 12px; text-align: center; font-family: var(--font-title); }
 .notes { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; font-size: max(14px, calc(var(--read) - 2pt)); color: var(--muted); }
 .notes .rich-text > :first-child { margin-top: 0; }
 .notes .rich-text > :last-child { margin-bottom: 0; }
