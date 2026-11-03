@@ -17,6 +17,16 @@ A public blog for Bijuu's ("tappioca") fanfics and art, like a small WordPress b
 - Say the pending count (`git rev-list --count origin/main..HEAD`) only when it changes or she asks.
 - **Where we left off** (update at the end of a chat when it changes): not drawn on the canvas, waiting on her call: `/browse`, tag, 404 and Comms pages; edit in place for the Howdy and The Archive boxes; the admin Aa panel matching the reader's; tag filtering on the Fic list. Loading feedback (top line, waiting cursor, placeholders, busy spinners) is built but not drawn on the canvas. Waiting on her outside the code: `RESEND_API_KEY`, `RESEND_FROM`, `ALERT_EMAIL` in Vercel (comment emails); `DRIVE_BRIDGE_URL`, `DRIVE_BRIDGE_TOKEN` (Drive parts stay hidden). Possible speed-up not done: a faster admin sign-in check (`getClaims`), untested without her login.
 
+## Remind her when she mentions posting original work (not fanfiction)
+
+She asked to be reminded of these, once, when it comes up:
+- The bot blocks only stop crawlers that announce themselves. One that pretends to be a browser can still copy any public chapter, so original work is the thing most worth protecting and nothing in code fully prevents copying.
+- Put a copyright line on the site or in each story's notes (for example "(c) year tappioca, all rights reserved"); the footer today says only that others' properties belong to their owners.
+- Keep dated drafts (the editor already stores earlier versions) as proof the work is hers and when it was written.
+- Consider posting only some chapters publicly, or leaving the newest chapters as drafts until she is ready.
+- The RSS feeds already carry only titles and links, never chapter text, so subscribers can't copy through them.
+- Vercel's AI Bots rule is set to Deny; Bot Protection is left Off on purpose (it would challenge RSS readers). Watch Vercel Firewall traffic if she suspects scraping.
+
 ## Working with Bijuu
 
 - Analogies help when explaining. Give step-by-step instructions as a flow chart.
