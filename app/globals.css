@@ -320,3 +320,32 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .resume-where { font-size: var(--t14); }
 .resume-button { flex: 0 1 auto; }
 .home-all { align-self: flex-start; flex: none; margin-bottom: 20px; }
+
+/* Comments */
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+.comments { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; scroll-margin-top: 16px; }
+.comments .section-bar { margin: 0; }
+.comment-list, .comment-replies { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.comment {
+  display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--card-bg);
+}
+.comment-replies { margin-top: 6px; padding-left: 16px; border-left: 2px solid var(--border); }
+.comment-replies .comment { border: 0; padding: 8px 0 0; background: transparent; }
+.comment-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; }
+.comment-name { font-weight: 600; text-transform: none; overflow-wrap: anywhere; }
+.comment-badge { margin-left: 8px; padding: 0 8px; border: 1px solid var(--field-border); border-radius: var(--radius-small); font-size: var(--t13); font-weight: 500; }
+.comment-date { font-size: var(--t13); }
+.comment-body { margin: 0; text-transform: none; white-space: pre-wrap; overflow-wrap: anywhere; }
+.comment-form { display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius); }
+.comment-form label { display: flex; flex-direction: column; gap: 4px; font-size: var(--t14); }
+.comment-form input[type="text"], .comment-form textarea {
+  box-sizing: border-box; padding: 0 10px; border: 1px solid var(--field-border); border-radius: var(--radius-small);
+  background: var(--card-bg); color: var(--ink); font: inherit; font-size: max(12px, calc(16px * var(--fs))); text-transform: none;
+}
+.comment-form input[type="text"] { min-height: 44px; }
+.comment-form textarea { padding: 10px; resize: vertical; }
+.comment-error { margin: 0; font-size: var(--t14); font-weight: 600; }
+.comment-post { align-self: flex-start; flex: none; }
+.comment-post:disabled { opacity: 0.6; cursor: default; }
+.comment-jump { flex: 1 1 100%; }

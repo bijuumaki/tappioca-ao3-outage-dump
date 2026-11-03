@@ -10,6 +10,7 @@ export default function EndOfStory({ slug, title, count, fandom }: {
       <h2 id="end-heading">{heading}</h2>
       <p>{count > 1 ? `That was chapter ${count}, the last one.` : "That was the whole story."}</p>
       <div className="story-actions">
+        <a href="#comments-heading" className="story-primary comment-jump">Leave a comment</a>
         <Link href={`/fics/${slug}/1`} className="story-secondary">Read again</Link>
         {fandom
           ? <Link href={`/tags/fandom/${fandom.slug}`} className="story-secondary">More in {fandom.name}</Link>

@@ -5,6 +5,7 @@ import BackToTop from "@/components/BackToTop";
 import ChapterBody from "@/components/ChapterBody";
 import ChapterGate from "@/components/ChapterGate";
 import ChapterNav, { TouchChapterNav } from "@/components/ChapterNav";
+import Comments from "@/components/Comments";
 import EndOfStory from "@/components/EndOfStory";
 import ReaderRegister from "@/components/ReaderRegister";
 import RecordPlace from "@/components/RecordPlace";
@@ -56,6 +57,7 @@ export default async function ChapterPage({ params }: Props) {
           <ChapterBody id={`${slug}/${chapter.n}`} chapter={chapter} />
           {several && <ChapterNav slug={slug} n={chapter.n} count={count} />}
           {chapter.n === count && <EndOfStory slug={slug} title={fic.title} count={count} fandom={fandomTag ? { name: fandomTag.name, slug: fandomTag.slug } : null} />}
+          <Comments slug={slug} n={chapter.n} />
         </ChapterGate>
       </article>
       <BackToTop />
