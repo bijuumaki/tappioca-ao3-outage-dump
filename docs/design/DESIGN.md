@@ -1,8 +1,8 @@
 # DESIGN.md: Tappioca's Fic Archive (design spec for Claude Code)
 
-Updated 2026-11-03 from the design canvas, **version 122**. Read `claude/HANDOFF.md` too (data, hosting, Apps Script, repo rules). This file describes the design: what each screen looks like, how it behaves, and the rules to keep.
+Updated 2026-11-03 from the design canvas, **version 123**. Read `claude/HANDOFF.md` too (data, hosting, Apps Script, repo rules). This file describes the design: what each screen looks like, how it behaves, and the rules to keep.
 
-**Precedence (Bijuu's rule): the latest state of the canvas wins over this file.** This file is a description of the canvas at v122. If you open the canvas and it differs from what is written here, build what the canvas shows, and tell Bijuu so the docs can be corrected.
+**Precedence (Bijuu's rule): the latest state of the canvas wins over this file.** This file is a description of the canvas at v123. If you open the canvas and it differs from what is written here, build what the canvas shows, and tell Bijuu so the docs can be corrected.
 
 ## 0. How to use this file
 
@@ -89,7 +89,7 @@ Earlier orders (fics first; Continue reading on top) were replaced by Bijuu's co
 **Fic cards** (Home and Fic list): well/cover 96px, title, rating and relationships line, words and chapters line, and a small muted **"heart icon + [N] hearts"** line. The hearts line is a count only; it is not a button.
 
 ### Fic list
-Fic cards grouped by fandom (bar heading per fandom). Cards as above. Opens the **story page**, not the reader. Search, tags and sorting are wanted (see HANDOFF); the canvas does not draw them yet.
+Fic cards grouped by fandom (bar heading per fandom). Cards as above. Opens the **story page**, not the reader. Above the groups: a **"Search the fic list"** field (matches title, fandom and pairing; typed text is not lowercased) and a **"Sort by"** select (**Newest, Title, Most hearts**), both 44px tall, side by side and wrapping on phones. Fandoms with no match disappear; if nothing matches, a status line says "No fics match that search." with an underlined "Clear the search" link. On the canvas only Title visibly reorders, because dates and hearts are placeholders; in the real app Newest uses the updated date and Most hearts uses the server count. Tag filtering is **not** drawn (all tags are placeholders); ask Bijuu before adding it.
 
 ### Story page (overview) and content notice
 - "Back to the fic list" link, cover (2:3 well), title, fandom, summary, tag chips.
@@ -122,17 +122,18 @@ Every admin screen has a row of section links under its header: **Stories | Comm
 ### Admin: New Story (editor)
 - Header: title "New Story", "Back to all stories", Aa (theme only; older circle look).
 - Left column (collapses behind a button below 1024px): **Story details** (Fandom: Resident Evil / Naruto / Saw (Static Baby); Rating: Not Rated / General Audiences / Teen and Up / Mature / Explicit; Relationships; Summary; optional cover upload with preview; Tags) and **Chapters** (list, "+ Add chapter").
-- Editor: menu row, formatting toolbar (undo/redo, bold, italic, underline, strike, link, image, block quote, scene break, alignment, spacing, indent, clear, text style, font, size), story title, chapter title, writing area, status line ("Chapter N · [Word count] · Draft or Published").
+- **Menu row: File, Edit, View only** (Insert, Format, Tools, Help were dropped; the toolbar covers them). Pressing one (accent fill while open, `aria-expanded`) opens a row of underlined links beneath it. File: Save draft, Preview, Publish (opens the Publish check), Back to stories. Edit: Undo, Redo, Clear formatting. View: Word count, Text size. Below 1024px the row sits behind the hamburger button. On the canvas most items just close the row; build the real actions.
+- Editor: formatting toolbar (undo/redo, bold, italic, underline, strike, link, image, block quote, scene break, alignment, spacing, indent, clear, text style, font, size), story title, chapter title, writing area, status line ("Chapter N · [Word count] · Draft or Published").
 - Actions: Save draft, Preview, **Publish**. On phones they sit in a fixed bottom bar.
 - **Publish check** (dialog): Publish opens it instead of publishing. Checks: story title present, summary present, rating is not "Not Rated", fandom chosen. Each row shows a check or "!" plus a short note; the dialog title says how many things need attention. **"Publish story" stays disabled until all pass**; "Keep editing" and "Save as draft" always work. If rating is Explicit or Mature, a line says readers will see a content notice before chapter 1. Enforce the same rules on the server; the dialog is only the front door.
 
 ### Admin: Stories (dashboard)
 - Header "Stories", "Add new story" (bottom bar on phone), Aa.
-- Filter tabs All / Published / Drafts with counts; Fandom select.
+- Filter tabs All / Published / Drafts with counts; Fandom select. **No "show" button:** the select filters as soon as it changes.
 - **Table** on desktop, **cards** on tablet and phone. Columns: select box, story + fandom, rating, chapters, words, status (filled dot = published), updated, actions.
 - Row actions: **Edit** (underlined link), **View** (underlined, published only), **delete icon** (no box).
 - Multi-select with a sticky bar ("N selected", Clear, "Delete N stories"). Delete opens a confirm dialog (permanent; says how many published stories will disappear). Esc closes dialogs.
-- Open question: whether Anam Cara and MORIBUND stay marked Published, and the real dashboard's "show" button.
+- Open question: whether Anam Cara and MORIBUND stay marked Published.
 
 ### Admin: Comments (new)
 - Header "Comments", Aa (theme panel with X close), section links.
@@ -189,4 +190,5 @@ Rows, top to bottom: Home and Reader in four themes (Reader: Day opens with the 
 - 2026-11-03 (v106-v120, from Bijuu's canvas comments): display options X icon without a box; Aa stays visible on desktop; "See the whole fic list" button removed; Continue reading moved to the bottom for returning readers; intro block moved under the page title; Aa plain 10pt text; Previous/Next arrow icons with Contents centered; "adjust for your eyes" inside the panel left of the X; pencil doodle removed from Reader: Day.
 - 2026-11-03 (v121, requested by terminal Claude Code, answers from Bijuu): per-story hearts; rss follow buttons and footer link; Admin Comments screen; Admin Uploads/Drive screen; section links across admin screens.
 - 2026-11-03 (v122, Bijuu's comment): reader bottom chapter row became centered plain links (no boxes).
+- 2026-11-03 (v123, from the terminal's gap list, Bijuu: "all as suggested"): editor menu row reduced to File/Edit/View with items; dashboard "show" button confirmed absent; fic list search and sort.
 - 2026-11-03 (docs only, no canvas change): added the canvas-wins rule; storage keys relabeled as proposed; Uploads demo rows marked as examples; leftover-palette note corrected.

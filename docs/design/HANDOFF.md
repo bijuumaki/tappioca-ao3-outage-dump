@@ -1,10 +1,10 @@
 # Handoff: Tappioca's fic archive and reader
 
-Updated 2026-11-03 (after canvas v122). The user is Bijuu (goes by tappioca; Philippines/Asia). Project in claude.ai: "TAPPIOCA NEOCITIES".
+Updated 2026-11-03 (after canvas v123). The user is Bijuu (goes by tappioca; Philippines/Asia). Project in claude.ai: "TAPPIOCA NEOCITIES".
 
 **Read order for Claude Code in the terminal:** this file first (what we are building, data, hosting, rules), then `claude/DESIGN.md` (the design: tokens, screens, behavior, what to build). Then the design canvas link in section 1.
 
-**Precedence (Bijuu's rule): the latest state of the canvas wins over both docs.** The docs describe the canvas at v122. If the canvas differs, build what it shows and tell Bijuu so the docs get fixed. **Anything marked "Nov 1 snapshot" below is old status from 2026-11-01: verify it before relying on it** (check the repo, the Drive folder and the Apps Script, not this file).
+**Precedence (Bijuu's rule): the latest state of the canvas wins over both docs.** The docs describe the canvas at v123. If the canvas differs, build what it shows and tell Bijuu so the docs get fixed. **Anything marked "Nov 1 snapshot" below is old status from 2026-11-01: verify it before relying on it** (check the repo, the Drive folder and the Apps Script, not this file).
 
 ## 0. Division of labor
 
@@ -20,7 +20,7 @@ The old v44 artifact (https://claude.ai/artifact/EorgyHdTy5dVNpkEjvmFZS) is **su
 
 ## 1. Where things live
 
-- **Design canvas** (Claude Design artifact, private to Bijuu's account): https://claude.ai/artifact/27nUAdqjtSjppMvVp9t2bP . Comment/canvas view: https://claude.ai/code/artifact/090b9f46-3f8f-4cb4-ba9f-582d2e923d46 . Latest published version at time of writing: **v122**. Its source files: `Site.dc.html` (the whole reader), `Admin.dc.html` (story editor), `Dashboard.dc.html` (stories list), `Comments.dc.html` (admin comments), `Uploads.dc.html` (admin uploads), plus small wrapper boards and `canvas.json`. They are prototype components, not production code; treat them as the visual and behavioral reference.
+- **Design canvas** (Claude Design artifact, private to Bijuu's account): https://claude.ai/artifact/27nUAdqjtSjppMvVp9t2bP . Comment/canvas view: https://claude.ai/code/artifact/090b9f46-3f8f-4cb4-ba9f-582d2e923d46 . Latest published version at time of writing: **v123**. Its source files: `Site.dc.html` (the whole reader), `Admin.dc.html` (story editor), `Dashboard.dc.html` (stories list), `Comments.dc.html` (admin comments), `Uploads.dc.html` (admin uploads), plus small wrapper boards and `canvas.json`. They are prototype components, not production code; treat them as the visual and behavioral reference.
 - **Project docs:** `claude/HANDOFF.md` (this), `claude/DESIGN.md`.
 - **Code:** GitHub repo (source of truth for code). Fics are **not** in the repo.
 - **Deploy:** Vercel via GitHub (batched, see rules).
@@ -70,6 +70,12 @@ Added in v121 after terminal Claude Code asked for the missing screens (Bijuu ch
 15. **Admin Uploads / Drive:** a three-step "how a fic gets here" flow, "Check Drive again", a list of fics found with Ready / Needs attention and the reason, Open and View in Drive links. Its demo rows are examples of states, not real Drive contents.
 16. **Admin section links** (Stories | Comments | Uploads) on every admin screen.
 
+Added in v123 (Bijuu approved all three suggestions after the terminal listed what the canvas did not say):
+
+17. **Editor menu row is now only File, Edit, View** (Insert, Format, Tools and Help were dropped: the formatting toolbar already does the first two and nothing defined the other two). Each opens a row of underlined links: File = Save draft, Preview, Publish (opens the Publish check), Back to stories; Edit = Undo, Redo, Clear formatting; View = Word count, Text size.
+18. **Dashboard has no "show" button.** The Fandom select filters as soon as it changes, like the status tabs. The terminal's "show" button should be removed.
+19. **Fic list search and sort:** a "Search the fic list" field (matches title, fandom, pairing) and a "Sort by" select (Newest, Title, Most hearts), above the fandom groups. No match shows "No fics match that search" with a "Clear the search" link. Tag filtering is not drawn (all tags are placeholders); ask Bijuu before adding it.
+
 ## 4. Rules for Claude Code
 
 - **The latest canvas wins over these docs** (see the top).
@@ -108,7 +114,6 @@ Added in v121 after terminal Claude Code asked for the missing screens (Bijuu ch
 - Is the comment form's Post button staying a box? (The bottom chapter row became links; Post was left alone.)
 - Do Anam Cara and MORIBUND stay marked "Published" in the dashboard demo?
 - Name for the Lagoon theme (working name).
-- What the real dashboard's "show" button should do.
 - Day muted text on teal bars measured 3.6:1 in an earlier audit; no instance found. Recheck once built.
 - Guesses made on comments, to confirm: "underline options" meant the Dashboard row actions; "put this on top" meant Featured (later superseded); "relocate under page title" meant the intro block; "these buttons" in the last comment meant the bottom chapter row.
 - Content notice wording and whether to ask readers to confirm they are adults.
@@ -121,8 +126,9 @@ Added in v121 after terminal Claude Code asked for the missing screens (Bijuu ch
 - 2026-11-03: canvas v100-v102 (section 3 items 1-6); HANDOFF.md rewritten; DESIGN.md created.
 - 2026-11-03: canvas v106-v120 from Bijuu's comments (items 7-11); both docs updated.
 - 2026-11-03: canvas v121-v122 (items 12-16 and the bottom chapter row links); both docs updated.
+- 2026-11-03: canvas v123 (items 17-19: editor menus, no dashboard show button, fic list search and sort); both docs updated.
 - 2026-11-03: docs only, per Bijuu: added the canvas-wins rule; marked Nov 1 snapshot items to verify; DESIGN storage keys relabeled as proposed; Uploads demo rows marked as examples.
-- 2026-11-03 (terminal): built Home order, plain Aa, X close, arrow nav, link token, hearts, RSS, approve-first Comments, Drive panel in Uploads. Repo is Next.js + Supabase (not static HTML); Drive is an optional copy; the script is apps-script/drive-bridge.gs (not Code.gs) and also returns no links or status yet.
+- 2026-11-03 (terminal): built Home order, plain Aa, X close, arrow nav, link token, hearts, RSS, approve-first Comments, Drive panel in Uploads, Stories delete, Jump to chapter. Repo is Next.js + Supabase (not static HTML); Drive is an optional copy; the script is apps-script/drive-bridge.gs (not Code.gs) and also returns no links or status yet.
 - (Add terminal-side changes here, one line each, with the date.)
 
 ## 8. Next steps
