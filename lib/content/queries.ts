@@ -146,6 +146,7 @@ export async function getCategories(): Promise<Category[]> {
 
 export type HomeData = {
   featured: FicCardData | null;
+  moreFics: FicCardData[];
   recentPosts: PostCardData[];
   storyCount: number;
   fandoms: { name: string; slug: string; count: number }[];
@@ -172,7 +173,8 @@ export async function getHomeData(): Promise<HomeData> {
   const fandoms = groupByFandom(fics)
     .filter((g) => g.slug !== null)
     .map((g) => ({ name: g.name, slug: g.slug as string, count: g.fics.length }));
-  return { featured, recentPosts: posts.slice(0, 3), storyCount: fics.length, fandoms };
+  const moreFics = fics.filter((f) => f.slug !== featured?.slug).slice(0, 6);
+  return { featured, moreFics, recentPosts: posts.slice(0, 3), storyCount: fics.length, fandoms };
 }
 
 /* Short home-page texts ("howdy", "archive"), stored in the pages table but not public pages. */

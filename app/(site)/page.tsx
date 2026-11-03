@@ -1,4 +1,6 @@
 import Link from "next/link";
+import ContinueReading from "@/components/ContinueReading";
+import FicCard from "@/components/FicCard";
 import PostCard from "@/components/PostCard";
 import RichText from "@/components/RichText";
 import { mediaUrl } from "@/lib/content/media";
@@ -15,6 +17,35 @@ export default async function Home() {
   return (
     <main className="page" id="main">
       <h1 className="page-title home-title"><Link href="/">Tappioca’s Fic Archive</Link></h1>
+      <ContinueReading />
+
+      {f && (
+        <>
+          <h2 className="section-bar">Featured: {f.title}</h2>
+          <Link href={`/fics/${f.slug}`} className="featured">
+            <span className="featured-cover">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {f.cover_path && <img src={mediaUrl(f.cover_path)} alt="" />}
+            </span>
+            <span className="featured-body">
+              <span className="featured-title">{f.title}</span>
+              {f.summary && <span className="featured-summary keep-case">{f.summary.replace(/<[^>]*>/g, " ").trim()}</span>}
+              <span className="featured-meta">{[fandomNames(f), ratingAndRelationships(f), lengthLine(f)].filter(Boolean).join(" · ")}</span>
+            </span>
+          </Link>
+        </>
+      )}
+
+      {home.moreFics.length > 0 && (
+        <>
+          <h2 className="section-bar">More stories</h2>
+          <section aria-label="More stories" className="card-grid">
+            {home.moreFics.map((fic) => <FicCard key={fic.slug} fic={fic} />)}
+          </section>
+        </>
+      )}
+      <Link href="/fics" className="story-secondary home-all">See the whole fic list</Link>
+
       <section className="home-intro">
         <div className="home-side">
           <div className="photo" aria-hidden="true" />
@@ -41,23 +72,6 @@ export default async function Home() {
           </nav>
         </div>
       </section>
-
-      {f && (
-        <>
-          <h2 className="section-bar">Featured: {f.title}</h2>
-          <Link href={`/fics/${f.slug}`} className="featured">
-            <span className="featured-cover">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              {f.cover_path && <img src={mediaUrl(f.cover_path)} alt="" />}
-            </span>
-            <span className="featured-body">
-              <span className="featured-title">{f.title}</span>
-              {f.summary && <span className="featured-summary keep-case">{f.summary.replace(/<[^>]*>/g, " ").trim()}</span>}
-              <span className="featured-meta">{[fandomNames(f), ratingAndRelationships(f), lengthLine(f)].filter(Boolean).join(" · ")}</span>
-            </span>
-          </Link>
-        </>
-      )}
 
       {home.recentPosts.length > 0 && (
         <>

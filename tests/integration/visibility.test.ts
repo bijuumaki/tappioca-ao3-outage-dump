@@ -67,6 +67,16 @@ describe.skipIf(!configured)("reader queries", async () => {
     expect(res!.posts.map((p) => p.slug)).toEqual(["sample-art"]);
   });
 
+  test("getHomeData lists the other published stories after the featured one", async () => {
+    const home = await q.getHomeData();
+    expect(home.featured!.slug).toBe("sample-fic");
+    const slugs = home.moreFics.map((f) => f.slug);
+    expect(slugs).not.toContain("sample-fic");
+    expect(slugs).not.toContain("sample-draft");
+    expect(slugs).toEqual(expect.arrayContaining(["sample-oneshot", "sample-mature", "sample-empty"]));
+    expect(slugs.length).toBeLessThanOrEqual(6);
+  });
+
   test("getPage only knows the four simple pages", async () => {
     expect((await q.getPage("about"))!.title).toBe("About");
     expect(await q.getPage("nonsense")).toBeNull();

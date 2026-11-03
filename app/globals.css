@@ -306,3 +306,16 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .to-top svg { width: 52%; height: 52%; }
 @media (max-width: 599px) { .to-top { width: 48px; height: 48px; } }
 @media (prefers-reduced-motion: reduce) { .to-top, .to-top[data-shown="true"] { transition: none; } }
+
+/* Home: continue reading, more stories */
+.resume-card {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; padding: 16px 20px;
+  border: 1px solid var(--field-border); border-radius: var(--radius); background: var(--card-bg);
+}
+.resume-text { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.resume-text h2 { margin: 0; font-family: var(--font-heading); font-size: var(--h20); line-height: 1.25; font-weight: 600; color: var(--accent-text); }
+.resume-text p { margin: 0; }
+.resume-title { font-weight: 500; overflow-wrap: anywhere; }
+.resume-where { font-size: var(--t14); }
+.resume-button { flex: 0 1 auto; }
+.home-all { align-self: flex-start; flex: none; margin-bottom: 20px; }
