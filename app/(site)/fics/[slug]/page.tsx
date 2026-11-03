@@ -4,6 +4,7 @@ import RichText from "@/components/RichText";
 import StoryOverview from "@/components/StoryOverview";
 import { getFic } from "@/lib/content/queries";
 import { RATING_LABELS, STATUS_LABELS } from "@/lib/content/types";
+import { chaptersLabel } from "@/lib/content/chapters-label";
 import { formatDate } from "@/lib/format/dates";
 import { formatWords } from "@/lib/format/words";
 
@@ -28,7 +29,7 @@ export default async function FicPage({ params }: Props) {
     { k: "Rating", v: RATING_LABELS[fic.rating] },
     ...(names("relationship").length ? [{ k: "Relationships", v: names("relationship").join(", ") }] : []),
     { k: "Words", v: formatWords(fic.totalWords) },
-    { k: "Chapters", v: String(fic.chapters.length) },
+    { k: "Chapters", v: chaptersLabel(fic.chapters.length, fic.planned_chapters ?? null, fic.status) },
     { k: "Status", v: STATUS_LABELS[fic.status] },
     ...(updated ? [{ k: "Updated", v: formatDate(updated) }] : []),
   ];

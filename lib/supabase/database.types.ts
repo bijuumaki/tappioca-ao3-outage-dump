@@ -63,17 +63,17 @@ export type Database = {
       };
       fics: {
         Row: {
-          category_id: number; cover_path: string | null; created_at: string; featured: boolean; hearts: number; id: number; notes: string; publish_at: string | null;
+          category_id: number; cover_path: string | null; created_at: string; featured: boolean; hearts: number; id: number; notes: string; planned_chapters: number | null; publish_at: string | null;
           rating: Database["public"]["Enums"]["rating"]; slug: string; status: Database["public"]["Enums"]["fic_status"];
           summary: string; title: string; updated_at: string;
         };
         Insert: {
-          category_id: number; cover_path?: string | null; created_at?: string; featured?: boolean; hearts?: number; id?: never; notes?: string; publish_at?: string | null;
+          category_id: number; cover_path?: string | null; created_at?: string; featured?: boolean; hearts?: number; id?: never; notes?: string; planned_chapters?: number | null; publish_at?: string | null;
           rating?: Database["public"]["Enums"]["rating"]; slug: string; status?: Database["public"]["Enums"]["fic_status"];
           summary?: string; title: string; updated_at?: string;
         };
         Update: {
-          category_id?: number; cover_path?: string | null; created_at?: string; featured?: boolean; hearts?: number; id?: never; notes?: string; publish_at?: string | null;
+          category_id?: number; cover_path?: string | null; created_at?: string; featured?: boolean; hearts?: number; id?: never; notes?: string; planned_chapters?: number | null; publish_at?: string | null;
           rating?: Database["public"]["Enums"]["rating"]; slug?: string; status?: Database["public"]["Enums"]["fic_status"];
           summary?: string; title?: string; updated_at?: string;
         };

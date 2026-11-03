@@ -1,4 +1,4 @@
-import { RATING_LABELS, type Rating } from "@/lib/content/types";
+import { RATING_LABELS, STATUS_LABELS, type FicStatus, type Rating } from "@/lib/content/types";
 
 export const RATING_OPTIONS: { value: Rating; label: string }[] = (["not_rated", "general", "teen", "mature", "explicit"] as Rating[])
   .map((value) => ({ value, label: RATING_LABELS[value] }));
@@ -28,11 +28,19 @@ export function uniqueSlug(base: string, taken: string[]): string {
 export type StoryDetails = {
   title: string; summary: string; rating: Rating; fandom: string;
   relationships: string[]; characters: string[]; warnings: string[]; tags: string[];
+  status: FicStatus; planned: number | null;
 };
+
+/* "10" -> 10; blank, 0, junk or over 999 -> null (shown to readers as "?"). */
+export function plannedFromText(text: string): number | null {
+  const n = Number(text.trim());
+  return text.trim() && Number.isInteger(n) && n >= 1 && n <= 999 ? n : null;
+}
 
 export function storyDetailsFromForm(form: FormData): StoryDetails {
   const text = (k: string) => String(form.get(k) ?? "").trim();
   const rating = text("rating");
+  const status = text("status");
   return {
     title: text("title") || "Untitled",
     summary: text("summary"),
@@ -42,6 +50,8 @@ export function storyDetailsFromForm(form: FormData): StoryDetails {
     characters: parseTagInput(text("characters")),
     warnings: parseTagInput(text("warnings")),
     tags: parseTagInput(text("tags")),
+    status: status in STATUS_LABELS ? (status as FicStatus) : "in_progress",
+    planned: plannedFromText(text("planned")),
   };
 }
 

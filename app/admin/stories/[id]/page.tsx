@@ -42,6 +42,7 @@ export default async function EditStoryPage({ params, searchParams }: Props) {
             values={{
               summary: story.summary, rating: story.rating, fandom: names("fandom"), relationships: names("relationship"),
               characters: names("character"), warnings: names("warning"), tags: names("freeform"),
+              status: story.status, planned: story.planned_chapters ? String(story.planned_chapters) : "",
             }}
           />
           <ChapterList ficId={story.id} chapters={story.chapters} currentId={chapter?.id ?? null} />

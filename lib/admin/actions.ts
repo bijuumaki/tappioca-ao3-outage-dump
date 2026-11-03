@@ -44,8 +44,10 @@ export async function saveStoryDetails(ficId: number, _prev: SaveState, form: Fo
   if (!fic) return { ok: false, savedAt: null, error: "This story no longer exists." };
   /* The web address follows the title until the story is first published, then stays put. */
   const slug = !fic.publish_at && (d.title !== fic.title || fic.slug.startsWith("untitled-")) ? uniqueSlug(slugify(d.title), await takenSlugs(db, ficId)) : fic.slug;
-  const { error } = await db.from("fics").update({ title: d.title, summary: d.summary, rating: d.rating, slug }).eq("id", ficId);
+  const { error } = await db.from("fics").update({ title: d.title, summary: d.summary, rating: d.rating, status: d.status, slug }).eq("id", ficId);
   if (error) return { ok: false, savedAt: null, error: "Couldn’t save. Try again." };
+  /* Separate so the rest still saves before migration 0014 has been run on the live database. */
+  await db.from("fics").update({ planned_chapters: d.planned }).eq("id", ficId);
   await setTags(db, ficId, {
     fandom: d.fandom ? [d.fandom] : [], relationship: d.relationships, character: d.characters, warning: d.warnings, freeform: d.tags,
   });

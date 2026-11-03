@@ -3,10 +3,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { saveStoryDetails } from "@/lib/admin/actions";
 import { RATING_OPTIONS } from "@/lib/admin/story-form";
 import { registerDetailsSaver } from "@/lib/client/details-saver";
-import type { Rating } from "@/lib/content/types";
+import { STATUS_LABELS, type FicStatus, type Rating } from "@/lib/content/types";
 
 export type DetailsValues = {
   summary: string; rating: Rating; fandom: string; relationships: string; characters: string; warnings: string; tags: string;
+  status: FicStatus; planned: string;
 };
 type State = "idle" | "saving" | "saved" | "error";
 
@@ -78,6 +79,14 @@ export default function StoryDetails({ ficId, values, fandoms }: { ficId: number
         <select name="rating" defaultValue={values.rating}>
           {RATING_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
+      </label>
+      <label className="a-field">Status
+        <select name="status" defaultValue={values.status}>
+          {Object.entries(STATUS_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+        </select>
+      </label>
+      <label className="a-field">Planned chapters
+        <input name="planned" type="number" inputMode="numeric" min={1} max={999} defaultValue={values.planned} placeholder="Leave blank if unsure (shows ?)" />
       </label>
       <label className="a-field">Relationships
         <input name="relationships" defaultValue={values.relationships} placeholder="Character/Character" />
