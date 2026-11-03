@@ -30,12 +30,12 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 @media (min-width: 900px) { html[data-dock] .site { padding-right: 344px; } }
 @media (prefers-reduced-motion: reduce) { .site { transition: none; } }
 
-/* Site title: a link home on every page except Home (where the big title is the link) */
+/* Site title: a link home on every page except Home (where the big title is the link). Link color, no underline (canvas). */
 .site-title-wrap { max-width: var(--page-width); margin: 0 auto 24px; padding-right: 64px; }
 .site-title {
   display: inline-flex; align-items: center; min-height: 44px;
   font-family: var(--font-title); font-size: calc(24px * var(--fs)); font-weight: 700;
-  text-decoration: underline; text-underline-offset: 5px;
+  color: var(--link); text-decoration: none;
 }
 
 /* Aa button and display options */

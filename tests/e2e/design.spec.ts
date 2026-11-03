@@ -14,6 +14,7 @@ test("other pages have the site title as a link home", async ({ page }) => {
     const link = page.locator(".site-title");
     await expect(link, path).toHaveText("Tappioca’s Fic Archive");
     await expect(link, path).toHaveAttribute("href", "/");
+    expect(await link.evaluate((el) => getComputedStyle(el).textDecorationLine), path).toBe("none");
   }
   await page.goto("/");
   await expect(page.locator(".site-title")).toBeHidden();
