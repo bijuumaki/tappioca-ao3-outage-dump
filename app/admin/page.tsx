@@ -27,7 +27,7 @@ export default async function StoriesPage({ searchParams }: { searchParams: Prom
   return (
     <main className="a-page">
       <AdminHeader title="Stories">
-        <Link href="/admin/stories/new" className="a-add a-add-desktop"><span aria-hidden="true">+</span>Add new story</Link>
+        <Link href="/admin/stories/new" className="a-add-story a-add-desktop"><span aria-hidden="true">+</span>Add new story</Link>
       </AdminHeader>
 
       <div className="a-toolbar">
@@ -50,7 +50,7 @@ export default async function StoriesPage({ searchParams }: { searchParams: Prom
         <StoryList rows={rows} />
       )}
       <div role="group" aria-label="Add story" className="a-add-bar">
-        <Link href="/admin/stories/new" className="a-add"><span aria-hidden="true">+</span>Add new story</Link>
+        <Link href="/admin/stories/new" className="a-add-story"><span aria-hidden="true">+</span>Add new story</Link>
       </div>
     </main>
   );
