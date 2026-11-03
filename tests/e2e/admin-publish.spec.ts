@@ -118,7 +118,7 @@ test("the publish check lists what is missing and blocks publishing", async ({ p
   await page.getByRole("button", { name: "Publish", exact: true }).click();
   await expect(dialog.getByRole("heading")).toHaveText("Publish “(e2e publish check)”?");
   await expect(dialog).toContainText("Readers will see this story on the fic list as soon as you publish.");
-  await expect(dialog).toContainText("This story is rated Explicit. Readers see a content notice before chapter 1.");
+  await expect(dialog).not.toContainText("content notice");
   await dialog.getByRole("button", { name: "Publish story" }).click();
   await expect(page.locator(".a-pub-state")).toHaveText(/published/i);
   const res = await page.goto("/fics/e2e-publish-check");

@@ -1,12 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
-
-/* Clicks "Continue to the story" until the page has really saved it (the first click can land before the page is interactive). */
-async function acceptNotice(page: Page) {
-  await expect(async () => {
-    await page.getByRole("button", { name: "Continue to the story" }).click({ timeout: 1000 });
-    expect(await page.evaluate(() => localStorage.getItem("fic-site-ack"))).toContain("sample-mature");
-  }).toPass();
-}
+import { expect, test } from "@playwright/test";
 
 test("story page shows the details, tags and a start button", async ({ page }) => {
   await page.goto("/fics/sample-fic");
@@ -22,7 +14,6 @@ test("story page shows the details, tags and a start button", async ({ page }) =
   await expect(page.getByRole("link", { name: "Start reading" })).toHaveAttribute("href", "/fics/sample-fic/1");
   await expect(page.getByRole("link", { name: "Back to the fic list" })).toHaveAttribute("href", "/fics");
   await expect(page.locator(".story-chapters li")).toHaveCount(3);
-  await expect(page.getByText("Content notice")).toHaveCount(0);
 });
 
 test("a one-chapter story has the same page and no chapter text on it", async ({ page }) => {
@@ -44,25 +35,6 @@ test("the story page still works when the browser blocks saved settings", async 
     Storage.prototype.setItem = () => { throw new Error("blocked"); };
   });
   await page.goto("/fics/sample-fic");
-  await expect(page.getByRole("link", { name: "Start reading" })).toBeVisible();
-  await page.goto("/fics/sample-mature");
-  await expect(page.getByRole("heading", { name: "Content notice" })).toBeVisible();
-});
-
-test("a Mature story shows a content notice before any chapter opens", async ({ page }) => {
-  await page.goto("/fics/sample-mature");
-  const notice = page.getByRole("region", { name: "Content notice" });
-  await expect(notice).toContainText("This story is rated Mature. It may contain adult content.");
-  await expect(notice).toContainText("(sample warning)");
-  await expect(page.getByText("Read the content notice above to open a chapter.")).toBeVisible();
-  await expect(page.locator(".story-chapters button:disabled")).toHaveCount(1);
-  await expect(page.getByRole("link", { name: "Start reading" })).toHaveCount(0);
-  await expect(notice.getByRole("link", { name: "Go back" })).toHaveAttribute("href", "/fics");
-
-  await acceptNotice(page);
-  await page.goto("/fics/sample-mature");
-  await expect(page.getByRole("heading", { name: "Content notice" })).toHaveCount(0);
-  await expect(page.getByText("You have seen the content notice for this story (Mature).")).toBeVisible();
   await expect(page.getByRole("link", { name: "Start reading" })).toBeVisible();
 });
 
@@ -93,29 +65,6 @@ test("a one-chapter story is read at chapter 1 with no chapter controls", async 
   await expect(page.locator(".chapter-label")).toHaveText("Chapter 1 · 6 words");
   await expect(page.locator(".chapter-buttons")).toHaveCount(0);
   await expect(page.locator(".progress")).toHaveCount(0);
-});
-
-/* getByText ignores the page data scripts, so this checks what the reader sees, not the page source. */
-test("a direct link to a Mature chapter shows the content notice instead of the text", async ({ page }) => {
-  await page.goto("/fics/sample-mature/1");
-  await expect(page.getByRole("heading", { name: "Content notice" })).toBeVisible();
-  await expect(page.getByText("Mature sample text.")).toHaveCount(0);
-  await acceptNotice(page);
-  await expect(page.getByText("Mature sample text.")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Content notice" })).toHaveCount(0);
-  await expect(page).toHaveURL(/\/fics\/sample-mature\/1$/);
-  await page.reload();
-  await expect(page.getByText("Mature sample text.")).toBeVisible();
-});
-
-test("a Mature chapter stays hidden when the browser blocks saved settings", async ({ page }) => {
-  await page.addInitScript(() => {
-    Storage.prototype.getItem = () => { throw new Error("blocked"); };
-    Storage.prototype.setItem = () => { throw new Error("blocked"); };
-  });
-  await page.goto("/fics/sample-mature/1");
-  await expect(page.getByRole("heading", { name: "Content notice" })).toBeVisible();
-  await expect(page.getByText("Mature sample text.")).toHaveCount(0);
 });
 
 test("the last chapter ends with just a comment button and a heart icon", async ({ page }) => {

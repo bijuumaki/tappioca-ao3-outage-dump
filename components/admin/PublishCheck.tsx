@@ -3,8 +3,8 @@ import { useEffect, useRef, type RefObject } from "react";
 import { missingCount, type Check } from "@/lib/admin/readiness";
 
 /* The "are you sure" step before a story goes public. It lists the basics and blocks Publish until they are there. */
-export default function PublishCheck({ checks, title, adult, ratingLabel, busy, returnFocus, onKeepEditing, onSaveDraft, onPublish }: {
-  checks: Check[]; title: string; adult: boolean; ratingLabel: string; busy: boolean; returnFocus: RefObject<HTMLElement | null>;
+export default function PublishCheck({ checks, title, busy, returnFocus, onKeepEditing, onSaveDraft, onPublish }: {
+  checks: Check[]; title: string; busy: boolean; returnFocus: RefObject<HTMLElement | null>;
   onKeepEditing(): void; onSaveDraft(): void; onPublish(): void;
 }) {
   const box = useRef<HTMLDivElement>(null);
@@ -46,7 +46,6 @@ export default function PublishCheck({ checks, title, adult, ratingLabel, busy, 
             </li>
           ))}
         </ul>
-        {adult && <p className="a-check-adult">This story is rated {ratingLabel}. Readers see a content notice before chapter 1.</p>}
         <div className="a-row a-modal-actions">
           <button type="button" className="a-button" onClick={onKeepEditing}>Keep editing</button>
           <button type="button" className="a-button" onClick={onSaveDraft}>Save as draft</button>

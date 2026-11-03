@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { hasAck, lastPlace, placeOf, recordPlace, setAck } from "@/lib/client/reading-memory";
+import { lastPlace, placeOf, recordPlace } from "@/lib/client/reading-memory";
 
 function fakeStorage(initial: Record<string, string> = {}) {
   const data = { ...initial };
@@ -32,19 +32,11 @@ describe("reading memory", () => {
     expect(lastPlace()).toMatchObject({ slug: "a", n: 2 });
   });
 
-  it("content notices are accepted per story", () => {
-    expect(hasAck("a")).toBe(false);
-    setAck("a");
-    expect(hasAck("a")).toBe(true);
-    expect(hasAck("b")).toBe(false);
-  });
-
   it("survives corrupt saved data", () => {
-    vi.stubGlobal("localStorage", fakeStorage({ "fic-site-place": "{nope", "fic-site-ack": "[[" }));
+    vi.stubGlobal("localStorage", fakeStorage({ "fic-site-place": "{nope" }));
     expect(placeOf("a")).toBeNull();
     expect(lastPlace()).toBeNull();
-    expect(hasAck("a")).toBe(false);
-    expect(() => { recordPlace("a", { n: 1, title: "A", count: 1 }); setAck("a"); }).not.toThrow();
+    expect(() => { recordPlace("a", { n: 1, title: "A", count: 1 }); }).not.toThrow();
   });
 
   it("survives storage that throws", () => {
@@ -52,7 +44,6 @@ describe("reading memory", () => {
     vi.stubGlobal("localStorage", boom);
     expect(placeOf("a")).toBeNull();
     expect(lastPlace()).toBeNull();
-    expect(hasAck("a")).toBe(false);
-    expect(() => { recordPlace("a", { n: 1, title: "A", count: 1 }); setAck("a"); }).not.toThrow();
+    expect(() => { recordPlace("a", { n: 1, title: "A", count: 1 }); }).not.toThrow();
   });
 });

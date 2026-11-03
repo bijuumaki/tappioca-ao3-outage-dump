@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import BackToTop from "@/components/BackToTop";
 import ChapterBody from "@/components/ChapterBody";
-import ChapterGate from "@/components/ChapterGate";
 import ChapterJump from "@/components/ChapterJump";
 import ChapterNav from "@/components/ChapterNav";
 import Comments from "@/components/Comments";
@@ -11,7 +10,6 @@ import EndOfStory from "@/components/EndOfStory";
 import ReaderRegister from "@/components/ReaderRegister";
 import RecordPlace from "@/components/RecordPlace";
 import { getChapter } from "@/lib/content/queries";
-import { RATING_LABELS } from "@/lib/content/types";
 import { formatWords } from "@/lib/format/words";
 
 export const revalidate = 60;
@@ -43,8 +41,6 @@ export default async function ChapterPage({ params }: Props) {
   const count = fic.chapters.length;
   const several = count > 1;
   const options = fic.chapters.map((c) => ({ n: c.n, label: c.title ? `${c.n}. ${c.title}` : `Chapter ${c.n}` }));
-  const adult = fic.rating === "mature" || fic.rating === "explicit";
-  const warnings = fic.tags.filter((t) => t.type === "warning").map((t) => t.name);
 
   return (
     <main className="page" id="main">
@@ -58,13 +54,13 @@ export default async function ChapterPage({ params }: Props) {
           {several && <ChapterJump slug={slug} n={chapter.n} chapters={options} />}
           {several && <div className="progress" aria-hidden="true"><div style={{ width: `${Math.round((chapter.n / count) * 100)}%` }} /></div>}
         </header>
-        <ChapterGate slug={slug} adult={adult} ratingLabel={RATING_LABELS[fic.rating]} warnings={warnings}>
+        <>
           <h2 className="section-bar chapter-title">{chapterHeading(chapter.n, chapter.title)}</h2>
           <ChapterBody id={`${slug}/${chapter.n}`} chapter={chapter} />
           {several && <ChapterNav slug={slug} n={chapter.n} count={count} />}
           {chapter.n === count && <EndOfStory slug={slug} />}
           <Comments slug={slug} n={chapter.n} />
-        </ChapterGate>
+        </>
       </article>
       <BackToTop />
     </main>

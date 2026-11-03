@@ -87,7 +87,7 @@ export default function PublishBar({ ficId, chapterId, publishAt, save }: {
       )}
       {error && <p className="a-alert" role="alert">{error}</p>}
       {review && (
-        <PublishCheck checks={review.checks} title={review.title} adult={review.adult} ratingLabel={review.ratingLabel} busy={busy} returnFocus={publishButton}
+        <PublishCheck checks={review.checks} title={review.title} busy={busy} returnFocus={publishButton}
           onKeepEditing={() => setReview(null)}
           onSaveDraft={() => { setReview(null); void save(); }}
           onPublish={() => { setReview(null); void run(() => publishChapter(chapterId)); }} />

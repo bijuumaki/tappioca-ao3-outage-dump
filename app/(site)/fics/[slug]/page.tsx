@@ -42,9 +42,6 @@ export default async function FicPage({ params }: Props) {
         summary={fic.summary ? <RichText html={fic.summary} /> : null}
         notes={fic.notes ? <RichText html={fic.notes} /> : null}
         tags={fic.tags.filter((t) => t.type !== "fandom").map((t) => ({ type: t.type, name: t.name, slug: t.slug }))}
-        ratingLabel={RATING_LABELS[fic.rating]}
-        adult={fic.rating === "mature" || fic.rating === "explicit"}
-        warnings={names("warning")}
         details={details}
         chapters={fic.chapters.map((c) => ({ n: c.n, label: c.title ? `${c.n}. ${c.title}` : `Chapter ${c.n}` }))}
       />

@@ -62,8 +62,3 @@ test("Leave a comment at the end of the story jumps to the comments", async ({ p
   await expect(page.locator("#comments-heading")).toBeInViewport();
 });
 
-test("a Mature chapter shows no comments or form until the notice is accepted", async ({ page }) => {
-  await page.goto("/fics/sample-mature/1");
-  await expect(page.getByRole("heading", { name: "Content notice" })).toBeVisible();
-  await expect(page.getByLabel("Your comment")).toHaveCount(0);
-});

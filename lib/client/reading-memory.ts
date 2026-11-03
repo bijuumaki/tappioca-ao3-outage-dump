@@ -1,8 +1,7 @@
 import { readPref, writePref } from "./prefs";
 
-/* Where each story was left, and which content notices were accepted. Browser-only, no accounts. */
+/* Where each story was left,. Browser-only, no accounts. */
 const PLACE_KEY = "fic-site-place";
-const ACK_KEY = "fic-site-ack";
 
 export type Place = { n: number; title: string; count: number; at: number };
 
@@ -37,16 +36,6 @@ export function lastPlace(): ({ slug: string } & Place) | null {
     if (isPlace(v) && (!best || v.at > best.at)) best = { slug, ...v };
   }
   return best;
-}
-
-export function hasAck(slug: string): boolean {
-  return load(ACK_KEY)[slug] === true;
-}
-
-export function setAck(slug: string): void {
-  const all = load(ACK_KEY);
-  all[slug] = true;
-  writePref(ACK_KEY, JSON.stringify(all));
 }
 
 const HEART_KEY = "fic-site-hearted";

@@ -11,7 +11,6 @@ import { storeImage } from "./media";
 import { notesToHtml } from "./notes";
 import { loadStoryChecks, NotReadyError, publishChapterAt, unpublishChapter } from "./publish";
 import type { Check } from "./readiness";
-import { RATING_LABELS } from "@/lib/content/types";
 import { storyDetailsFromForm, uniqueSlug } from "./story-form";
 import { setTags, takenSlugs } from "./story-store";
 import { saveVersion } from "./versions";
@@ -110,19 +109,16 @@ export async function publishChapter(chapterId: number): Promise<PublishResult> 
 }
 
 export type PublishChecksResult =
-  | { ok: true; checks: Check[]; title: string; ratingLabel: string; adult: boolean }
+  | { ok: true; checks: Check[]; title: string }
   | { ok: false; error: string };
 
 /* What the publish check dialog shows, read from what is saved. */
 export async function getPublishChecks(ficId: number): Promise<PublishChecksResult> {
   const { db } = await requireAdmin();
   try {
-    const { data: fic, error } = await db.from("fics").select("title, rating").eq("id", ficId).single();
+    const { data: fic, error } = await db.from("fics").select("title").eq("id", ficId).single();
     if (error) throw error;
-    return {
-      ok: true, checks: await loadStoryChecks(db, ficId), title: fic.title,
-      ratingLabel: RATING_LABELS[fic.rating], adult: fic.rating === "mature" || fic.rating === "explicit",
-    };
+    return { ok: true, checks: await loadStoryChecks(db, ficId), title: fic.title };
   } catch {
     return { ok: false, error: "Couldn’t check the story. Try again." };
   }
