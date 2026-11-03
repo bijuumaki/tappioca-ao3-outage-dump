@@ -2,7 +2,9 @@ import Link from "next/link";
 import ContinueReading from "@/components/ContinueReading";
 import FicCard from "@/components/FicCard";
 import PostCard from "@/components/PostCard";
+import SitePhoto from "@/components/SitePhoto";
 import RichText from "@/components/RichText";
+import { mediaUrl } from "@/lib/content/media";
 import { getHomeData, getSnippet } from "@/lib/content/queries";
 import { fandomNames, lengthLine, ratingAndRelationships } from "@/lib/format/fic-meta";
 
@@ -11,7 +13,7 @@ export const revalidate = 60;
 const ROWS = [["/disclaimer", "Disclaimer"], ["/about", "About"], ["/fics", "Fic List"], ["/links", "Links"]] as const;
 
 export default async function Home() {
-  const [home, howdy, archive] = await Promise.all([getHomeData(), getSnippet("howdy"), getSnippet("archive")]);
+  const [home, howdy, archive, photo] = await Promise.all([getHomeData(), getSnippet("howdy"), getSnippet("archive"), getSnippet("photo")]);
   const f = home.featured;
   return (
     <main className="page" id="main">
@@ -19,7 +21,7 @@ export default async function Home() {
 
       <section className="home-intro">
         <div className="home-side">
-          <div className="photo" aria-hidden="true" />
+          <SitePhoto url={photo ? mediaUrl(photo) : null} />
           <section aria-label="About this archive" className="archive-box">
             <h2>The Archive</h2>
             {archive && <RichText html={archive} />}

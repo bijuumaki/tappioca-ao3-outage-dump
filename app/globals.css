@@ -108,6 +108,10 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
   aspect-ratio: 1 / 1; border-radius: 50%; background: var(--bar); overflow: hidden;
   display: flex; align-items: center; justify-content: center; font-size: var(--t13); font-weight: 500;
 }
+.photo img { width: 100%; height: 100%; object-fit: cover; }
+.photo-edit { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 16px; }
+.photo-edit .story-secondary { flex: none; padding: 0 16px; }
+.photo-error { margin: 0; color: var(--accent-text); font-size: var(--t14); text-align: center; }
 .home-side .photo { align-self: center; margin-bottom: 16px; width: 205px; height: 205px; }
 .archive-box {
   width: 100%; padding: 20px; border: 1px solid var(--border); border-radius: var(--radius);
@@ -211,7 +215,8 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 
 /* Simple pages */
 .about { display: flex; flex-wrap: wrap; gap: 24px 46px; align-items: flex-start; }
-.about .photo { flex: 1 1 240px; max-width: min(253px, 64vw); margin-inline: auto; width: auto; height: auto; }
+.about-photo { flex: 1 1 240px; max-width: min(253px, 64vw); margin-inline: auto; display: flex; flex-direction: column; }
+.about .photo { width: 100%; height: auto; margin-bottom: 12px; }
 .about .box { flex: 999 1 360px; min-width: 0; }
 .links-page .rich-text { max-width: 66ch; font-size: var(--t16); line-height: 1.7; }
 

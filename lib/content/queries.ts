@@ -178,7 +178,7 @@ export async function getHomeData(): Promise<HomeData> {
 }
 
 /* Short home-page texts ("howdy", "archive"), stored in the pages table but not public pages. */
-export async function getSnippet(slug: "howdy" | "archive"): Promise<string> {
+export async function getSnippet(slug: "howdy" | "archive" | "photo"): Promise<string> {
   const { data, error } = await createReaderClient().from("pages").select("body").eq("slug", slug).maybeSingle();
   if (error) throw error;
   return data?.body ?? "";
