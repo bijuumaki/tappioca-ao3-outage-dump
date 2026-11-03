@@ -5,6 +5,7 @@ import PostCard from "@/components/PostCard";
 import SitePhoto from "@/components/SitePhoto";
 import RichText from "@/components/RichText";
 import { mediaUrl } from "@/lib/content/media";
+import { parsePhoto } from "@/lib/content/photo";
 import { getHomeData, getSnippet } from "@/lib/content/queries";
 import { fandomNames, lengthLine, ratingAndRelationships } from "@/lib/format/fic-meta";
 
@@ -14,6 +15,7 @@ const ROWS = [["/disclaimer", "Disclaimer"], ["/about", "About"], ["/fics", "Fic
 
 export default async function Home() {
   const [home, howdy, archive, photo] = await Promise.all([getHomeData(), getSnippet("howdy"), getSnippet("archive"), getSnippet("photo")]);
+  const photoFrame = parsePhoto(photo);
   const f = home.featured;
   return (
     <main className="page" id="main">
@@ -21,7 +23,7 @@ export default async function Home() {
 
       <section className="home-intro">
         <div className="home-side">
-          <SitePhoto url={photo ? mediaUrl(photo) : null} />
+          <SitePhoto photo={photoFrame ? { url: mediaUrl(photoFrame.path), zoom: photoFrame.zoom, x: photoFrame.x, y: photoFrame.y } : null} />
           <section aria-label="About this archive" className="archive-box">
             <h2>The Archive</h2>
             {archive && <RichText html={archive} />}

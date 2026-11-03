@@ -109,9 +109,17 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
   display: flex; align-items: center; justify-content: center; font-size: var(--t13); font-weight: 500;
 }
 .photo { position: relative; }
-.photo img { width: 100%; height: 100%; object-fit: cover; }
+.photo img { width: 100%; height: 100%; object-fit: cover; user-select: none; }
+.photo-tools { position: absolute; inset: 50% auto auto 50%; transform: translate(-50%, -50%); display: flex; gap: 8px; }
+.photo-adjusting { cursor: grab; touch-action: none; outline: 2px solid var(--accent-text); outline-offset: 3px; }
+.photo-adjusting:active { cursor: grabbing; }
+.photo-adjust { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 16px; }
+.photo-adjust label { display: flex; flex-direction: column; gap: 4px; width: 100%; font-size: var(--t14); }
+.photo-adjust input[type="range"] { width: 100%; min-height: 44px; }
+.photo-adjust p { margin: 0; font-size: var(--t13); text-align: center; }
+.photo-adjust .story-primary { flex: none; padding: 0 24px; }
 .photo-upload {
-  appearance: none; position: absolute; inset: 50% auto auto 50%; transform: translate(-50%, -50%); width: 48px; height: 48px; padding: 0;
+  appearance: none; width: 48px; height: 48px; padding: 0;
   display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 50%;
   background: color-mix(in srgb, var(--card-bg) 85%, transparent); color: var(--ink); cursor: pointer;
 }
