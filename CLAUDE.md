@@ -111,3 +111,11 @@ Look at the rendered page, not just the code. Run `npm test` and `npm run e2e`. 
 - **Reader chrome**: Aa is plain 10pt text; display options close with an X and (in the reader) say "adjust for your eyes"; chapter arrows are icons; the bottom chapter row is plain centered links. The reader has the canvas's unlabeled "Jump to chapter" dropdown under the chapter label (the Aa panel no longer has a chapter picker); Contents scrolls to the top and focuses it.
 - **Stories list**: row checkboxes, select all, a sticky "N selected / Clear / Delete N stories" bar, a trash icon per row and a confirm dialog (`components/admin/StoryList.tsx`, `deleteStories` in `lib/admin/actions.ts`; chapters and comments go with the story). Permanent.
 - **Rule from Bijuu**: the canvas wins on every design choice; any canvas button without working code gets built.
+
+## Added after canvas v135 (2026-11-03)
+
+- **Who builds:** Bijuu now has the desktop-app session do both the canvas (design) and the code. The canvas still wins.
+- **No covers.** Story page, cards, Home Featured and the editor have no cover image (`fics.cover_path` stays in the database, unused).
+- **Likes, not hearts, on screen.** The button says "Like" / "Liked"; no count is shown anywhere (the count is still kept by `heart_fic`). Fic list sort says "Most liked".
+- **End of story** is only "Leave a comment" plus an icon-only heart. **Chapter bar** reads "Chapter N: title", centered (a title that only repeats the number shows "Chapter N"). **No Previous/Next buttons under the title**; the bottom link row and the dropdown remain.
+- **Edit in place** (`components/InlinePageEditor.tsx`): signed in as admin, the Disclaimer, About, Links and Comms text becomes a Tiptap editor with Bold, Italic, Underline, Heading, List, Quote, Link; autosaves through `savePageText`. Readers get the cached server-rendered text. Howdy and The Archive on Home are not editable this way yet (not drawn on the canvas).
