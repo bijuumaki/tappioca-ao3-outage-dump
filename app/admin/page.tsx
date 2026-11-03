@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AdminHeader from "@/components/admin/AdminHeader";
+import FandomFilter from "@/components/admin/FandomFilter";
 import StoryList from "@/components/admin/StoryList";
 import { listAdminStories } from "@/lib/admin/queries";
 import type { StoryStatus } from "@/lib/admin/status";
@@ -37,15 +38,7 @@ export default async function StoriesPage({ searchParams }: { searchParams: Prom
             </Link>
           ))}
         </nav>
-        <form method="get" className="a-filter">
-          {tab !== "all" && <input type="hidden" name="status" value={tab} />}
-          <label htmlFor="fandom-filter">Fandom</label>
-          <select id="fandom-filter" name="fandom" defaultValue={fandom}>
-            <option value="">All fandoms</option>
-            {fandoms.map(([slug, name]) => <option key={slug} value={slug}>{name}</option>)}
-          </select>
-          <button type="submit" className="a-button">Show</button>
-        </form>
+        <FandomFilter fandoms={fandoms} value={fandom} status={tab} />
       </div>
 
       {rows.length === 0 ? (

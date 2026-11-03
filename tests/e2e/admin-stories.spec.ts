@@ -33,7 +33,6 @@ test("a row shows rating, chapters, words and status; view only for published", 
 test("the fandom filter narrows the list", async ({ page }) => {
   await signIn(page);
   await page.getByLabel("Fandom").selectOption({ label: "(sample fandom)" });
-  await page.getByRole("button", { name: "show" }).click();
   await expect(page).toHaveURL(/fandom=sample-fandom/);
   await expect(page.locator(".a-story")).toHaveCount(3);
 });
