@@ -136,7 +136,7 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .empty-note { margin: 0; color: var(--muted); font-style: italic; text-decoration: none; }
 
 /* Home */
-.home-intro { display: flex; flex-wrap: wrap; gap: 24px 20px; align-items: flex-start; margin-bottom: 20px; }
+.home-intro { display: flex; flex-wrap: wrap; gap: 24px 20px; align-items: stretch; margin-bottom: 20px; }
 .home-side { flex: 1 1 240px; max-width: min(253px, 64vw); margin-inline: auto; display: flex; flex-direction: column; gap: 0; }
 .photo {
   aspect-ratio: 1 / 1; border-radius: 50%; background: var(--bar); overflow: hidden;
@@ -161,7 +161,7 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .photo-error { margin: 0; color: var(--accent-text); font-size: var(--t14); text-align: center; }
 .home-side .photo { align-self: center; margin-bottom: 16px; width: 205px; height: 205px; }
 .archive-box {
-  width: 100%; padding: 20px; border: 1px solid var(--border); border-radius: var(--radius);
+  width: 100%; flex: 1 1 auto; padding: 20px; border: 1px solid var(--border); border-radius: var(--radius);
   background: var(--card-bg); display: flex; flex-direction: column; gap: 12px; font-size: var(--t16); line-height: 1.4;
 }
 .archive-box h2 { margin: 0; font-family: var(--font-heading); font-size: var(--h24); line-height: 1.3; font-weight: 600; color: var(--accent-text); }
@@ -173,7 +173,7 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .archive-box li { align-items: center; }
 .archive-box li span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
 .home-main { flex: 999 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
-.howdy { display: flex; flex-direction: column; gap: 12px; }
+.howdy { flex: 1 1 auto; display: flex; flex-direction: column; gap: 12px; }
 .howdy h2 { margin: 0; font-family: var(--font-heading); font-size: var(--h24); line-height: 1.3; font-weight: 600; color: var(--accent-text); }
 .pages-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .home-row {
