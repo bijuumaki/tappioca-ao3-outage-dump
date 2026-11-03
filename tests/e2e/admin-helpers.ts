@@ -12,3 +12,16 @@ export async function signIn(page: Page) {
   await page.getByRole("button", { name: "Sign in" }).click();
   await page.waitForURL(/\/admin$/);
 }
+
+/* The basics a story needs before it can be published. */
+export async function fillBasics(page: Page, o: { fandom: string; rating?: string; summary?: string }) {
+  await page.getByLabel("Fandom").fill(o.fandom);
+  await page.getByLabel("Rating").selectOption({ label: o.rating ?? "Teen and Up" });
+  await page.getByLabel("Summary").fill(o.summary ?? "(e2e summary)");
+}
+
+/* Publish, then confirm in the publish check dialog. */
+export async function publishViaDialog(page: Page) {
+  await page.getByRole("button", { name: "Publish", exact: true }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Publish story" }).click();
+}

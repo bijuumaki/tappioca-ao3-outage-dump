@@ -8,7 +8,9 @@ import { slugify } from "@/lib/text/slug";
 import { prepareChapter } from "./chapter";
 import { NOT_AN_IMAGE, storeImage } from "./media";
 import { notesToHtml } from "./notes";
-import { publishChapterAt, unpublishChapter } from "./publish";
+import { loadStoryChecks, NotReadyError, publishChapterAt, unpublishChapter } from "./publish";
+import type { Check } from "./readiness";
+import { RATING_LABELS } from "@/lib/content/types";
 import { storyDetailsFromForm, uniqueSlug } from "./story-form";
 import { setTags, takenSlugs } from "./story-store";
 import { saveVersion } from "./versions";
@@ -133,8 +135,27 @@ export async function publishChapter(chapterId: number): Promise<PublishResult> 
     const { ficId, slug } = await publishChapterAt(db, chapterId, new Date());
     await afterPublish(ficId, slug);
     return { ok: true, status: "published", at: new Date().toISOString() };
+  } catch (e) {
+    return { ok: false, error: e instanceof NotReadyError ? e.message : "Couldn’t publish. Try again." };
+  }
+}
+
+export type PublishChecksResult =
+  | { ok: true; checks: Check[]; title: string; ratingLabel: string; adult: boolean }
+  | { ok: false; error: string };
+
+/* What the publish check dialog shows, read from what is saved. */
+export async function getPublishChecks(ficId: number): Promise<PublishChecksResult> {
+  const { db } = await requireAdmin();
+  try {
+    const { data: fic, error } = await db.from("fics").select("title, rating").eq("id", ficId).single();
+    if (error) throw error;
+    return {
+      ok: true, checks: await loadStoryChecks(db, ficId), title: fic.title,
+      ratingLabel: RATING_LABELS[fic.rating], adult: fic.rating === "mature" || fic.rating === "explicit",
+    };
   } catch {
-    return { ok: false, error: "Couldn’t publish. Try again." };
+    return { ok: false, error: "Couldn’t check the story. Try again." };
   }
 }
 
@@ -148,7 +169,7 @@ export async function scheduleChapter(chapterId: number, localDateTime: string):
     await afterPublish(ficId, slug);
     return { ok: true, status: "scheduled", at: when.toISOString() };
   } catch (e) {
-    return { ok: false, error: e instanceof Error && /future/.test(e.message) ? e.message : "Couldn’t schedule. Try again." };
+    return { ok: false, error: e instanceof NotReadyError || (e instanceof Error && /future/.test(e.message)) ? (e as Error).message : "Couldn’t schedule. Try again." };
   }
 }
 

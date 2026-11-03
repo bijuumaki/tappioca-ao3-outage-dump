@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { secretClient } from "../support/supabase-admin";
-import { signIn } from "./admin-helpers";
+import { fillBasics, publishViaDialog, signIn } from "./admin-helpers";
 
 test.describe.configure({ mode: "serial" });
 async function cleanUp() {
@@ -11,6 +11,7 @@ async function cleanUp() {
     if (files?.length) await db.storage.from("media").remove(files.map((x) => `fics/${f.id}/images/${x.name}`));
     await db.from("fics").delete().eq("id", f.id);
   }
+  await db.from("tags").delete().like("name", "(e2e image%");
 }
 test.beforeAll(cleanUp);
 test.afterAll(cleanUp);
@@ -20,6 +21,7 @@ async function newStory(page: Page, title: string) {
   await page.getByRole("link", { name: "Add new story" }).click();
   await page.waitForURL(/\/admin\/stories\/\d+$/);
   await page.getByLabel("Story title").fill(title);
+  await fillBasics(page, { fandom: "(e2e image fandom)" });
   await page.getByRole("button", { name: "Save details" }).click();
   await expect(page.locator(".a-saved")).toBeVisible();
 }
@@ -33,9 +35,9 @@ test("a picture is added to the chapter, saved, and shows on the public page", a
   await expect(img).toBeVisible({ timeout: 15_000 });
   await expect(img).toHaveAttribute("src", /^https:\/\/.+\/storage\/v1\/object\/public\/media\/fics\/\d+\/images\/.+\.(png|webp|jpg)$/);
   await expect(page.locator(".a-save-state")).toHaveText(/saved/i, { timeout: 10_000 });
-  await page.getByRole("button", { name: "Publish", exact: true }).click();
+  await publishViaDialog(page);
   await expect(page.locator(".a-pub-state")).toHaveText(/published/i);
-  await page.goto("/fics/e2e-image-add");
+  await page.goto("/fics/e2e-image-add/1");
   await expect(page.locator(".chapter-text img")).toHaveAttribute("src", /\/storage\/v1\/object\/public\/media\/fics\//);
 });
 

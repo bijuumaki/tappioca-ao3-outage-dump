@@ -1,9 +1,10 @@
 "use client";
 import { useState } from "react";
-import { publishChapter, scheduleChapter, unpublish, type PublishResult } from "@/lib/admin/actions";
+import { getPublishChecks, publishChapter, scheduleChapter, unpublish, type PublishChecksResult, type PublishResult } from "@/lib/admin/actions";
 import { statusOf, type StoryStatus as Status } from "@/lib/admin/status";
 import { formatDate } from "@/lib/format/dates";
 import { saveDetailsNow } from "@/lib/client/details-saver";
+import PublishCheck from "./PublishCheck";
 
 
 export default function PublishBar({ ficId, chapterId, publishAt, save }: {
@@ -15,6 +16,7 @@ export default function PublishBar({ ficId, chapterId, publishAt, save }: {
   const [error, setError] = useState<string | null>(null);
   const [scheduling, setScheduling] = useState(false);
   const [when, setWhen] = useState("");
+  const [review, setReview] = useState<Extract<PublishChecksResult, { ok: true }> | null>(null);
 
   async function run(fn: () => Promise<PublishResult>) {
     setBusy(true); setError(null);
@@ -24,6 +26,17 @@ export default function PublishBar({ ficId, chapterId, publishAt, save }: {
     setBusy(false);
     if (!res.ok) { setError(res.error); return; }
     setStatus(res.status); setAt(res.at); setScheduling(false);
+  }
+
+  /* Publish asks first: save, read back what is saved, and show the publish check. */
+  async function askPublish() {
+    setBusy(true); setError(null);
+    const okSave = (await saveDetailsNow()) && (await save());
+    if (!okSave) { setBusy(false); setError("Save didn’t go through, so nothing was published."); return; }
+    const res = await getPublishChecks(ficId).catch(() => ({ ok: false as const, error: "Something went wrong. Try again." }));
+    setBusy(false);
+    if (!res.ok) { setError(res.error); return; }
+    setReview(res);
   }
 
   async function preview() {
@@ -46,7 +59,7 @@ export default function PublishBar({ ficId, chapterId, publishAt, save }: {
         <button type="button" className="a-button" disabled={busy} onClick={() => void preview()}>Preview</button>
         {status === "draft" && <button type="button" className="a-button" disabled={busy} onClick={() => setScheduling(!scheduling)} aria-expanded={scheduling}>Schedule</button>}
         {status === "draft"
-          ? <button type="button" className="a-button-primary" disabled={busy} onClick={() => void run(() => publishChapter(chapterId))}>Publish</button>
+          ? <button type="button" className="a-button-primary" disabled={busy} onClick={() => void askPublish()}>Publish</button>
           : <button type="button" className="a-button" disabled={busy} onClick={() => void run(() => unpublish(chapterId))}>Unpublish</button>}
       </div>
       {scheduling && (
@@ -58,6 +71,12 @@ export default function PublishBar({ ficId, chapterId, publishAt, save }: {
         </div>
       )}
       {error && <p className="a-alert" role="alert">{error}</p>}
+      {review && (
+        <PublishCheck checks={review.checks} title={review.title} adult={review.adult} ratingLabel={review.ratingLabel} busy={busy}
+          onKeepEditing={() => setReview(null)}
+          onSaveDraft={() => { setReview(null); void save(); }}
+          onPublish={() => { setReview(null); void run(() => publishChapter(chapterId)); }} />
+      )}
     </div>
   );
 }

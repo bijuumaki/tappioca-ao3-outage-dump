@@ -35,7 +35,7 @@ test("the fandom filter narrows the list", async ({ page }) => {
   await page.getByLabel("Fandom").selectOption({ label: "(sample fandom)" });
   await page.getByRole("button", { name: "show" }).click();
   await expect(page).toHaveURL(/fandom=sample-fandom/);
-  await expect(page.locator(".a-story")).toHaveCount(2);
+  await expect(page.locator(".a-story")).toHaveCount(3);
 });
 
 test("new story button and phone layout", async ({ page }) => {

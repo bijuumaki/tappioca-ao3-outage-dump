@@ -1,12 +1,13 @@
 import { expect, test, type Page } from "@playwright/test";
 import { secretClient } from "../support/supabase-admin";
-import { signIn } from "./admin-helpers";
+import { fillBasics, publishViaDialog, signIn } from "./admin-helpers";
 
 test.describe.configure({ mode: "serial" });
 async function cleanUp() {
   const db = secretClient();
   const { data } = await db.from("fics").select("id").like("title", "(e2e versions%");
   for (const f of data ?? []) await db.from("fics").delete().eq("id", f.id);
+  await db.from("tags").delete().like("name", "(e2e versions%");
 }
 test.beforeAll(cleanUp);
 test.afterAll(cleanUp);
@@ -19,12 +20,13 @@ test("publishing keeps a version, and an earlier one can be restored", async ({ 
   await page.getByRole("link", { name: "Add new story" }).click();
   await page.waitForURL(/\/admin\/stories\/\d+$/);
   await page.getByLabel("Story title").fill("(e2e versions one)");
+  await fillBasics(page, { fandom: "(e2e versions fandom)" });
   await page.getByRole("button", { name: "Save details" }).click();
   await expect(page.locator(".a-saved")).toBeVisible();
   await editor(page).click();
   await page.keyboard.type("version one");
   await saved(page);
-  await page.getByRole("button", { name: "Publish", exact: true }).click();
+  await publishViaDialog(page);
   await expect(page.locator(".a-pub-state")).toHaveText(/published/i);
 
   await page.keyboard.press("ControlOrMeta+a");
