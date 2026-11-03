@@ -594,11 +594,11 @@ button[aria-busy="true"]::after {
 .sync-icon { appearance: none; min-width: 44px; min-height: 44px; border: 0; background: transparent; color: var(--ink); font-size: 20px; cursor: pointer; }
 .sync-status { color: var(--muted); font-size: var(--t14); }
 .sync-buttons { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-.sync-dialog button:not(.options-close):not(.sync-icon) {
+.sync-buttons button, .sync-use button {
   appearance: none; min-height: 48px; padding: 0 14px; border: 1px solid var(--field-border); border-radius: var(--radius-small); background: var(--bg); color: var(--ink); font: inherit; font-weight: 600; cursor: pointer;
 }
-.sync-dialog button.sync-primary:not(.x):not(.y) { background: var(--accent-fill); color: var(--on-accent); border-color: var(--accent-fill); }
-.sync-dialog button.sync-link:not(.x):not(.y) { border: 0; background: transparent; color: var(--muted); font-weight: 400; text-decoration: underline; text-underline-offset: 3px; }
+.sync-buttons .sync-primary { background: var(--accent-fill); color: var(--on-accent); border-color: var(--accent-fill); }
+.sync-buttons .sync-link { border: 0; background: transparent; color: var(--muted); font-weight: 400; text-decoration: underline; text-underline-offset: 3px; }
 .sync-dialog button:disabled { opacity: 0.5; cursor: default; }
 .sync-use { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
 .sync-use input { box-sizing: border-box; min-height: 48px; padding: 0 12px; border: 1px solid var(--field-border); border-radius: var(--radius-small); background: var(--bg); color: var(--ink); font: 16px ui-monospace, "SF Mono", Menlo, Consolas, monospace; text-transform: uppercase; }

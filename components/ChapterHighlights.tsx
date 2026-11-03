@@ -4,7 +4,7 @@ import { HL_COLORS, LIMITS, type HlColor, type Mark } from "@/lib/notes/model";
 import { addMark, deleteMark, marksFor, NOTES_EVENT, upsertMark } from "@/lib/client/notes-store";
 import { locate, offsetAtPoint, offsetOf, paint, rangeAt } from "@/lib/client/notes-dom";
 
-type Pick = { start: number; end: number; quote: string };
+type Picked = { start: number; end: number; quote: string };
 const COLOR_NAMES: Record<HlColor, string> = { yellow: "Yellow", pink: "Pink", green: "Green", blue: "Blue" };
 
 function Dots({ value, onPick }: { value?: HlColor; onPick: (c: HlColor) => void }) {
@@ -20,7 +20,7 @@ function Dots({ value, onPick }: { value?: HlColor; onPick: (c: HlColor) => void
 /* Select words in the chapter to highlight them or add a note; tap a highlight to change it. Saved in this browser, and
    synced if the reader turned sync on in the Aa panel. */
 export default function ChapterHighlights({ slug, n, fic, ch }: { slug: string; n: number; fic: string; ch: string }) {
-  const [picked, setPicked] = useState<Pick | null>(null);
+  const [picked, setPicked] = useState<Picked | null>(null);
   const [editing, setEditing] = useState<Mark | null>(null);
   const [draft, setDraft] = useState("");
   const rootRef = useRef<HTMLElement | null>(null);
@@ -54,7 +54,7 @@ export default function ChapterHighlights({ slug, n, fic, ch }: { slug: string; 
     return () => { window.removeEventListener(NOTES_EVENT, onChange); if (timer) clearTimeout(timer); };
   }, [repaint, slug, n]);
 
-  /* Text selection, and tapping an existing highlight. Copying is still blocked: selecting is only for highlighting. */
+  /* Text selection, and tapping an existing highlight. Copying and dragging stay blocked by NoCopy: selecting is only for highlighting. */
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -86,19 +86,12 @@ export default function ChapterHighlights({ slug, n, fic, ch }: { slug: string; 
         .sort((a, b) => (a.at!.end - a.at!.start) - (b.at!.end - b.at!.start))[0];
       if (hit) { setEditing(hit.m); setDraft(hit.m.note); setPicked(null); }
     };
-    const block = (e: Event) => e.preventDefault();
     document.addEventListener("selectionchange", onSelect);
     root.addEventListener("click", onClick);
-    root.addEventListener("copy", block);
-    root.addEventListener("cut", block);
-    root.addEventListener("dragstart", block);
     return () => {
       clearTimeout(timer);
       document.removeEventListener("selectionchange", onSelect);
       root.removeEventListener("click", onClick);
-      root.removeEventListener("copy", block);
-      root.removeEventListener("cut", block);
-      root.removeEventListener("dragstart", block);
     };
   }, [slug, n]);
 

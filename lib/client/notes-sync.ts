@@ -48,7 +48,7 @@ export async function turnOn(): Promise<Outcome> {
 }
 
 /* A code made on another device: this browser's highlights are merged into the saved ones. */
-export async function useCode(input: string): Promise<Outcome> {
+export async function joinWithCode(input: string): Promise<Outcome> {
   const code = normalizeCode(input);
   if (!CODE_PATTERN.test(code)) return { ok: false, error: "A code has 16 letters and numbers, like 5JPE-H9QT-AN8F-F3JG." };
   if (!(await codeExists(code))) return { ok: false, error: "No highlights are saved under that code. Check it for typos." };

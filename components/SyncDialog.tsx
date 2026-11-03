@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { deleteCloudCopy, getCode, lastSynced, SYNC_EVENT, syncNow, turnOff, turnOn, useCode } from "@/lib/client/notes-sync";
+import { deleteCloudCopy, getCode, lastSynced, SYNC_EVENT, syncNow, turnOff, turnOn, joinWithCode } from "@/lib/client/notes-sync";
 
 function ago(t: number | null): string {
   if (!t) return "Not synced yet";
@@ -73,7 +73,7 @@ export default function SyncDialog({ open, onClose }: { open: boolean; onClose: 
           <div className="sync-buttons">
             <button type="button" className="sync-primary" disabled={busy} onClick={() => run(turnOn)}>Turn on sync (make a code)</button>
           </div>
-          <form className="sync-use" onSubmit={(e) => { e.preventDefault(); run(() => useCode(typed)); }}>
+          <form className="sync-use" onSubmit={(e) => { e.preventDefault(); run(() => joinWithCode(typed)); }}>
             <label htmlFor="sync-typed" className="sync-label">Or use a code from another device</label>
             <input id="sync-typed" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="XXXX-XXXX-XXXX-XXXX" autoComplete="off" autoCapitalize="characters" spellCheck={false} />
             <button type="submit" disabled={busy || !typed.trim()}>Use this code</button>
