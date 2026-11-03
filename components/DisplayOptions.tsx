@@ -91,7 +91,12 @@ export default function DisplayOptions() {
       <button ref={button} type="button" className="aa-button" data-hidden={hidden && !open} aria-label="Display options"
         aria-expanded={open} aria-controls="display-options" onClick={() => setOpen(!open)} onFocus={() => setHidden(false)}>Aa</button>
       <section ref={panel} id="display-options" className="options-panel" role="dialog" aria-label="Display options" hidden={!open}>
-        <button type="button" className="options-close" onClick={() => { setOpen(false); button.current?.focus(); }}>Close</button>
+        <div className="options-head">
+          {reader && <span className="options-hint">adjust for your eyes</span>}
+          <button type="button" className="options-close" aria-label="Close display options" onClick={() => { setOpen(false); button.current?.focus(); }}>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" /></svg>
+          </button>
+        </div>
         {reader && reader.chapters.length > 1 && (
           <div className="options-field">
             <label htmlFor="options-chapter">Chapter</label>
