@@ -35,6 +35,23 @@ export type Database = {
           { foreignKeyName: "chapters_fic_id_fkey"; columns: ["fic_id"]; isOneToOne: false; referencedRelation: "fics"; referencedColumns: ["id"] },
         ];
       };
+      comments: {
+        Row: { body: string; by_author: boolean; chapter_id: number; created_at: string; hidden: boolean; id: number; name: string; parent_id: number | null };
+        Insert: { body: string; by_author?: boolean; chapter_id: number; created_at?: string; hidden?: boolean; id?: never; name: string; parent_id?: number | null };
+        Update: { body?: string; by_author?: boolean; chapter_id?: number; created_at?: string; hidden?: boolean; id?: never; name?: string; parent_id?: number | null };
+        Relationships: [
+          { foreignKeyName: "comments_chapter_id_fkey"; columns: ["chapter_id"]; isOneToOne: false; referencedRelation: "chapters"; referencedColumns: ["id"] },
+          { foreignKeyName: "comments_parent_id_fkey"; columns: ["parent_id"]; isOneToOne: false; referencedRelation: "comments"; referencedColumns: ["id"] },
+        ];
+      };
+      comment_meta: {
+        Row: { comment_id: number; created_at: string; ip_hash: string };
+        Insert: { comment_id: number; created_at?: string; ip_hash: string };
+        Update: { comment_id?: number; created_at?: string; ip_hash?: string };
+        Relationships: [
+          { foreignKeyName: "comment_meta_comment_id_fkey"; columns: ["comment_id"]; isOneToOne: true; referencedRelation: "comments"; referencedColumns: ["id"] },
+        ];
+      };
       fic_tags: {
         Row: { fic_id: number; tag_id: number };
         Insert: { fic_id: number; tag_id: number };
