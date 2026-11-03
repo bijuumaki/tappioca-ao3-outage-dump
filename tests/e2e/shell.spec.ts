@@ -30,20 +30,25 @@ test("text size steps by 2 between 10 and 20pt, scales the whole site, and is re
   const titleSize = () => page.evaluate(() => parseFloat(getComputedStyle(document.querySelector("h1")!).fontSize));
   expect(await read()).toBe("14pt");
   const before = await titleSize();
-  for (let i = 0; i < 3; i++) await page.getByRole("button", { name: "Larger text" }).click();
-  await expect(page.getByRole("button", { name: "Larger text" })).toBeDisabled();
+  const slider = page.getByLabel("Text size");
+  await expect(slider).toHaveAttribute("min", "10");
+  await expect(slider).toHaveAttribute("max", "20");
+  await expect(slider).toHaveAttribute("step", "2");
+  await slider.fill("20");
   expect(await read()).toBe("20pt");
   expect(await titleSize()).toBeGreaterThan(before * 1.3);
   await page.reload();
   expect(await read()).toBe("20pt");
 });
 
-test("font loads only when picked", async ({ page }) => {
+test("the font cards load their fonts when the panel opens, and picking one applies it", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator('link[href*="Crimson+Pro"]')).toHaveCount(0);
+  await expect(page.locator("html")).not.toHaveAttribute("data-font", /.+/);
   await page.getByRole("button", { name: "Display options" }).click();
-  await page.getByLabel("Font").selectOption("crimson");
   await expect(page.locator('link[href*="Crimson+Pro"]')).toHaveCount(1);
+  await expect(page.locator("html")).not.toHaveAttribute("data-font", /.+/);
+  await page.getByRole("button", { name: "Crimson Pro", exact: true }).click();
   await expect(page.locator("html")).toHaveAttribute("data-font", "crimson");
 });
 

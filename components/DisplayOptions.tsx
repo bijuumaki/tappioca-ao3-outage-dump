@@ -1,6 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { clampSize, FONTS, loadWebFont, readPref, SIZE_MAX, SIZE_MIN, SPACINGS, THEMES, writePref } from "@/lib/client/prefs";
+
+/* The font cards, grouped the way the canvas shows them. Each card previews its own font. */
+const FONT_GROUPS = [
+  { label: "Serif", fonts: ["crimson", "cormorant"] },
+  { label: "Sans serif", fonts: ["default", "lucida", "cantarell"] },
+] as const;
+const SAMPLE = "The quick brown fox jumps over the lazy dog.";
+const fontLabel = (v: string) => (v === "default" ? "Inclusive Sans (default)" : FONTS.find(([k]) => k === v)?.[1] ?? v);
 import { useReaderInfo } from "@/lib/client/reader-store";
 
 export default function DisplayOptions() {
@@ -51,6 +59,9 @@ export default function DisplayOptions() {
     return () => { document.removeEventListener("click", onClick); document.removeEventListener("keydown", onKey); };
   }, [open]);
 
+  /* The font cards show each font, so their web fonts are fetched the first time the panel opens. */
+  useEffect(() => { if (open) FONTS.forEach(([v]) => loadWebFont(v)); }, [open]);
+
   useEffect(() => {
     const toggle = () => setOpen((o) => !o);
     window.addEventListener("tappioca:toggle-options", toggle);
@@ -95,30 +106,42 @@ export default function DisplayOptions() {
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" /></svg>
           </button>
         </div>
-        <div className="options-row">
-          <span>Text size</span>
-          <span className="options-stepper">
-            <button type="button" aria-label="Smaller text" disabled={size <= SIZE_MIN} onClick={() => changeSize(size - 2)}>−</button>
-            <output aria-live="polite">{size}pt</output>
-            <button type="button" aria-label="Larger text" disabled={size >= SIZE_MAX} onClick={() => changeSize(size + 2)}>+</button>
-          </span>
-        </div>
-        <div className="options-field">
-          <label htmlFor="options-font">Font</label>
-          <select id="options-font" value={font} onChange={(e) => pickFont(e.target.value)}>
-            {FONTS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-          </select>
-        </div>
-        <div className="options-field" role="group" aria-label="Line spacing">
-          <span>Line spacing</span>
-          <div className="options-choices">
-            {SPACINGS.map(([v, l]) => <button key={v} type="button" aria-pressed={spacing === v} onClick={() => pickSpacing(v)}>{l}</button>)}
+        <div className="options-group" role="group" aria-label="Theme">
+          <h3 className="options-heading">Theme</h3>
+          <div className="swatch-row">
+            {THEMES.map(([v, l]) => (
+              <button key={v} type="button" className="swatch-btn" data-swatch={v} aria-pressed={theme === v} onClick={() => pickTheme(v)}>
+                <span className="swatch" aria-hidden="true" />
+                <span>{l}</span>
+              </button>
+            ))}
           </div>
         </div>
-        <div className="options-row options-wrap" role="group" aria-label="Theme">
-          <span>Theme</span>
+        <div className="options-group">
+          <h3 className="options-heading"><label htmlFor="options-size">Text size</label> <output className="options-value" aria-live="polite">{size}pt</output></h3>
+          <div className="size-row">
+            <span className="size-small" aria-hidden="true">A</span>
+            <input id="options-size" type="range" min={SIZE_MIN} max={SIZE_MAX} step={2} value={size} onChange={(e) => changeSize(Number(e.target.value))} />
+            <span className="size-large" aria-hidden="true">A</span>
+          </div>
+        </div>
+        {FONT_GROUPS.map((g) => (
+          <div key={g.label} className="options-group" role="group" aria-label={`${g.label} fonts`}>
+            <h3 className="options-heading">{g.label}</h3>
+            <div className="font-list">
+              {g.fonts.map((v) => (
+                <button key={v} type="button" className="font-card" data-font={v} aria-pressed={font === v} aria-label={fontLabel(v)} onClick={() => pickFont(v)}>
+                  <span className="font-name">{fontLabel(v)}</span>
+                  <span className="font-sample">{SAMPLE}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+        <div className="options-group" role="group" aria-label="Line spacing">
+          <h3 className="options-heading">Line spacing</h3>
           <div className="options-choices">
-            {THEMES.map(([v, l]) => <button key={v} type="button" aria-pressed={theme === v} onClick={() => pickTheme(v)}>{l}</button>)}
+            {SPACINGS.map(([v, l]) => <button key={v} type="button" aria-pressed={spacing === v} onClick={() => pickSpacing(v)}>{l}</button>)}
           </div>
         </div>
       </section>

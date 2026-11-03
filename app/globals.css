@@ -85,6 +85,44 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
 .options-panel button:disabled { opacity: 0.5; cursor: default; }
 .options-choices { display: flex; flex-wrap: wrap; gap: 6px; }
 .options-field .options-choices button { flex: 1 1 0; min-width: 0; }
+.options-group { display: flex; flex-direction: column; gap: 10px; }
+.options-group .options-choices button { flex: 1 1 0; min-width: 0; }
+.options-heading { margin: 0; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font: inherit; font-size: var(--t13); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.options-heading label { cursor: pointer; }
+.options-value { text-transform: none; letter-spacing: 0; }
+
+/* Theme swatches: a circle split in two, the page color and the accent color */
+.swatch-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.options-panel .swatch-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px 2px 4px; border: 0; background: transparent; color: var(--muted); font-size: var(--t13);
+}
+.options-panel .swatch-btn[aria-pressed="true"] { background: transparent; color: var(--ink); }
+.swatch {
+  width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--field-border);
+  background: linear-gradient(135deg, var(--sw-a) 50%, var(--sw-b) 50%);
+}
+.swatch-btn[aria-pressed="true"] .swatch { outline: 2px solid var(--accent-text); outline-offset: 3px; }
+.swatch-btn:focus-visible .swatch { outline: 2px solid currentColor; outline-offset: 3px; }
+
+/* Text size slider */
+.size-row { display: flex; align-items: center; gap: 12px; }
+.size-row input[type="range"] { flex: 1 1 auto; min-height: 44px; accent-color: var(--accent-fill); }
+.size-small { font-size: 12px; color: var(--muted); }
+.size-large { font-size: 22px; color: var(--muted); }
+
+/* Font cards: each shows its own font */
+.font-list { display: flex; flex-direction: column; gap: 8px; }
+.options-panel .font-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 14px; text-align: left; border-radius: var(--radius);
+}
+.options-panel .font-card[aria-pressed="true"] { background: var(--bg); color: var(--ink); outline: 2px solid var(--accent-text); outline-offset: 2px; }
+.font-name { font-size: var(--t13); color: var(--muted); }
+.font-sample { font-size: 17px; line-height: 1.35; text-transform: none; }
+.font-card[data-font="default"] .font-sample { font-family: var(--nf-body, "Inclusive Sans"), ui-sans-serif, sans-serif; }
+.font-card[data-font="lucida"] .font-sample { font-family: var(--stack-lucida); }
+.font-card[data-font="cantarell"] .font-sample { font-family: var(--stack-cantarell); }
+.font-card[data-font="crimson"] .font-sample { font-family: var(--stack-crimson); }
+.font-card[data-font="cormorant"] .font-sample { font-family: var(--stack-cormorant); }
 
 /* Page column */
 .page { max-width: var(--page-width); margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }

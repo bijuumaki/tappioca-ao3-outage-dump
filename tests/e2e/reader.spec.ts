@@ -35,7 +35,7 @@ test("reading text follows the size and spacing choices", async ({ page }) => {
   const text = page.locator(".chapter-text");
   expect(await text.evaluate((el) => getComputedStyle(el).fontSize)).toBe("18.6667px"); // 14pt
   await page.getByRole("button", { name: "Display options" }).click();
-  await page.getByRole("button", { name: "Larger text" }).click();
+  await page.getByLabel("Text size").fill("16");
   expect(await text.evaluate((el) => getComputedStyle(el).fontSize)).toBe("21.3333px"); // 16pt
   await page.locator('[aria-label="Line spacing"] button', { hasText: "Loose" }).click();
   expect(await text.evaluate((el) => parseFloat(getComputedStyle(el).lineHeight) / parseFloat(getComputedStyle(el).fontSize))).toBeCloseTo(2.1, 1);

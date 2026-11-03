@@ -81,7 +81,7 @@ test("on a wide screen the panel pushes the chapter over instead of covering it"
 test("the font choice changes the whole site's text but not the site title", async ({ page }) => {
   await page.goto("/fics");
   await page.getByRole("button", { name: "Display options" }).click();
-  await page.getByLabel("Font").selectOption("crimson");
+  await page.getByRole("button", { name: "Crimson Pro", exact: true }).click();
   expect(await page.locator("main").evaluate((el) => getComputedStyle(el).fontFamily)).toContain("Crimson Pro");
   expect(await page.locator(".page-title").evaluate((el) => getComputedStyle(el).fontFamily)).toContain("Crimson Pro");
   expect(await page.locator(".site-title").evaluate((el) => getComputedStyle(el).fontFamily)).toContain("IM Fell English");

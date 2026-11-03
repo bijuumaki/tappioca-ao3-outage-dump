@@ -76,3 +76,9 @@
   background-image: linear-gradient(color-mix(in srgb, var(--bg) 45%, transparent), color-mix(in srgb, var(--bg) 45%, transparent)), url("/textures/old-paper.webp");
   background-size: auto, cover; background-attachment: fixed; background-blend-mode: normal, multiply;
 }
+
+/* Theme swatches in the display options: the page color and the accent color of each theme */
+.swatch-btn[data-swatch="day"] { --sw-a: #EDF6F9; --sw-b: #51344D; }
+.swatch-btn[data-swatch="lagoon"] { --sw-a: #F6F1E7; --sw-b: #A84B4E; }
+.swatch-btn[data-swatch="night"] { --sw-a: #14262D; --sw-b: #D8B4D1; }
+.swatch-btn[data-swatch="midnight"] { --sw-a: #06141B; --sw-b: #CCD0CF; }
