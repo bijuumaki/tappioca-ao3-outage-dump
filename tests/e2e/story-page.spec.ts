@@ -92,7 +92,6 @@ test("a one-chapter story is read at chapter 1 with no chapter controls", async 
   await expect(page.getByText("Duis aute irure dolor in reprehenderit.")).toBeVisible();
   await expect(page.locator(".chapter-label")).toHaveText("Chapter 1 · 6 words");
   await expect(page.locator(".chapter-buttons")).toHaveCount(0);
-  await expect(page.locator(".touch-nav")).toHaveCount(0);
   await expect(page.locator(".progress")).toHaveCount(0);
 });
 
@@ -119,23 +118,18 @@ test("a Mature chapter stays hidden when the browser blocks saved settings", asy
   await expect(page.getByText("Mature sample text.")).toHaveCount(0);
 });
 
-test("the last chapter ends with an end-of-story box", async ({ page }) => {
+test("the last chapter ends with just a comment button and a heart icon", async ({ page }) => {
   await page.goto("/fics/sample-fic/3");
-  const end = page.getByRole("region", { name: "You have reached the end of (sample fic)" });
-  await expect(end).toContainText("That was chapter 3, the last one.");
-  await expect(end.getByRole("link", { name: "Read again" })).toHaveAttribute("href", "/fics/sample-fic/1");
-  await expect(end.getByRole("link", { name: "More in (sample fandom)" })).toHaveAttribute("href", "/tags/fandom/sample-fandom");
-  await expect(end.getByRole("link", { name: "Story details" })).toHaveAttribute("href", "/fics/sample-fic");
-});
-
-test("earlier chapters have no end-of-story box", async ({ page }) => {
-  await page.goto("/fics/sample-fic/1");
+  const end = page.locator(".story-end");
+  await expect(end.getByRole("link", { name: "Leave a comment" })).toBeVisible();
+  await expect(end.getByRole("button", { name: "Heart this story" })).toBeVisible();
+  await expect(end.getByRole("link")).toHaveCount(1);
   await expect(page.getByText("You have reached the end of")).toHaveCount(0);
 });
 
-test("a one-chapter story says that was the whole story", async ({ page }) => {
-  await page.goto("/fics/sample-oneshot/1");
-  await expect(page.getByText("That was the whole story.")).toBeVisible();
+test("earlier chapters have no end-of-story row", async ({ page }) => {
+  await page.goto("/fics/sample-fic/1");
+  await expect(page.locator(".story-end")).toHaveCount(0);
 });
 
 test("a back-to-top button appears near the bottom of a chapter and returns to the top", async ({ page }) => {

@@ -5,7 +5,7 @@ import BackToTop from "@/components/BackToTop";
 import ChapterBody from "@/components/ChapterBody";
 import ChapterGate from "@/components/ChapterGate";
 import ChapterJump from "@/components/ChapterJump";
-import ChapterNav, { TouchChapterNav } from "@/components/ChapterNav";
+import ChapterNav from "@/components/ChapterNav";
 import Comments from "@/components/Comments";
 import EndOfStory from "@/components/EndOfStory";
 import ReaderRegister from "@/components/ReaderRegister";
@@ -38,7 +38,6 @@ export default async function ChapterPage({ params }: Props) {
   const several = count > 1;
   const options = fic.chapters.map((c) => ({ n: c.n, label: c.title ? `${c.n}. ${c.title}` : `Chapter ${c.n}` }));
   const adult = fic.rating === "mature" || fic.rating === "explicit";
-  const fandomTag = fic.tags.find((t) => t.type === "fandom") ?? null;
   const warnings = fic.tags.filter((t) => t.type === "warning").map((t) => t.name);
 
   return (
@@ -52,13 +51,12 @@ export default async function ChapterPage({ params }: Props) {
           <p className="chapter-label">{several ? `Chapter ${chapter.n} of ${count}` : "Chapter 1"} · {formatWords(chapter.word_count)}</p>
           {several && <ChapterJump slug={slug} n={chapter.n} chapters={options} />}
           {several && <div className="progress" aria-hidden="true"><div style={{ width: `${Math.round((chapter.n / count) * 100)}%` }} /></div>}
-          {several && <TouchChapterNav slug={slug} n={chapter.n} count={count} />}
         </header>
         <ChapterGate slug={slug} adult={adult} ratingLabel={RATING_LABELS[fic.rating]} warnings={warnings}>
-          <h2 className="section-bar chapter-title">{chapter.title ?? `Chapter ${chapter.n}`}</h2>
+          <h2 className="section-bar chapter-title">{chapter.title ? `Chapter ${chapter.n}: ${chapter.title}` : `Chapter ${chapter.n}`}</h2>
           <ChapterBody id={`${slug}/${chapter.n}`} chapter={chapter} />
           {several && <ChapterNav slug={slug} n={chapter.n} count={count} />}
-          {chapter.n === count && <EndOfStory slug={slug} title={fic.title} count={count} hearts={fic.hearts ?? 0} fandom={fandomTag ? { name: fandomTag.name, slug: fandomTag.slug } : null} />}
+          {chapter.n === count && <EndOfStory slug={slug} hearts={fic.hearts ?? 0} />}
           <Comments slug={slug} n={chapter.n} />
         </ChapterGate>
       </article>

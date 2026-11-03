@@ -86,14 +86,18 @@ test("the font choice changes the whole site's text but not the site title", asy
   expect(await page.locator(".site-title").evaluate((el) => getComputedStyle(el).fontFamily)).toContain("IM Fell English");
 });
 
-test("touch screens get previous and next chapter buttons under the title", async ({ page }) => {
+test("there are no previous and next buttons under the title (canvas v129)", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 800 });
   await page.goto("/fics/sample-fic/2");
-  const group = page.getByRole("group", { name: "Chapter navigation" });
-  await expect(group.getByRole("link", { name: "Previous chapter" })).toHaveAttribute("href", "/fics/sample-fic/1");
-  await expect(group.getByRole("link", { name: "Next chapter" })).toHaveAttribute("href", "/fics/sample-fic/3");
-  await page.setViewportSize({ width: 1280, height: 800 });
-  await expect(group).toBeHidden();
+  await expect(page.getByRole("group", { name: "Chapter navigation" })).toHaveCount(0);
+  await expect(page.getByRole("navigation", { name: "Chapters" }).getByRole("link", { name: "Previous chapter" })).toHaveAttribute("href", "/fics/sample-fic/1");
+});
+
+test("the chapter bar reads Chapter N: title, centered", async ({ page }) => {
+  await page.goto("/fics/sample-fic/2");
+  const bar = page.locator(".chapter-title");
+  await expect(bar).toHaveText(/^Chapter 2: /);
+  expect(await bar.evaluate((el) => getComputedStyle(el).textAlign)).toBe("center");
 });
 
 test("the Links page is writing with links in it, not big buttons", async ({ page }) => {
