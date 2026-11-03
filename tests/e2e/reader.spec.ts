@@ -1,19 +1,18 @@
 import { expect, test, type Page } from "@playwright/test";
 
-test("fic page shows details, tags and a contents list with word counts", async ({ page }) => {
+test("fic page shows details, tags and a chapter list", async ({ page }) => {
   await page.goto("/fics/sample-fic");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("(sample fic)");
-  const details = page.locator(".fic-details");
+  const details = page.locator(".story-details");
   await expect(details).toContainText("Teen and Up");
   await expect(details).toContainText("In progress");
   await expect(details).toContainText("675 words");
-  await expect(page.locator(".tag-group")).toHaveCount(5);
+  await expect(page.getByRole("list", { name: "Tags" }).locator("li")).toHaveCount(4);
   await expect(page.getByRole("link", { name: "(sample fandom)" })).toHaveAttribute("href", "/tags/fandom/sample-fandom");
-  const items = page.locator('nav[aria-label="Contents"] li');
+  const items = page.locator(".story-chapters li");
   await expect(items).toHaveCount(3);
-  await expect(items.nth(0)).toContainText("10 words");
-  await expect(items.nth(1)).toContainText("660 words");
-  await expect(items.nth(2)).toContainText("5 words");
+  await expect(items.nth(0)).toContainText("1. (chapter title)");
+  await expect(items.nth(1)).toContainText("Chapter 2");
 });
 
 test("chapter page: label, progress, word count, notes, buttons", async ({ page }) => {
@@ -40,14 +39,6 @@ test("reading text follows the size and spacing choices", async ({ page }) => {
   expect(await text.evaluate((el) => getComputedStyle(el).fontSize)).toBe("21.3333px"); // 16pt
   await page.locator('[aria-label="Line spacing"] button', { hasText: "Loose" }).click();
   expect(await text.evaluate((el) => parseFloat(getComputedStyle(el).lineHeight) / parseFloat(getComputedStyle(el).fontSize))).toBeCloseTo(2.1, 1);
-});
-
-test("oneshot shows the story on the fic page and /1 redirects there", async ({ page }) => {
-  await page.goto("/fics/sample-oneshot");
-  await expect(page.getByText("Duis aute irure dolor in reprehenderit.")).toBeVisible();
-  await expect(page.locator('nav[aria-label="Contents"]')).toHaveCount(0);
-  await page.goto("/fics/sample-oneshot/1");
-  await expect(page).toHaveURL(/\/fics\/sample-oneshot$/);
 });
 
 for (const path of ["/fics/sample-fic/0", "/fics/sample-fic/abc", "/fics/sample-fic/9", "/fics/sample-draft"]) {

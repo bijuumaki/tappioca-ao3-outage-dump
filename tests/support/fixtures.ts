@@ -2,7 +2,7 @@ import { secretClient } from "./supabase-admin";
 
 /* Sample content the tests read. Added at the start of a test run and removed at the end, so the live site
    only shows it while tests run. Placeholders only, never real fic details. Mirrors supabase/seed.sql. */
-const FIC_SLUGS = ["sample-fic", "sample-oneshot", "sample-draft", "sample-empty"];
+const FIC_SLUGS = ["sample-fic", "sample-oneshot", "sample-draft", "sample-empty", "sample-mature"];
 const ago = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString();
 
 export async function removeFixtures(): Promise<void> {
@@ -35,6 +35,7 @@ export async function seedFixtures(): Promise<void> {
     { slug: "sample-fic", title: "(sample fic)", summary: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", notes: "(fic notes)", category_id: ficCat, rating: "teen", status: "in_progress", publish_at: ago(10), featured: true },
     { slug: "sample-oneshot", title: "(sample oneshot)", summary: "Sed do eiusmod tempor incididunt.", category_id: ficCat, rating: "general", status: "complete", publish_at: ago(5) },
     { slug: "sample-draft", title: "(sample draft)", summary: "Draft summary.", category_id: ficCat, rating: "mature", status: "in_progress", publish_at: null },
+    { slug: "sample-mature", title: "(sample mature)", summary: "Quis nostrud exercitation ullamco.", category_id: ficCat, rating: "mature", status: "complete", publish_at: ago(4) },
     { slug: "sample-empty", title: "(sample empty)", summary: "Ut labore et dolore magna aliqua.", category_id: ficCat, rating: "not_rated", status: "in_progress", publish_at: ago(3) },
   ], { defaultToNull: false }).select("id, slug");
   if (fe) throw fe;
@@ -48,6 +49,7 @@ export async function seedFixtures(): Promise<void> {
     { fic_id: fic("sample-fic"), position: 3, title: "(scheduled chapter)", body: "<p>Hidden scheduled chapter.</p>", word_count: 3, publish_at: new Date(Date.now() + 365 * 86_400_000).toISOString() },
     { fic_id: fic("sample-fic"), position: 4, body: "<p>Ut enim ad minim veniam.</p>", word_count: 5, publish_at: ago(1) },
     { fic_id: fic("sample-oneshot"), position: 1, body: "<p>Duis aute irure dolor in reprehenderit.</p>", word_count: 6, publish_at: ago(5) },
+    { fic_id: fic("sample-mature"), position: 1, body: "<p>Mature sample text.</p>", word_count: 3, publish_at: ago(4) },
     { fic_id: fic("sample-draft"), position: 1, body: "<p>Draft text.</p>", word_count: 2, publish_at: ago(5) },
     { fic_id: fic("sample-empty"), position: 1, body: "<p>Not yet.</p>", word_count: 2, publish_at: null },
   ], { defaultToNull: false });
@@ -57,6 +59,8 @@ export async function seedFixtures(): Promise<void> {
   const { error: fte } = await db.from("fic_tags").insert([
     ...allFicTags,
     { fic_id: fic("sample-oneshot"), tag_id: tag("sample-fandom") },
+    { fic_id: fic("sample-mature"), tag_id: tag("sample-fandom") },
+    { fic_id: fic("sample-mature"), tag_id: tag("sample-warning") },
     { fic_id: fic("sample-draft"), tag_id: tag("draft-only-tag") },
   ]);
   if (fte) throw fte;

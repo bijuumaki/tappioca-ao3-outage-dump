@@ -63,7 +63,7 @@ describe.skipIf(!configured)("reader queries", async () => {
 
   test("getTagItems lists fics and posts with that tag", async () => {
     const res = await q.getTagItems("fandom", "sample-fandom");
-    expect(res!.fics.map((f) => f.slug).sort()).toEqual(["sample-fic", "sample-oneshot"]);
+    expect(res!.fics.map((f) => f.slug).sort()).toEqual(["sample-fic", "sample-mature", "sample-oneshot"]);
     expect(res!.posts.map((p) => p.slug)).toEqual(["sample-art"]);
   });
 

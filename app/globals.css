@@ -240,3 +240,48 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
   max-width: var(--page-width); margin: 40px auto 0; padding: 14px 0;
   border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
 }
+
+/* Story page (the page before chapter 1) */
+.story-back { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
+.story-head { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: flex-start; }
+.story-cover {
+  flex: none; width: min(200px, 100%); aspect-ratio: 2 / 3; border-radius: var(--radius); background: var(--border); overflow: hidden;
+  display: flex; align-items: center; justify-content: center; font-size: var(--t13); font-weight: 500;
+}
+.story-cover img { width: 100%; height: 100%; object-fit: cover; }
+.story-info { flex: 999 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.story-info .page-title { margin: 0; overflow-wrap: anywhere; }
+.story-info p { margin: 0; }
+.story-tags { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.story-tags li { border: 1px solid var(--field-border); border-radius: var(--radius-small); font-size: var(--t13); }
+.story-tags a { display: inline-block; padding: 2px 10px; }
+.story-section { display: flex; flex-direction: column; gap: 8px; }
+.story-details { margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: var(--t14); }
+.story-details > div { display: flex; flex-wrap: wrap; gap: 0 16px; }
+.story-details dt { flex: 0 0 120px; color: var(--muted); }
+.story-details dd { margin: 0; flex: 1 1 160px; min-width: 0; overflow-wrap: anywhere; }
+.story-notice {
+  display: flex; flex-direction: column; gap: 12px; padding: 20px; border: 1px solid var(--accent-text);
+  border-radius: var(--radius); background: var(--card-bg);
+}
+.story-notice h2 { margin: 0; font-family: var(--font-heading); font-size: calc(22px * var(--fs)); line-height: 1.25; font-weight: 600; color: var(--accent-text); }
+.story-notice p { margin: 0; }
+.story-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.story-primary, .story-secondary {
+  appearance: none; display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 18px;
+  border-radius: 8px; font: inherit; cursor: pointer; text-align: center;
+}
+.story-primary { border: 0; background: var(--accent-fill); color: var(--on-accent); font-weight: 600; flex: 1 1 200px; }
+.story-secondary { border: 1px solid var(--field-border); background: transparent; color: var(--ink); flex: 1 1 120px; }
+.story-big { min-height: 52px; padding: 0 26px; flex: none; }
+.story-start { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.story-seen { margin: 0; font-size: var(--t13); }
+.story-chapters { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.story-chapters a, .story-chapters button {
+  appearance: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 48px;
+  padding: 0 14px; border: 1px solid var(--field-border); border-radius: var(--radius); background: var(--card-bg); color: var(--ink);
+  font: inherit; text-align: left;
+}
+.story-chapters button:disabled { opacity: 0.5; cursor: default; }
+.story-chapters a span:last-child { font-size: var(--t13); }
+.story-toggle { align-self: flex-start; flex: none; min-height: 44px; }

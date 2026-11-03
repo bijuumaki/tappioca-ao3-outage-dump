@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import ChapterBody from "@/components/ChapterBody";
-import FicDetails from "@/components/FicDetails";
 import RichText from "@/components/RichText";
-import TableOfContents from "@/components/TableOfContents";
-import { getChapter, getFic } from "@/lib/content/queries";
+import StoryOverview from "@/components/StoryOverview";
+import { mediaUrl } from "@/lib/content/media";
+import { getFic } from "@/lib/content/queries";
+import { RATING_LABELS, STATUS_LABELS } from "@/lib/content/types";
+import { formatDate } from "@/lib/format/dates";
 import { formatWords } from "@/lib/format/words";
 
 export const revalidate = 60;
@@ -20,20 +21,34 @@ export default async function FicPage({ params }: Props) {
   const { slug } = await params;
   const fic = await getFic(slug);
   if (!fic) notFound();
-  const oneshot = fic.chapters.length === 1 ? await getChapter(slug, 1) : null;
+
+  const names = (type: string) => fic.tags.filter((t) => t.type === type).map((t) => t.name);
+  const fandomTag = fic.tags.find((t) => t.type === "fandom") ?? null;
+  const updated = fic.chapters.map((c) => c.publish_at).filter((d): d is string => !!d).sort().at(-1) ?? null;
+  const details = [
+    { k: "Rating", v: RATING_LABELS[fic.rating] },
+    ...(names("relationship").length ? [{ k: "Relationships", v: names("relationship").join(", ") }] : []),
+    { k: "Words", v: formatWords(fic.totalWords) },
+    { k: "Chapters", v: String(fic.chapters.length) },
+    { k: "Status", v: STATUS_LABELS[fic.status] },
+    ...(updated ? [{ k: "Updated", v: formatDate(updated) }] : []),
+  ];
 
   return (
     <main className="page" id="main">
-      <header className="reader-header">
-        <h1 className="page-title">{fic.title}</h1>
-        {oneshot && <p className="chapter-label">{formatWords(oneshot.chapter.word_count)}</p>}
-      </header>
-      <FicDetails fic={fic} />
-      {fic.summary && <section aria-label="Summary" className="box"><RichText html={fic.summary} /></section>}
-      {fic.notes && <aside className="notes" aria-label="Fic notes"><RichText html={fic.notes} /></aside>}
-      {fic.chapters.length === 0 && <p className="empty-note">No chapters yet.</p>}
-      {oneshot && <ChapterBody id={`${slug}/1`} chapter={oneshot.chapter} />}
-      {fic.chapters.length > 1 && <TableOfContents slug={slug} chapters={fic.chapters} />}
+      <StoryOverview
+        slug={slug}
+        title={fic.title}
+        coverUrl={fic.cover_path ? mediaUrl(fic.cover_path) : null}
+        fandom={fandomTag ? { name: fandomTag.name, slug: fandomTag.slug } : null}
+        summary={fic.summary ? <RichText html={fic.summary} /> : null}
+        tags={fic.tags.filter((t) => t.type !== "fandom").map((t) => ({ type: t.type, name: t.name, slug: t.slug }))}
+        ratingLabel={RATING_LABELS[fic.rating]}
+        adult={fic.rating === "mature" || fic.rating === "explicit"}
+        warnings={names("warning")}
+        details={details}
+        chapters={fic.chapters.map((c) => ({ n: c.n, label: c.title ? `${c.n}. ${c.title}` : `Chapter ${c.n}` }))}
+      />
     </main>
   );
 }

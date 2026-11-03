@@ -14,7 +14,7 @@ test("clicking a fandom tag opens its tag page", async ({ page }) => {
   await page.goto("/fics/sample-fic");
   await page.getByRole("link", { name: "(sample fandom)" }).click();
   await expect(page).toHaveURL(/\/tags\/fandom\/sample-fandom$/);
-  await expect(page.locator(".fic-card")).toHaveCount(2);
+  await expect(page.locator(".fic-card")).toHaveCount(3);
   await expect(page.locator(".post-card")).toHaveCount(1);
 });
 
