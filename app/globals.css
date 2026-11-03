@@ -330,8 +330,8 @@ button, select, input, textarea { text-transform: inherit; touch-action: manipul
   display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border: 1px solid var(--border);
   border-radius: var(--radius); background: var(--card-bg);
 }
-.comment-replies { margin-top: 6px; padding-left: 16px; border-left: 2px solid var(--border); }
-.comment-replies .comment { border: 0; padding: 8px 0 0; background: transparent; }
+.comment-replies { margin-top: 6px; padding-left: 16px; }
+.comment-replies .comment { padding: 10px 12px; background: var(--bar); border: 0; }
 .comment-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; }
 .comment-name { font-weight: 600; text-transform: none; overflow-wrap: anywhere; }
 .comment-badge { margin-left: 8px; padding: 0 8px; border: 1px solid var(--field-border); border-radius: var(--radius-small); font-size: var(--t13); font-weight: 500; }

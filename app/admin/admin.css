@@ -247,7 +247,7 @@
 .a-comment p { margin: 0; }
 .a-comment-name { font-weight: 600; text-transform: none; overflow-wrap: anywhere; }
 .a-comment-body, .a-comment-reply { text-transform: none; white-space: pre-wrap; overflow-wrap: anywhere; }
-.a-comment-reply { padding-left: 12px; border-left: 2px solid var(--a-border); }
+.a-comment-reply { padding: 8px 12px; border-radius: 6px; background: var(--a-bar); }
 .a-tag { margin-left: 8px; padding: 0 8px; border: 1px solid var(--a-field-border); border-radius: 6px; font-size: 13px; font-weight: 500; }
 .a-reply summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
 .a-reply-form { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
