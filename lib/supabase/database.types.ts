@@ -58,6 +58,12 @@ export type Database = {
         Update: { id?: string; reader?: string; slug?: string; chapter_n?: number; start_at?: number; end_at?: number; quote?: string; color?: string; note?: string; fic?: string; ch?: string; updated?: number };
         Relationships: [];
       };
+      feed_hits: {
+        Row: { day: string; feed: string; visitor: string; app: string; subs: number };
+        Insert: { day: string; feed: string; visitor: string; app?: string; subs?: number };
+        Update: { day?: string; feed?: string; visitor?: string; app?: string; subs?: number };
+        Relationships: [];
+      };
       reader_sync: {
         Row: { code_hash: string; data: Json; updated_at: string };
         Insert: { code_hash: string; data?: Json; updated_at?: string };
