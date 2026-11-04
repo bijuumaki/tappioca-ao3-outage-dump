@@ -1,6 +1,7 @@
 "use client";
 import { useEditorState, type Editor } from "@tiptap/react";
 import { FONTS } from "@/lib/client/prefs";
+import { useFontLabel } from "@/lib/client/font-labels";
 
 function Icon({ d }: { d: string }) {
   return <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={d} /></svg>;
@@ -28,6 +29,7 @@ export type ToolbarProps = {
 };
 
 export default function EditorToolbar({ editor, font, size, onFont, onSize, children }: ToolbarProps) {
+  const fontLabel = useFontLabel();
   const active = useEditorState({
     editor,
     selector: ({ editor: e }) => ({
@@ -65,7 +67,7 @@ export default function EditorToolbar({ editor, font, size, onFont, onSize, chil
       </select>
       {onFont && font !== undefined && (
         <select aria-label="Font" value={font} onChange={(e) => onFont(e.target.value)} title="Changes only how this page looks while you write">
-          {FONTS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+          {FONTS.map(([v]) => <option key={v} value={v}>{fontLabel(v)}</option>)}
         </select>
       )}
       {onSize && size !== undefined && (

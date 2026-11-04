@@ -8,13 +8,14 @@ const FONT_GROUPS = [
   { label: "Serif", fonts: ["crimson", "ebgaramond", "charter"] },
   { label: "Sans serif", fonts: ["default", "lucida", "cantarell", "avenir"] },
 ] as const;
-const fontLabel = (v: string) => (v === "default" ? "Inclusive Sans (default)" : FONTS.find(([k]) => k === v)?.[1] ?? v);
 import { useReaderInfo } from "@/lib/client/reader-store";
 import SyncDialog from "@/components/SyncDialog";
 import { setSharing, sharing } from "@/lib/client/notes-share";
+import { useFontLabel } from "@/lib/client/font-labels";
 
 export default function DisplayOptions() {
   const reader = useReaderInfo();
+  const fontLabel = useFontLabel();
   const [open, setOpen] = useState(false);
   const [theme, setTheme] = useState("day");
   const [size, setSize] = useState(14);

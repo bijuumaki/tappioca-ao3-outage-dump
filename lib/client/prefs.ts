@@ -20,7 +20,7 @@ const WEB_FONTS: Record<string, string> = {
 };
 /* Apple devices ship the real Charter and Avenir Next, so those two are not downloaded there; everywhere else they are Charis SIL (built from Charter) and Nunito Sans (a close match to Avenir Next). */
 const NATIVE_ON_APPLE = ["charter", "avenir"];
-function isApple(): boolean { return /Mac|iPhone|iPad|iPod/.test(navigator.userAgent); }
+export function isApple(): boolean { return /Mac|iPhone|iPad|iPod/.test(navigator.userAgent); }
 export const SIZE_MIN = 10;
 export const SIZE_MAX = 20;
 
