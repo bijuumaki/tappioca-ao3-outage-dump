@@ -1,13 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { isBlockedBot } from "@/lib/security/bots";
+import { LOGIN_PATH, isProtectedAdminPath } from "@/lib/security/admin-paths";
 
 /* Turns away named AI and scraping crawlers on every page, then keeps the admin session fresh and sends signed-out visitors to the sign-in page. */
 export async function proxy(request: NextRequest) {
   if (isBlockedBot(request.headers.get("user-agent"), request.nextUrl.pathname)) return new NextResponse("Automated access to this site is not allowed.", { status: 403, headers: { "content-type": "text/plain" } });
-  /* Only /admin and /admin/... are protected; the sign-in page /admin-login only looks similar and must stay open, or signed-out visitors loop forever. */
-  const first = request.nextUrl.pathname;
-  if (first !== "/admin" && !first.startsWith("/admin/")) return NextResponse.next();
+  if (!isProtectedAdminPath(request.nextUrl.pathname)) return NextResponse.next();
   let response = NextResponse.next({ request });
   const db = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
     cookies: {
@@ -24,7 +23,7 @@ export async function proxy(request: NextRequest) {
   /* The sign-in page lives at /admin-login; an old /admin/login bookmark is sent there. */
   if (path === "/admin/login") {
     const url = request.nextUrl.clone();
-    url.pathname = "/admin-login";
+    url.pathname = LOGIN_PATH;
     return NextResponse.redirect(url);
   }
   const onLogin = path === "/admin/set-password";
@@ -32,7 +31,7 @@ export async function proxy(request: NextRequest) {
   const isAction = request.headers.has("next-action");
   if (!user && !onLogin && !isAction) {
     const url = request.nextUrl.clone();
-    url.pathname = "/admin-login";
+    url.pathname = LOGIN_PATH;
     url.search = "";
     return NextResponse.redirect(url);
   }
