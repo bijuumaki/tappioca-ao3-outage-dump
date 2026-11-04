@@ -5,7 +5,9 @@ import { isBlockedBot } from "@/lib/security/bots";
 /* Turns away named AI and scraping crawlers on every page, then keeps the admin session fresh and sends signed-out visitors to the sign-in page. */
 export async function proxy(request: NextRequest) {
   if (isBlockedBot(request.headers.get("user-agent"), request.nextUrl.pathname)) return new NextResponse("Automated access to this site is not allowed.", { status: 403, headers: { "content-type": "text/plain" } });
-  if (!request.nextUrl.pathname.startsWith("/admin")) return NextResponse.next();
+  /* Only /admin and /admin/... are protected; the sign-in page /admin-login only looks similar and must stay open, or signed-out visitors loop forever. */
+  const first = request.nextUrl.pathname;
+  if (first !== "/admin" && !first.startsWith("/admin/")) return NextResponse.next();
   let response = NextResponse.next({ request });
   const db = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
     cookies: {
